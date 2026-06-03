@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "TutorMaths",
+  title: "Maths Tasks",
   description: "Private mathematics homework for tutoring students.",
 };
 

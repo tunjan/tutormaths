@@ -1,4 +1,4 @@
-# Deploying TutorMaths to Vercel
+# Deploying Maths Tasks to Vercel
 
 The Next.js app deploys to Vercel. The database, auth, storage, the
 `send-reminders` Edge Function, and the `pg_cron` schedule all live in Supabase
@@ -25,7 +25,7 @@ Every key was shared in plaintext during development. Rotate before going live:
 ```bash
 git init
 git add -A
-git commit -m "TutorMaths initial"
+git commit -m "Maths Tasks initial"
 # create a GitHub repo, then:
 git remote add origin git@github.com:<you>/tutormaths.git
 git branch -M main
@@ -50,7 +50,7 @@ Set for **Production** (and Preview if you want preview deploys to work):
 | `NEXT_PUBLIC_SITE_URL` | `https://<your-domain>` | canonical URL; used to build magic-link/invite redirects |
 | `SUPABASE_SERVICE_ROLE_KEY` | secret key | **server-only — never expose** |
 | `RESEND_API_KEY` | Resend key | server-only |
-| `RESEND_FROM_EMAIL` | `TutorMaths <homework@akuira.cafe>` | verified domain |
+| `RESEND_FROM_EMAIL` | `Maths Tasks <homework@akuira.cafe>` | verified domain |
 
 If you don't set `NEXT_PUBLIC_SITE_URL`, the app falls back to Vercel's
 production URL automatically (`getSiteUrl()` in `lib/site-url.ts`), but setting

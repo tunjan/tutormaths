@@ -1,4 +1,4 @@
-# TutorMaths — Setup (Step 2)
+# Maths Tasks — Setup (Step 2)
 
 Do these in order. Stop at the **TYPES CHECKPOINT** until the schema is live.
 
@@ -108,7 +108,7 @@ resolve to the token-hash confirm flow, e.g.
 2. **Set the function secrets** (NOT `SUPABASE_*` — those are auto-injected):
    ```bash
    supabase secrets set RESEND_API_KEY=re_xxx \
-     RESEND_FROM_EMAIL="TutorMaths <homework@your-verified-domain.com>"
+     RESEND_FROM_EMAIL="Maths Tasks <homework@your-verified-domain.com>"
    ```
    Or Dashboard → Edge Functions → send-reminders → Secrets.
 3. **Store the service-role key in Vault** (lets cron authenticate the call):

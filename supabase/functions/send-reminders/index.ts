@@ -1,5 +1,5 @@
 // ============================================================================
-// TutorMaths — scheduled reminder function.
+// Maths Tasks — scheduled reminder function.
 // Invoked by pg_cron on a FIXED interval (e.g. every 15 minutes), NOT per
 // assignment. On each run it finds active assignments whose due time has
 // entered a reminder window, and for each (assignment, student, window) it has
@@ -46,7 +46,7 @@ Deno.serve(async () => {
 
   const resendKey = Deno.env.get("RESEND_API_KEY");
   const fromEmail =
-    Deno.env.get("RESEND_FROM_EMAIL") ?? "TutorMaths <onboarding@resend.dev>";
+    Deno.env.get("RESEND_FROM_EMAIL") ?? "Maths Tasks <onboarding@resend.dev>";
 
   const supabase = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },

@@ -16,7 +16,7 @@ export default async function TutorLayout({
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-6 py-4">
           <nav className="flex items-center gap-6 text-sm">
             <Link href="/tutor" className="font-semibold tracking-tight">
-              TutorMaths
+              Maths Tasks
             </Link>
             <Link
               href="/tutor/students"

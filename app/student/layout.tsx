@@ -15,7 +15,7 @@ export default async function StudentLayout({
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-6 py-4">
           <Link href="/student" className="font-semibold tracking-tight">
-            TutorMaths
+            Maths Tasks
           </Link>
           <div className="flex items-center gap-2">
             <NotificationBell userId={ctx.userId} />

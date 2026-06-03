@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================================================
-   shadcn/ui (Base UI) semantic tokens, tuned to the TutorMaths brand:
+   shadcn/ui (Base UI) semantic tokens, tuned to the Maths Tasks brand:
    primary + ring = the single accent #0E7490; surfaces/borders match the
    original palette; Inter is the sans font. Light mode is the product; the
    .dark block is kept for completeness but unused (no `dark` class is set).
@@ -118,7 +118,7 @@
 }
 
 /* ============================================================================
-   TutorMaths legacy tokens (used by pages not yet migrated to shadcn).
+   Maths Tasks legacy tokens (used by pages not yet migrated to shadcn).
    The brand teal lives under `brand`/`brand-hover` so it never collides with
    shadcn's semantic `accent`. Defined after @theme inline so these win.
    ========================================================================== */

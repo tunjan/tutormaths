@@ -12,7 +12,7 @@ export default function LoginPage() {
     <main className="flex min-h-screen flex-col items-center justify-center gap-10 bg-surface px-4 py-16">
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          TutorMaths
+          Maths Tasks
         </h1>
         <p className="text-sm text-muted-foreground">
           Mathematics homework for tutoring students
