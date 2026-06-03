@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
   const { error } = await admin.auth.admin.inviteUserByEmail(email, {
     data: { full_name: fullName },
-    redirectTo: `${siteUrl}/auth/confirm`,
+    redirectTo: `${siteUrl}/auth/confirm?next=/auth/set-password`,
   });
 
   if (error) {

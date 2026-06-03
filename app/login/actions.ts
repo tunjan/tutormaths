@@ -1,50 +1,35 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getSiteUrl } from "@/lib/site-url";
 
 export interface LoginState {
-  status: "idle" | "sent" | "error";
-  message?: string;
+  error?: string;
 }
 
 /**
- * Passwordless sign-in. Sends a magic link to an EXISTING user only
- * (`shouldCreateUser: false`) — there is no public sign-up; students are
- * onboarded by the tutor via invite, and the tutor account is created in the
- * Supabase dashboard. We never hold anyone's password.
+ * Email + password sign-in. Students set their own password from the invite
+ * link (see /auth/set-password); the tutor sets theirs via "forgot password".
+ * We never store or transmit a password on anyone's behalf.
  */
-export async function sendMagicLink(
+export async function signIn(
   _prev: LoginState,
   formData: FormData,
 ): Promise<LoginState> {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const password = String(formData.get("password") ?? "");
 
-  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-    return { status: "error", message: "Enter a valid email address." };
+  if (!email || !password) {
+    return { error: "Enter your email and password." };
   }
 
-  const siteUrl = getSiteUrl();
   const supabase = await createClient();
-
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      shouldCreateUser: false,
-      emailRedirectTo: `${siteUrl}/auth/confirm`,
-    },
-  });
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    // Don't leak whether the email exists — show a neutral message either way.
-    return {
-      status: "sent",
-      message: "If that email has an account, a sign-in link is on its way.",
-    };
+    return { error: "Incorrect email or password." };
   }
 
-  return {
-    status: "sent",
-    message: "Check your inbox for a sign-in link.",
-  };
+  // "/" routes to the correct role home.
+  redirect("/");
 }
