@@ -8,9 +8,9 @@ export interface LoginState {
 }
 
 /**
- * Email + password sign-in. Students set their own password from the invite
- * link (see /auth/set-password); the tutor sets theirs via "forgot password".
- * We never store or transmit a password on anyone's behalf.
+ * Email + password sign-in. Students get a temporary password when the tutor
+ * creates them, then are forced to /auth/set-password on first sign-in (see
+ * proxy.ts); the tutor sets theirs via "forgot password".
  */
 export async function signIn(
   _prev: LoginState,

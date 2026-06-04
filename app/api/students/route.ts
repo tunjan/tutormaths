@@ -1,13 +1,17 @@
+import { randomBytes } from "node:crypto";
 import { type NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getSiteUrl } from "@/lib/site-url";
 
 /**
- * Privileged: create a student by sending a Supabase invite (magic link) —
- * we never set or hold a student's password. Uses the service-role key, so it
- * MUST stay server-side. We re-check the tutor role per request (never trust
- * the proxy), then call the admin API.
+ * Privileged: create a student account with an auto-generated temporary
+ * password. The password is returned ONCE in the response so the tutor can
+ * share it with the student; we never store it ourselves. The account is
+ * flagged `must_change_password`, so the student is forced through
+ * /auth/set-password on first sign-in (see proxy.ts).
+ *
+ * Uses the service-role key, so it MUST stay server-side. We re-check the tutor
+ * role per request (never trust the proxy), then call the admin API.
  */
 export async function POST(request: NextRequest) {
   const ctx = await getAuthContext();
@@ -32,17 +36,30 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const siteUrl = getSiteUrl();
+  const tempPassword = generateTempPassword();
   const admin = createAdminClient();
 
-  const { error } = await admin.auth.admin.inviteUserByEmail(email, {
-    data: { full_name: fullName },
-    redirectTo: `${siteUrl}/auth/confirm?next=/auth/set-password`,
+  // email_confirm: true lets the student sign in immediately (no confirmation
+  // round-trip). The handle_new_user() trigger reads full_name from this
+  // metadata and assigns the student role.
+  const { error } = await admin.auth.admin.createUser({
+    email,
+    password: tempPassword,
+    email_confirm: true,
+    user_metadata: { full_name: fullName, must_change_password: true },
   });
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, email, tempPassword });
+}
+
+/**
+ * A short, URL-safe temporary password. 12 chars of base64url easily clears
+ * Supabase's policy and the 8-char minimum the student sees on set-password.
+ */
+function generateTempPassword(): string {
+  return randomBytes(9).toString("base64url");
 }

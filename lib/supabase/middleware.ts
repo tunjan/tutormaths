@@ -52,6 +52,23 @@ export async function updateSession(request: NextRequest) {
     const role = claims.user_role === "tutor" ? "tutor" : "student";
     const home = role === "tutor" ? "/tutor" : "/student";
 
+    // Students created with a temporary password must choose a real one before
+    // doing anything else. The flag lives in user_metadata (cleared on
+    // set-password). Allow set-password itself and signing out.
+    const mustChangePassword =
+      (claims.user_metadata as { must_change_password?: boolean } | undefined)
+        ?.must_change_password === true;
+    if (
+      mustChangePassword &&
+      path !== "/auth/set-password" &&
+      path !== "/auth/signout"
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/auth/set-password";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+
     // Already signed in but sitting on /login → send to their home.
     if (path === "/login") {
       const url = request.nextUrl.clone();

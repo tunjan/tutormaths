@@ -31,7 +31,11 @@ export function SetPasswordForm() {
     }
 
     setPending(true);
-    const { error: updErr } = await supabase.auth.updateUser({ password });
+    // Clearing must_change_password drops the proxy's set-password redirect.
+    const { error: updErr } = await supabase.auth.updateUser({
+      password,
+      data: { must_change_password: false },
+    });
     if (updErr) {
       setError(
         /session/i.test(updErr.message)
@@ -41,6 +45,10 @@ export function SetPasswordForm() {
       setPending(false);
       return;
     }
+
+    // updateUser doesn't reissue the access token, so the JWT still carries the
+    // old metadata. Refresh it before navigating, or the proxy bounces us back.
+    await supabase.auth.refreshSession();
 
     toast.success("Password set — you're signed in.");
     router.push("/");

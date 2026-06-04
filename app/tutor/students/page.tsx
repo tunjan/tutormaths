@@ -43,10 +43,10 @@ export default async function StudentsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Invite a student</CardTitle>
+          <CardTitle className="text-base">Add a student</CardTitle>
           <CardDescription>
-            We email a secure sign-in link — you never set or hold their
-            password.
+            We generate a temporary password — share it with the student, and
+            they&rsquo;ll choose their own on first sign-in.
           </CardDescription>
         </CardHeader>
         <CardContent>
