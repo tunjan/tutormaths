@@ -15,9 +15,13 @@ const dueStyles: Record<Exclude<DueState, "done">, string> = {
 };
 
 const reviewStyles: Record<Exclude<ReviewStatus, "assigned">, string> = {
-  submitted: "border-transparent bg-secondary text-secondary-foreground",
+  // Awaiting review is the tutor's call to action — give it a real accent
+  // (info/blue), not the old neutral gray that read as "nothing to do here".
+  submitted: "border-transparent bg-info-muted text-info",
   approved: "border-transparent bg-primary/10 text-primary",
-  needs_work: "border-transparent bg-warning-muted text-warning",
+  // "Changes requested" is an action the student must take — a solid amber so
+  // it never reads the same as the pale "Due soon" chip.
+  needs_work: "border-transparent bg-warning text-white dark:text-background",
 };
 
 function content(status: AssignmentStatus): { label: string; className: string } {

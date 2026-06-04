@@ -39,6 +39,10 @@
   --warning: #b45309;
   --warning-muted: #fef3c7;
 
+  /* Info = "awaiting review" — distinct from success (teal) and warning (amber) */
+  --info: #1d4ed8;
+  --info-muted: #dbeafe;
+
   /* App backdrop behind cards (login, etc.) — switchable for dark mode */
   --surface: #f7f7f8;
 
@@ -80,6 +84,8 @@
   --destructive: oklch(0.704 0.191 22.216);
   --warning: #fbbf24;
   --warning-muted: oklch(0.3 0.06 70);
+  --info: #60a5fa;
+  --info-muted: oklch(0.3 0.06 260);
   --surface: oklch(0.115 0 0);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
@@ -106,6 +112,8 @@
   --color-destructive: var(--destructive);
   --color-warning: var(--warning);
   --color-warning-muted: var(--warning-muted);
+  --color-info: var(--info);
+  --color-info-muted: var(--info-muted);
   --color-surface: var(--surface);
   --color-border: var(--border);
   --color-input: var(--input);

@@ -10,6 +10,7 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import { FilePreview } from "@/components/ui/file-preview";
 import { CompletionControl } from "@/components/completion-control";
+import { AssignmentSteps } from "@/components/assignment-steps";
 import { SubmissionUploader } from "@/components/submission-uploader";
 import { SubmissionList } from "@/components/submission-list";
 import { LiveCommentThread, type Participant } from "@/components/live-comment-thread";
@@ -20,6 +21,7 @@ import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -97,6 +99,10 @@ export default async function StudentAssignmentPage({
         )}
       </header>
 
+      <div className="rounded-xl bg-card px-4 py-4 ring-1 ring-foreground/10">
+        <AssignmentSteps status={a.review_status} />
+      </div>
+
       <ReviewBanner status={a.review_status} />
 
       <section className="flex flex-col gap-4">
@@ -124,16 +130,8 @@ export default async function StudentAssignmentPage({
         )}
       </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Progress</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-5">
-          <ProgressBar value={a.completion_pct} />
-          <CompletionControl assignmentId={id} initial={a.completion_pct} />
-        </CardContent>
-      </Card>
-
+      {/* Submitting is the step that actually reaches the tutor, so it leads —
+          progress tracking is secondary and lives below it. */}
       <section className="flex flex-col gap-4">
         <SectionHeading>Submit your work</SectionHeading>
         <SubmissionUploader assignmentId={id} studentId={ctx.userId} />
@@ -141,6 +139,24 @@ export default async function StudentAssignmentPage({
           <SubmissionList submissions={submissions} canDelete />
         )}
       </section>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Your progress</CardTitle>
+          <CardDescription>
+            A tracker just for you. To hand work in, use “Submit your work”
+            above.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-5">
+          <ProgressBar value={a.completion_pct} />
+          <CompletionControl
+            assignmentId={id}
+            initial={a.completion_pct}
+            hasSubmissions={submissions.length > 0}
+          />
+        </CardContent>
+      </Card>
 
       <section className="flex flex-col gap-4">
         <SectionHeading>Comments</SectionHeading>
@@ -158,12 +174,25 @@ export default async function StudentAssignmentPage({
 function ReviewBanner({ status }: { status: ReviewStatus }) {
   if (status === "assigned") return null;
 
+  // Approval is the big positive moment in the whole flow — give it a warmer,
+  // more celebratory treatment than the other states.
+  if (status === "approved") {
+    return (
+      <div className="flex items-center gap-3 rounded-xl bg-primary/10 px-4 py-4 text-primary ring-1 ring-primary/20">
+        <span aria-hidden className="text-2xl leading-none">
+          🎉
+        </span>
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="size-5 shrink-0" />
+          <span className="text-sm font-medium">
+            Approved — your tutor has signed off on this work. Great job!
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   const config = {
-    approved: {
-      icon: CheckCircle2,
-      className: "bg-primary/10 text-primary",
-      text: "Approved — your tutor has signed off on this work. Nice job!",
-    },
     needs_work: {
       icon: RotateCcw,
       className: "bg-warning-muted text-warning",
@@ -171,7 +200,7 @@ function ReviewBanner({ status }: { status: ReviewStatus }) {
     },
     submitted: {
       icon: Clock,
-      className: "bg-secondary text-secondary-foreground",
+      className: "bg-info-muted text-info",
       text: "Submitted — your tutor will review your work soon.",
     },
   }[status];

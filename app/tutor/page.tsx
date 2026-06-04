@@ -42,36 +42,81 @@ export default async function TutorDashboard() {
   }));
 
   const awaiting = all.filter((a) => a.review_status === "submitted").length;
+  // Overdue = the student is late and it's on them to act (not yet submitted,
+  // not approved). Submitted-but-late work lives under "Awaiting your review".
+  // This definition matches the Overdue section in TutorAssignmentBrowser so
+  // the headline number and the list always agree.
   const overdue = all.filter(
     (a) =>
-      a.review_status !== "approved" &&
+      (a.review_status === "assigned" || a.review_status === "needs_work") &&
       new Date(a.due_at).getTime() < Date.now(),
   ).length;
+
+  const hasStudents = (students?.length ?? 0) > 0;
 
   return (
     <div className="flex flex-col gap-10">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-        <Link
-          href="/tutor/assignments/new"
-          className={cn(buttonVariants(), "shrink-0")}
-        >
-          New assignment
-        </Link>
+        {hasStudents && (
+          <Link
+            href="/tutor/assignments/new"
+            className={cn(buttonVariants(), "shrink-0")}
+          >
+            New assignment
+          </Link>
+        )}
       </div>
 
-      <div className="grid grid-cols-3 gap-3 sm:gap-4">
-        <Stat
-          label="Students"
-          value={students?.length ?? 0}
-          href="/tutor/students"
-        />
-        <Stat label="Awaiting review" value={awaiting} />
-        <Stat label="Overdue" value={overdue} />
-      </div>
+      {hasStudents ? (
+        <>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+            <Stat
+              label="Students"
+              value={students?.length ?? 0}
+              href="/tutor/students"
+            />
+            <Stat
+              label="Awaiting review"
+              value={awaiting}
+              href={awaiting > 0 ? "#awaiting" : undefined}
+            />
+            <Stat
+              label="Overdue"
+              value={overdue}
+              href={overdue > 0 ? "#overdue" : undefined}
+            />
+          </div>
 
-      <TutorAssignmentBrowser items={items} />
+          <TutorAssignmentBrowser items={items} />
+        </>
+      ) : (
+        <Onboarding />
+      )}
     </div>
+  );
+}
+
+/** First-run guidance: a tutor with no students yet can't do anything else. */
+function Onboarding() {
+  return (
+    <Card className="py-10">
+      <CardContent className="flex flex-col items-center gap-5 px-6 text-center">
+        <div className="flex flex-col gap-1.5">
+          <h2 className="text-lg font-semibold tracking-tight">
+            Welcome to Maths Tasks
+          </h2>
+          <p className="mx-auto max-w-md text-sm text-muted-foreground">
+            Get set up in two steps: invite a student, then send them their
+            first assignment. You&rsquo;ll review their work and track progress
+            right here.
+          </p>
+        </div>
+        <Link href="/tutor/students" className={cn(buttonVariants())}>
+          Invite your first student
+        </Link>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -99,11 +144,16 @@ function Stat({
       </CardContent>
     </Card>
   );
-  return href ? (
+  if (!href) return inner;
+  // In-page anchors (#awaiting / #overdue) scroll within the dashboard; route
+  // links (e.g. /tutor/students) navigate.
+  return href.startsWith("#") ? (
+    <a href={href} className="group/stat block">
+      {inner}
+    </a>
+  ) : (
     <Link href={href} className="group/stat block">
       {inner}
     </Link>
-  ) : (
-    inner
   );
 }

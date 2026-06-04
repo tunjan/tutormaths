@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { createAssignment } from "@/app/tutor/actions";
@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { FileDropzone } from "@/components/ui/file-dropzone";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import {
   Select,
@@ -62,12 +63,11 @@ export function NewAssignmentForm({
   defaultStudentId?: string;
 }) {
   const [supabase] = useState(() => createClient());
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [studentId, setStudentId] = useState(defaultStudentId);
   const [type, setType] = useState<"problem_set" | "reading_notes">(
     "problem_set",
   );
-  const [fileName, setFileName] = useState("");
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
 
@@ -77,7 +77,7 @@ export function NewAssignmentForm({
     const title = String(data.get("title") ?? "").trim();
     const description = String(data.get("description") ?? "");
     const dueLocal = String(data.get("due_at") ?? "");
-    const file = fileRef.current?.files?.[0];
+    const file = selectedFile ?? undefined;
 
     const next: FieldErrors = {};
     if (!studentId) next.student = "Choose a student.";
@@ -200,31 +200,16 @@ export function NewAssignmentForm({
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="file">Assignment PDF</Label>
-        <div className="flex items-center gap-3">
-          <input
-            ref={fileRef}
-            id="file"
-            type="file"
-            accept="application/pdf"
-            className="hidden"
-            onChange={(e) => {
-              setFileName(e.target.files?.[0]?.name ?? "");
-              setErrors((er) => ({ ...er, file: undefined }));
-            }}
-          />
-          <Button
-            type="button"
-            variant="outline"
-            aria-invalid={!!errors.file}
-            onClick={() => fileRef.current?.click()}
-          >
-            {fileName ? "Change PDF" : "Choose PDF"}
-          </Button>
-          <span className="truncate text-sm text-muted-foreground">
-            {fileName || "No file chosen"}
-          </span>
-        </div>
+        <Label>Assignment PDF</Label>
+        <FileDropzone
+          accept="application/pdf"
+          hint="PDF, up to 20 MB"
+          selectedName={selectedFile?.name}
+          onFile={(f) => {
+            setSelectedFile(f ?? null);
+            setErrors((er) => ({ ...er, file: undefined }));
+          }}
+        />
         <FieldError message={errors.file} />
       </div>
 

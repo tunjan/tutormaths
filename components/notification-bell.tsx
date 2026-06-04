@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Bell } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime, relativeTime } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -160,8 +160,11 @@ export function NotificationBell({
                     )}
                     <span>{n.body}</span>
                   </span>
-                  <span className="pl-0 text-xs text-muted-foreground">
-                    {formatDateTime(n.created_at)}
+                  <span
+                    className="pl-0 text-xs text-muted-foreground"
+                    title={formatDateTime(n.created_at)}
+                  >
+                    {relativeTime(n.created_at)}
                   </span>
                 </button>
               </li>

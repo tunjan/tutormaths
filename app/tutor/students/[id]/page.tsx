@@ -71,7 +71,7 @@ export default async function StudentDetailPage({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
         <Stat label="Active" value={active.length} />
         <Stat label="Completed" value={completed.length} />
         <Stat label="Avg progress" value={`${avg}%`} />

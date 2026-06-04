@@ -112,27 +112,22 @@ export default async function TutorAssignmentPage({
         </div>
       </header>
 
-      <Card>
-        <CardContent className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-3">
-            <SectionHeading>Your review</SectionHeading>
-            {pdfUrl && (
-              <a
-                href={pdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-              >
-                Open PDF
-              </a>
-            )}
-          </div>
-          <ReviewControls assignmentId={a.id} status={a.review_status} />
-        </CardContent>
-      </Card>
-
+      {/* The work comes first: review the assignment and the student's
+          submission, then record a verdict. */}
       <section className="flex flex-col gap-4">
-        <SectionHeading>Assignment</SectionHeading>
+        <div className="flex items-center justify-between gap-3">
+          <SectionHeading>Assignment</SectionHeading>
+          {pdfUrl && (
+            <a
+              href={pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+            >
+              Open PDF
+            </a>
+          )}
+        </div>
         {pdfUrl ? (
           <FilePreview url={pdfUrl} mimeType="application/pdf" title={a.title} />
         ) : (
@@ -156,6 +151,13 @@ export default async function TutorAssignmentPage({
           <SubmissionList submissions={submissions} canDelete={false} />
         )}
       </section>
+
+      <Card>
+        <CardContent className="flex flex-col gap-4">
+          <SectionHeading>Your review</SectionHeading>
+          <ReviewControls assignmentId={a.id} status={a.review_status} />
+        </CardContent>
+      </Card>
 
       <section className="flex flex-col gap-4">
         <SectionHeading>Comments</SectionHeading>
