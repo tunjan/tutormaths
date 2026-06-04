@@ -7,6 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
 import {
   Select,
   SelectContent,
@@ -132,12 +133,10 @@ export function AssignmentActions({ id, title, description, type, dueAt }: Props
       </div>
       <div className="flex flex-col gap-2">
         <Label htmlFor="edit-due">Due</Label>
-        <Input
+        <DateTimePicker
           id="edit-due"
           name="due_at"
-          type="datetime-local"
           defaultValue={toLocalInput(dueAt)}
-          required
         />
       </div>
       <div className="flex gap-2">

@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
 import {
   Select,
   SelectContent,
@@ -173,11 +174,10 @@ export function NewAssignmentForm({
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="due_at">Due</Label>
-        <Input
+        <DateTimePicker
           id="due_at"
           name="due_at"
-          type="datetime-local"
-          aria-invalid={!!errors.due}
+          invalid={!!errors.due}
           onChange={() => setErrors((e) => ({ ...e, due: undefined }))}
         />
         <FieldError message={errors.due} />
