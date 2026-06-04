@@ -15,7 +15,7 @@ Do these in order. Stop at the **TYPES CHECKPOINT** until the schema is live.
 Key handling rules:
 - `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — public, fine in the browser; RLS is the real gate.
 - `SUPABASE_SERVICE_ROLE_KEY` — **server-only**, never `NEXT_PUBLIC`, never imported into a Client Component. Used solely to create student accounts in a Route Handler. If leaked, rotate immediately.
-- `RESEND_API_KEY` / `RESEND_FROM_EMAIL` — server-only; used by the reminder Edge Function (Step 5).
+- `RESEND_API_KEY` / `RESEND_FROM_EMAIL` — server-only; used by the `send-reminders` (Step 5) and `send-notification-email` (Step 6) Edge Functions.
 
 `.env.local` is git-ignored — never commit it.
 
@@ -125,3 +125,27 @@ resolve to the token-hash confirm flow, e.g.
      -H "Authorization: Bearer <SERVICE_ROLE_KEY>"
    ```
    Expect `{"ok":true,"evaluated":N,"sent":M}`.
+
+## Step 6 — email every in-app notification
+
+Mirrors every in-app notification (new assignment, comment, submission, review
+decision, homework request) into the recipient's inbox. Reminders are excluded
+here because Step 5 already emails them.
+
+1. **Deploy the function:**
+   ```bash
+   supabase functions deploy send-notification-email
+   ```
+2. **Reuse the same Resend secrets** (already set in Step 5: `RESEND_API_KEY`,
+   `RESEND_FROM_EMAIL`). Optionally add your app origin so emails deep-link back:
+   ```bash
+   supabase secrets set SITE_URL="https://your-domain.com"
+   ```
+3. **Reuse the Vault key** — the trigger authenticates with the same
+   `reminder_invoker_key` created in Step 5; nothing new to store.
+4. **Add the trigger** — run `supabase/migrations/0008_email_notifications.sql`.
+   It installs an `AFTER INSERT` trigger on `public.notifications` that calls the
+   function via `pg_net` (async, so it never blocks or fails the originating
+   action).
+5. **Test:** create an assignment for a student (or post a comment); the
+   recipient should get both the in-app badge and an email.

@@ -1,8 +1,9 @@
 # Deploying Maths Tasks to Vercel
 
 The Next.js app deploys to Vercel. The database, auth, storage, the
-`send-reminders` Edge Function, and the `pg_cron` schedule all live in Supabase
-and are **unaffected** by the Vercel deploy — they keep running regardless.
+`send-reminders` and `send-notification-email` Edge Functions, and the
+`pg_cron` schedule all live in Supabase and are **unaffected** by the Vercel
+deploy — they keep running regardless.
 
 Supabase project ref: `oahyvncrknjnusphwfti`
 
@@ -19,7 +20,8 @@ Every key was shared in plaintext during development. Rotate before going live:
     '<NEW_SERVICE_ROLE_JWT>'
   );
   ```
-  (cron authenticates the Edge Function call with this.)
+  (both cron and the notification-email trigger authenticate the Edge Function
+  call with this.)
 
 ## 1. Get the code into a Git repo
 ```bash
@@ -77,8 +79,10 @@ token-hash confirm flow (see SETUP.md) so invite links land on `/auth/confirm`.
 1. Visit the site → redirected to `/login`.
 2. Request a magic link as the tutor; confirm the email link points at the
    **production** domain (not localhost) and signs you in.
-3. Invite a student, create an assignment (PDF upload), then as the student
-   submit work / comment — verify the tutor notification bell updates live.
+3. Add a student, create an assignment (PDF upload), then as the student
+   submit work / comment — verify the tutor notification bell updates live
+   **and** that each notification arrives by email (requires the
+   `send-notification-email` function + its Vault key, SETUP.md Step 6).
 4. Reminders: already scheduled in Supabase; nothing to do on Vercel.
 
 ## Notes
