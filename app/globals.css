@@ -7,8 +7,8 @@
 /* ============================================================================
    shadcn/ui (Base UI) semantic tokens, tuned to the Maths Tasks brand:
    primary + ring = the single accent #0E7490; surfaces/borders match the
-   original palette; Inter is the sans font. Light mode is the product; the
-   .dark block is kept for completeness but unused (no `dark` class is set).
+   original palette; Inter is the sans font. Light is the default theme; the
+   .dark block is activated by next-themes via a `dark` class on <html>.
    ========================================================================== */
 :root {
   --radius: 0.5rem; /* 8px anchor for cards/buttons */
@@ -34,6 +34,17 @@
   --accent-foreground: #18181b;
 
   --destructive: #dc2626;
+
+  /* Warning = "due soon" (token-based, was a hardcoded amber) */
+  --warning: #b45309;
+  --warning-muted: #fef3c7;
+
+  /* Info = "awaiting review" — distinct from success (teal) and warning (amber) */
+  --info: #1d4ed8;
+  --info-muted: #dbeafe;
+
+  /* App backdrop behind cards (login, etc.) — switchable for dark mode */
+  --surface: #f7f7f8;
 
   --border: #e5e7eb;
   --input: #e5e7eb;
@@ -71,6 +82,11 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+  --warning: #fbbf24;
+  --warning-muted: oklch(0.3 0.06 70);
+  --info: #60a5fa;
+  --info-muted: oklch(0.3 0.06 260);
+  --surface: oklch(0.115 0 0);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
@@ -94,6 +110,11 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-warning: var(--warning);
+  --color-warning-muted: var(--warning-muted);
+  --color-info: var(--info);
+  --color-info-muted: var(--info-muted);
+  --color-surface: var(--surface);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -123,7 +144,6 @@
    shadcn's semantic `accent`. Defined after @theme inline so these win.
    ========================================================================== */
 @theme {
-  --color-surface: #f7f7f8;
   --color-text-primary: #18181b;
   --color-text-secondary: #6b7280;
   --color-brand: #0e7490;
@@ -147,6 +167,12 @@
 }
 
 @layer base {
+  :root {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+  }
   * {
     @apply border-border outline-ring/50;
   }

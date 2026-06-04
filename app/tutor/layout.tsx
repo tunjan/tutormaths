@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { requireTutor } from "@/lib/auth";
+import { Logo } from "@/components/logo";
+import { TutorNav } from "@/components/tutor-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notification-bell";
 import { SignOutButton } from "@/components/sign-out-button";
 
@@ -13,37 +16,21 @@ export default async function TutorLayout({
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-6 py-4">
-          <nav className="flex items-center gap-6 text-sm">
-            <Link href="/tutor" className="font-semibold tracking-tight">
-              Maths Tasks
+        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+          <div className="flex items-center gap-6">
+            <Link href="/tutor" aria-label="Maths Tasks home">
+              <Logo />
             </Link>
-            <Link
-              href="/tutor/students"
-              className="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Students
-            </Link>
-            <Link
-              href="/tutor/assignments/new"
-              className="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              New assignment
-            </Link>
-            <Link
-              href="/tutor/settings"
-              className="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Settings
-            </Link>
-          </nav>
-          <div className="flex items-center gap-2">
-            <NotificationBell userId={ctx.userId} />
+            <TutorNav />
+          </div>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <NotificationBell userId={ctx.userId} role="tutor" />
+            <ThemeToggle />
             <SignOutButton />
           </div>
         </div>
       </header>
-      <div className="mx-auto max-w-4xl px-6 py-10">{children}</div>
+      <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">{children}</div>
     </div>
   );
 }

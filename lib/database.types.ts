@@ -22,6 +22,8 @@ export type Database = {
           due_at: string
           file_path: string
           id: string
+          review_status: Database["public"]["Enums"]["review_status"]
+          reviewed_at: string | null
           student_id: string
           title: string
           tutor_id: string
@@ -35,6 +37,8 @@ export type Database = {
           due_at: string
           file_path: string
           id?: string
+          review_status?: Database["public"]["Enums"]["review_status"]
+          reviewed_at?: string | null
           student_id: string
           title: string
           tutor_id: string
@@ -48,6 +52,8 @@ export type Database = {
           due_at?: string
           file_path?: string
           id?: string
+          review_status?: Database["public"]["Enums"]["review_status"]
+          reviewed_at?: string | null
           student_id?: string
           title?: string
           tutor_id?: string
@@ -307,6 +313,9 @@ export type Database = {
         | "submission_updated"
         | "homework_requested"
         | "reminder"
+        | "work_approved"
+        | "work_returned"
+      review_status: "assigned" | "submitted" | "approved" | "needs_work"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -442,7 +451,10 @@ export const Constants = {
         "submission_updated",
         "homework_requested",
         "reminder",
+        "work_approved",
+        "work_returned",
       ],
+      review_status: ["assigned", "submitted", "approved", "needs_work"],
     },
   },
 } as const

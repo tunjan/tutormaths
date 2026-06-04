@@ -1,4 +1,5 @@
 import { LoginForm } from "./login-form";
+import { LogoMark } from "@/components/logo";
 import {
   Card,
   CardContent,
@@ -10,7 +11,8 @@ import {
 export default function LoginPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-10 bg-surface px-4 py-16">
-      <div className="flex flex-col items-center gap-2 text-center">
+      <div className="flex flex-col items-center gap-3 text-center">
+        <LogoMark className="size-12" />
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Maths Tasks
         </h1>

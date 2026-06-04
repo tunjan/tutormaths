@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { recordSubmission } from "@/app/student/actions";
+import { FileDropzone } from "@/components/ui/file-dropzone";
 import {
   BUCKET_SUBMISSIONS,
   MAX_FILE_BYTES,
@@ -27,8 +28,6 @@ export function SubmissionUploader({
 }) {
   const [supabase] = useState(() => createClient());
   const router = useRouter();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
   const [, startTransition] = useTransition();
 
@@ -75,46 +74,12 @@ export function SubmissionUploader({
   }
 
   return (
-    <div
-      onDragOver={(e) => {
-        e.preventDefault();
-        setDragging(true);
-      }}
-      onDragLeave={() => setDragging(false)}
-      onDrop={(e) => {
-        e.preventDefault();
-        setDragging(false);
-        void handleFile(e.dataTransfer.files[0]);
-      }}
-      onClick={() => inputRef.current?.click()}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
-      }}
-      className={`flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed px-6 py-10 text-center text-sm transition ${
-        dragging
-          ? "border-primary bg-primary/5 text-primary"
-          : "border-border bg-muted/30 text-muted-foreground hover:border-primary/60"
-      }`}
-    >
-      {busy ? (
-        <span>Uploading…</span>
-      ) : (
-        <>
-          <span className="font-medium text-foreground">
-            Drag a file here, or click to choose
-          </span>
-          <span className="text-xs">PDF or JPG, up to 20 MB</span>
-        </>
-      )}
-      <input
-        ref={inputRef}
-        type="file"
-        accept="application/pdf,image/jpeg"
-        className="hidden"
-        onChange={(e) => void handleFile(e.target.files?.[0])}
-      />
-    </div>
+    <FileDropzone
+      accept="application/pdf,image/jpeg"
+      hint="PDF or JPG, up to 20 MB"
+      busy={busy}
+      busyLabel="Uploading…"
+      onFile={(f) => void handleFile(f)}
+    />
   );
 }
