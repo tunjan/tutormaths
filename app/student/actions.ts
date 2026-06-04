@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { BUCKET_SUBMISSIONS } from "@/lib/constants";
 
 /**
  * Reports progress as a single integer 0–100. "Mark as done" simply submits
@@ -57,6 +58,34 @@ export async function recordSubmission(
   if (error) throw new Error(error.message);
 
   revalidatePath(`/student/assignments/${input.assignmentId}`);
+}
+
+/**
+ * Removes one of the student's own submissions (row + stored file). RLS only
+ * lets a student delete their own rows; the file lives under their own folder,
+ * so the user session may remove it directly.
+ */
+export async function deleteSubmission(submissionId: string): Promise<void> {
+  const ctx = await requireStudent();
+  if (!submissionId) return;
+
+  const supabase = await createClient();
+  const { data: sub } = await supabase
+    .from("submissions")
+    .select("file_path, assignment_id, student_id")
+    .eq("id", submissionId)
+    .single();
+  if (!sub || sub.student_id !== ctx.userId) return;
+
+  await supabase.storage.from(BUCKET_SUBMISSIONS).remove([sub.file_path]);
+
+  const { error } = await supabase
+    .from("submissions")
+    .delete()
+    .eq("id", submissionId);
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/student/assignments/${sub.assignment_id}`);
 }
 
 /** Asks the tutor for more homework (writes a notification via RPC). */

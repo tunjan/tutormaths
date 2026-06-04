@@ -20,7 +20,7 @@ export default async function StudentLayout({
             <Logo />
           </Link>
           <div className="flex items-center gap-1 sm:gap-2">
-            <NotificationBell userId={ctx.userId} />
+            <NotificationBell userId={ctx.userId} role="student" />
             <ThemeToggle />
             <SignOutButton />
           </div>

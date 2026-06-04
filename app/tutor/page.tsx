@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { unreadAssignmentIds } from "@/lib/queries";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -14,12 +15,15 @@ export default async function TutorDashboard() {
   await requireTutor();
   const supabase = await createClient();
 
-  const [{ data: assignments }, { data: students }] = await Promise.all([
+  const [{ data: assignments }, { data: students }, unread] = await Promise.all([
     supabase
       .from("assignments")
-      .select("id, title, type, due_at, completion_pct, student_id")
+      .select(
+        "id, title, type, due_at, completion_pct, student_id, review_status",
+      )
       .order("due_at", { ascending: true }),
     supabase.from("profiles").select("id, full_name, email").eq("role", "student"),
+    unreadAssignmentIds(),
   ]);
 
   const nameById = new Map(
@@ -32,10 +36,17 @@ export default async function TutorDashboard() {
     type: a.type,
     due_at: a.due_at,
     completion_pct: a.completion_pct,
+    review_status: a.review_status,
     student: nameById.get(a.student_id) ?? "Student",
+    unread: unread.has(a.id),
   }));
-  const active = all.filter((a) => a.completion_pct < 100);
-  const completed = all.filter((a) => a.completion_pct >= 100);
+
+  const awaiting = all.filter((a) => a.review_status === "submitted").length;
+  const overdue = all.filter(
+    (a) =>
+      a.review_status !== "approved" &&
+      new Date(a.due_at).getTime() < Date.now(),
+  ).length;
 
   return (
     <div className="flex flex-col gap-10">
@@ -50,9 +61,13 @@ export default async function TutorDashboard() {
       </div>
 
       <div className="grid grid-cols-3 gap-3 sm:gap-4">
-        <Stat label="Students" value={students?.length ?? 0} href="/tutor/students" />
-        <Stat label="Active" value={active.length} />
-        <Stat label="Completed" value={completed.length} />
+        <Stat
+          label="Students"
+          value={students?.length ?? 0}
+          href="/tutor/students"
+        />
+        <Stat label="Awaiting review" value={awaiting} />
+        <Stat label="Overdue" value={overdue} />
       </div>
 
       <TutorAssignmentBrowser items={items} />

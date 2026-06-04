@@ -1,15 +1,20 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ChevronLeft, CheckCircle2, RotateCcw, Clock } from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { signedUrl } from "@/lib/storage";
 import { loadComments } from "@/lib/queries";
 import { addComment } from "@/lib/actions/comments";
 import { ProgressBar } from "@/components/ui/progress-bar";
-import { DueBadge } from "@/components/ui/due-badge";
+import { AssignmentStatusBadge } from "@/components/ui/status-badge";
+import { FilePreview } from "@/components/ui/file-preview";
 import { CompletionControl } from "@/components/completion-control";
 import { SubmissionUploader } from "@/components/submission-uploader";
-import { CommentThread } from "@/components/comment-thread";
+import { SubmissionList } from "@/components/submission-list";
+import { LiveCommentThread, type Participant } from "@/components/live-comment-thread";
 import { CommentForm } from "@/components/comment-form";
+import { MarkAssignmentRead } from "@/components/mark-assignment-read";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -21,9 +26,8 @@ import {
 import { cn } from "@/lib/utils";
 import { BUCKET_ASSIGNMENTS, BUCKET_SUBMISSIONS } from "@/lib/constants";
 import {
-  dueState,
+  type ReviewStatus,
   formatDateTime,
-  humanFileSize,
   typeLabel,
 } from "@/lib/format";
 
@@ -53,19 +57,37 @@ export default async function StudentAssignmentPage({
 
   const submissions = await Promise.all(
     (subs ?? []).map(async (s) => ({
-      ...s,
+      id: s.id,
+      created_at: s.created_at,
+      mime_type: s.mime_type,
+      size_bytes: s.size_bytes,
       url: await signedUrl(BUCKET_SUBMISSIONS, s.file_path),
     })),
   );
 
   const comments = await loadComments(id);
 
+  // RLS hides the tutor's profile from a student, so we label the two known
+  // parties directly.
+  const participants: Record<string, Participant> = {
+    [ctx.userId]: { name: "You", role: "student" },
+    [a.tutor_id]: { name: "Your tutor", role: "tutor" },
+  };
+
   return (
     <div className="flex flex-col gap-10">
+      <MarkAssignmentRead assignmentId={id} />
       <header className="flex flex-col gap-3">
+        <Link
+          href="/student"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ChevronLeft className="size-4" />
+          My homework
+        </Link>
         <div className="flex items-start justify-between gap-4">
           <h1 className="text-2xl font-semibold tracking-tight">{a.title}</h1>
-          <DueBadge state={dueState(a.due_at, a.completion_pct)} />
+          <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
         </div>
         <p className="text-sm text-muted-foreground">
           {typeLabel(a.type)} · due {formatDateTime(a.due_at)}
@@ -73,17 +95,34 @@ export default async function StudentAssignmentPage({
         {a.description && (
           <p className="whitespace-pre-wrap text-sm">{a.description}</p>
         )}
-        {pdfUrl && (
-          <a
-            href={pdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(buttonVariants(), "mt-1 self-start")}
-          >
-            Open assignment PDF
-          </a>
-        )}
       </header>
+
+      <ReviewBanner status={a.review_status} />
+
+      <section className="flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-3">
+          <SectionHeading>Assignment</SectionHeading>
+          {pdfUrl && (
+            <a
+              href={pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+            >
+              Open PDF
+            </a>
+          )}
+        </div>
+        {pdfUrl ? (
+          <FilePreview url={pdfUrl} mimeType="application/pdf" title={a.title} />
+        ) : (
+          <Card className="py-10">
+            <CardContent className="text-center text-sm text-muted-foreground">
+              The assignment file could not be loaded.
+            </CardContent>
+          </Card>
+        )}
+      </section>
 
       <Card>
         <CardHeader>
@@ -99,42 +138,54 @@ export default async function StudentAssignmentPage({
         <SectionHeading>Submit your work</SectionHeading>
         <SubmissionUploader assignmentId={id} studentId={ctx.userId} />
         {submissions.length > 0 && (
-          <Card className="py-0">
-            <CardContent className="divide-y divide-border px-0">
-              {submissions.map((s) => (
-                <div
-                  key={s.id}
-                  className="flex items-center justify-between px-6 py-4"
-                >
-                  <div className="text-sm">
-                    <div>{formatDateTime(s.created_at)}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {s.mime_type === "application/pdf" ? "PDF" : "Image"}
-                      {s.size_bytes ? ` · ${humanFileSize(s.size_bytes)}` : ""}
-                    </div>
-                  </div>
-                  {s.url && (
-                    <a
-                      href={s.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-                    >
-                      Open
-                    </a>
-                  )}
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+          <SubmissionList submissions={submissions} canDelete />
         )}
       </section>
 
       <section className="flex flex-col gap-4">
         <SectionHeading>Comments</SectionHeading>
-        <CommentThread comments={comments} />
+        <LiveCommentThread
+          assignmentId={id}
+          initial={comments}
+          participants={participants}
+        />
         <CommentForm assignmentId={id} action={addComment} />
       </section>
+    </div>
+  );
+}
+
+function ReviewBanner({ status }: { status: ReviewStatus }) {
+  if (status === "assigned") return null;
+
+  const config = {
+    approved: {
+      icon: CheckCircle2,
+      className: "bg-primary/10 text-primary",
+      text: "Approved — your tutor has signed off on this work. Nice job!",
+    },
+    needs_work: {
+      icon: RotateCcw,
+      className: "bg-warning-muted text-warning",
+      text: "Your tutor asked for changes. Read their comments below, then upload a new version.",
+    },
+    submitted: {
+      icon: Clock,
+      className: "bg-secondary text-secondary-foreground",
+      text: "Submitted — your tutor will review your work soon.",
+    },
+  }[status];
+
+  const Icon = config.icon;
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-3 rounded-xl px-4 py-3 text-sm",
+        config.className,
+      )}
+    >
+      <Icon className="size-5 shrink-0" />
+      <span>{config.text}</span>
     </div>
   );
 }

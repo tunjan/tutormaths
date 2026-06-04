@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { ProgressBar } from "@/components/ui/progress-bar";
-import { DueBadge } from "@/components/ui/due-badge";
+import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { dueDescription, dueState, formatDateTime, typeLabel } from "@/lib/format";
+import {
+  type ReviewStatus,
+  formatDateTime,
+  relativeTime,
+  typeLabel,
+} from "@/lib/format";
 
 export interface AssignmentRowProps {
   href: string;
@@ -10,8 +15,11 @@ export interface AssignmentRowProps {
   type: "problem_set" | "reading_notes";
   dueAt: string;
   pct: number;
+  reviewStatus: ReviewStatus;
   /** Shown only on the tutor's multi-student lists. */
   student?: string;
+  /** True when there is unread activity (comment/submission/review) for the viewer. */
+  unread?: boolean;
 }
 
 export function AssignmentRow({
@@ -20,12 +28,14 @@ export function AssignmentRow({
   type,
   dueAt,
   pct,
+  reviewStatus,
   student,
+  unread,
 }: AssignmentRowProps) {
-  const state = dueState(dueAt, pct);
-  const meta = [student, typeLabel(type), dueDescription(dueAt, state)]
-    .filter(Boolean)
-    .join(" · ");
+  const dueText =
+    reviewStatus === "approved" ? "completed" : `due ${relativeTime(dueAt)}`;
+  const meta = [student, typeLabel(type), dueText].filter(Boolean).join(" · ");
+  const showBar = pct > 0 && pct < 100 && reviewStatus !== "approved";
 
   return (
     <li>
@@ -34,7 +44,15 @@ export function AssignmentRow({
           <CardContent className="flex flex-col gap-4 px-5">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
-                <div className="font-medium">{title}</div>
+                <div className="flex items-center gap-2 font-medium">
+                  {unread && (
+                    <span
+                      className="size-2 shrink-0 rounded-full bg-primary"
+                      aria-label="Unread activity"
+                    />
+                  )}
+                  <span className="truncate">{title}</span>
+                </div>
                 <div
                   className="mt-0.5 text-sm text-muted-foreground"
                   title={formatDateTime(dueAt)}
@@ -42,10 +60,9 @@ export function AssignmentRow({
                   {meta}
                 </div>
               </div>
-              <DueBadge state={state} />
+              <AssignmentStatusBadge reviewStatus={reviewStatus} dueAt={dueAt} />
             </div>
-            {/* A bar adds signal only mid-progress; 0% and 100% are noise. */}
-            {pct > 0 && pct < 100 && <ProgressBar value={pct} />}
+            {showBar && <ProgressBar value={pct} />}
           </CardContent>
         </Card>
       </Link>

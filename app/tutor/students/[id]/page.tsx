@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { AssignmentRow } from "@/components/assignment-row";
 import { cn } from "@/lib/utils";
-import { formatDate } from "@/lib/format";
+import { formatDate, type ReviewStatus } from "@/lib/format";
 
 export default async function StudentDetailPage({
   params,
@@ -28,13 +28,13 @@ export default async function StudentDetailPage({
 
   const { data: assignments } = await supabase
     .from("assignments")
-    .select("id, title, type, due_at, completion_pct")
+    .select("id, title, type, due_at, completion_pct, review_status")
     .eq("student_id", id)
     .order("due_at", { ascending: false });
 
   const all = assignments ?? [];
-  const active = all.filter((a) => a.completion_pct < 100);
-  const completed = all.filter((a) => a.completion_pct >= 100);
+  const active = all.filter((a) => a.review_status !== "approved");
+  const completed = all.filter((a) => a.review_status === "approved");
   const avg =
     all.length === 0
       ? 0
@@ -102,6 +102,7 @@ type AssignmentItem = {
   type: "problem_set" | "reading_notes";
   due_at: string;
   completion_pct: number;
+  review_status: ReviewStatus;
 };
 
 function AssignmentList({ items }: { items: AssignmentItem[] }) {
@@ -115,6 +116,7 @@ function AssignmentList({ items }: { items: AssignmentItem[] }) {
           type={a.type}
           dueAt={a.due_at}
           pct={a.completion_pct}
+          reviewStatus={a.review_status}
         />
       ))}
     </ul>

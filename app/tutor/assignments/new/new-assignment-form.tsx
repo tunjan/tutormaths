@@ -34,6 +34,17 @@ type FieldErrors = Partial<
   Record<"student" | "title" | "due" | "file", string>
 >;
 
+/** A sensible default due date: a week out, at 17:00 local, as a datetime-local string. */
+function defaultDue(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 7);
+  d.setHours(17, 0, 0, 0);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+    d.getHours(),
+  )}:${pad(d.getMinutes())}`;
+}
+
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
@@ -72,6 +83,8 @@ export function NewAssignmentForm({
     if (!studentId) next.student = "Choose a student.";
     if (!title) next.title = "Give the assignment a title.";
     if (!dueLocal) next.due = "Set a due date.";
+    else if (new Date(dueLocal).getTime() <= Date.now())
+      next.due = "The due date must be in the future.";
     if (!file) next.file = "Attach the assignment PDF.";
     else if (!accept.includes(file.type)) next.file = "The file must be a PDF.";
     else if (file.size > MAX_FILE_BYTES) next.file = "That file is larger than 20 MB.";
@@ -106,6 +119,8 @@ export function NewAssignmentForm({
       });
       // createAssignment redirects on success.
     } catch (err) {
+      // The row was never created — remove the now-orphaned upload.
+      await supabase.storage.from(BUCKET_ASSIGNMENTS).remove([path]);
       toast.error((err as Error).message);
       setBusy(false);
     }
@@ -177,6 +192,7 @@ export function NewAssignmentForm({
         <DateTimePicker
           id="due_at"
           name="due_at"
+          defaultValue={defaultDue()}
           invalid={!!errors.due}
           onChange={() => setErrors((e) => ({ ...e, due: undefined }))}
         />

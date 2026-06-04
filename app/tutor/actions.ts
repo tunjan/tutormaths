@@ -27,6 +27,11 @@ export async function createAssignment(
   input: CreateAssignmentInput,
 ): Promise<void> {
   const ctx = await requireTutor();
+
+  if (new Date(input.dueAt).getTime() <= Date.now()) {
+    throw new Error("The due date must be in the future.");
+  }
+
   const supabase = await createClient();
 
   const { error } = await supabase.from("assignments").insert({
@@ -71,7 +76,11 @@ export async function updateReminderWindows(formData: FormData): Promise<void> {
   revalidatePath("/tutor/settings");
 }
 
-/** Edits an assignment's metadata (not the attached PDF). */
+/**
+ * Edits an assignment's metadata, and optionally replaces the attached PDF.
+ * When a new `file_path` is supplied (already uploaded client-side), the old
+ * object is removed from storage afterwards.
+ */
 export async function updateAssignment(formData: FormData): Promise<void> {
   await requireTutor();
   const id = String(formData.get("id") ?? "");
@@ -81,9 +90,25 @@ export async function updateAssignment(formData: FormData): Promise<void> {
     | "problem_set"
     | "reading_notes";
   const dueLocal = String(formData.get("due_at") ?? "");
+  const newFilePath = String(formData.get("file_path") ?? "").trim();
   if (!id || !title || !dueLocal) return;
 
+  if (new Date(dueLocal).getTime() <= Date.now()) {
+    throw new Error("The due date must be in the future.");
+  }
+
   const supabase = await createClient();
+
+  let oldFilePath: string | null = null;
+  if (newFilePath) {
+    const { data: existing } = await supabase
+      .from("assignments")
+      .select("file_path")
+      .eq("id", id)
+      .single();
+    oldFilePath = existing?.file_path ?? null;
+  }
+
   const { error } = await supabase
     .from("assignments")
     .update({
@@ -91,12 +116,41 @@ export async function updateAssignment(formData: FormData): Promise<void> {
       description: description || null,
       type,
       due_at: new Date(dueLocal).toISOString(),
+      ...(newFilePath ? { file_path: newFilePath } : {}),
     })
     .eq("id", id);
   if (error) throw new Error(error.message);
 
+  if (newFilePath && oldFilePath && oldFilePath !== newFilePath) {
+    await supabase.storage.from(BUCKET_ASSIGNMENTS).remove([oldFilePath]);
+  }
+
   revalidatePath(`/tutor/assignments/${id}`);
   revalidatePath("/tutor");
+}
+
+/**
+ * Records the tutor's verdict on submitted work. The notify_review trigger
+ * pings the student; reviewed_at is stamped for the history. Decoupled from
+ * completion_pct (the student's self-report) by design.
+ */
+export async function reviewSubmission(
+  assignmentId: string,
+  decision: "approved" | "needs_work",
+): Promise<void> {
+  await requireTutor();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("assignments")
+    .update({ review_status: decision, reviewed_at: new Date().toISOString() })
+    .eq("id", assignmentId);
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/tutor/assignments/${assignmentId}`);
+  revalidatePath("/tutor");
+  revalidatePath(`/student/assignments/${assignmentId}`);
+  revalidatePath("/student");
 }
 
 /**

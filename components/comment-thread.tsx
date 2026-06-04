@@ -5,6 +5,7 @@ export interface CommentView {
   id: string;
   body: string;
   created_at: string;
+  authorId: string;
   authorName: string;
   authorRole: string;
 }

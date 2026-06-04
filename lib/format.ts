@@ -47,11 +47,52 @@ export type DueState = "done" | "overdue" | "due-soon" | "upcoming";
 
 export function dueState(dueAtIso: string, completionPct: number): DueState {
   if (completionPct >= 100) return "done";
+  return timeDueState(dueAtIso);
+}
+
+/** Due state from the clock alone, ignoring progress/review. */
+export function timeDueState(
+  dueAtIso: string,
+): Exclude<DueState, "done"> {
   const due = new Date(dueAtIso).getTime();
   const now = Date.now();
   if (due < now) return "overdue";
   if (due - now < 24 * 3600 * 1000) return "due-soon";
   return "upcoming";
+}
+
+export type ReviewStatus = "assigned" | "submitted" | "approved" | "needs_work";
+
+export function reviewLabel(status: ReviewStatus): string {
+  switch (status) {
+    case "submitted":
+      return "Awaiting review";
+    case "approved":
+      return "Approved";
+    case "needs_work":
+      return "Changes requested";
+    case "assigned":
+      return "Assigned";
+  }
+}
+
+/**
+ * The single dominant badge for an assignment. Review state wins when it is
+ * meaningful (submitted/approved/needs_work); otherwise we fall back to the
+ * time-based due state. This keeps lists scannable with one chip per row.
+ */
+export type AssignmentStatus =
+  | { kind: "review"; review: Exclude<ReviewStatus, "assigned"> }
+  | { kind: "due"; due: Exclude<DueState, "done"> };
+
+export function assignmentStatus(
+  reviewStatus: ReviewStatus,
+  dueAtIso: string,
+): AssignmentStatus {
+  if (reviewStatus !== "assigned") {
+    return { kind: "review", review: reviewStatus };
+  }
+  return { kind: "due", due: timeDueState(dueAtIso) };
 }
 
 export function dueLabel(state: DueState): string {

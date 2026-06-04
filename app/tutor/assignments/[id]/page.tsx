@@ -7,21 +7,20 @@ import { signedUrl } from "@/lib/storage";
 import { loadComments } from "@/lib/queries";
 import { addComment } from "@/lib/actions/comments";
 import { ProgressBar } from "@/components/ui/progress-bar";
-import { DueBadge } from "@/components/ui/due-badge";
-import { CommentThread } from "@/components/comment-thread";
+import { AssignmentStatusBadge } from "@/components/ui/status-badge";
+import { FilePreview } from "@/components/ui/file-preview";
+import { LiveCommentThread, type Participant } from "@/components/live-comment-thread";
 import { CommentForm } from "@/components/comment-form";
 import { AssignmentActions } from "@/components/assignment-actions";
+import { MarkAssignmentRead } from "@/components/mark-assignment-read";
+import { ReviewControls } from "@/components/review-controls";
+import { SubmissionList } from "@/components/submission-list";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { BUCKET_ASSIGNMENTS, BUCKET_SUBMISSIONS } from "@/lib/constants";
-import {
-  dueState,
-  formatDateTime,
-  humanFileSize,
-  typeLabel,
-} from "@/lib/format";
+import { formatDateTime, typeLabel } from "@/lib/format";
 
 export default async function TutorAssignmentPage({
   params,
@@ -39,11 +38,19 @@ export default async function TutorAssignmentPage({
     .single();
   if (!a) notFound();
 
-  const { data: student } = await supabase
+  const { data: people } = await supabase
     .from("profiles")
-    .select("full_name, email")
-    .eq("id", a.student_id)
-    .single();
+    .select("id, full_name, email, role")
+    .in("id", [a.tutor_id, a.student_id]);
+
+  const student = people?.find((p) => p.id === a.student_id);
+  const participants: Record<string, Participant> = {};
+  for (const p of people ?? []) {
+    participants[p.id] = {
+      name: p.full_name || p.email || "User",
+      role: p.role,
+    };
+  }
 
   const pdfUrl = await signedUrl(BUCKET_ASSIGNMENTS, a.file_path);
 
@@ -55,7 +62,10 @@ export default async function TutorAssignmentPage({
 
   const submissions = await Promise.all(
     (subs ?? []).map(async (s) => ({
-      ...s,
+      id: s.id,
+      created_at: s.created_at,
+      mime_type: s.mime_type,
+      size_bytes: s.size_bytes,
       url: await signedUrl(BUCKET_SUBMISSIONS, s.file_path),
     })),
   );
@@ -64,6 +74,7 @@ export default async function TutorAssignmentPage({
 
   return (
     <div className="flex flex-col gap-10">
+      <MarkAssignmentRead assignmentId={id} />
       <header className="flex flex-col gap-3">
         <Link
           href="/tutor"
@@ -74,7 +85,7 @@ export default async function TutorAssignmentPage({
         </Link>
         <div className="flex items-start justify-between gap-4">
           <h1 className="text-2xl font-semibold tracking-tight">{a.title}</h1>
-          <DueBadge state={dueState(a.due_at, a.completion_pct)} />
+          <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
         </div>
         <p className="text-sm text-muted-foreground">
           {student?.full_name || student?.email} · {typeLabel(a.type)} · due{" "}
@@ -85,17 +96,10 @@ export default async function TutorAssignmentPage({
         )}
         <div className="max-w-sm">
           <ProgressBar value={a.completion_pct} />
+          <p className="mt-1 text-xs text-muted-foreground">
+            Student-reported progress: {a.completion_pct}%
+          </p>
         </div>
-        {pdfUrl && (
-          <a
-            href={pdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(buttonVariants(), "mt-1 self-start")}
-          >
-            View assignment PDF
-          </a>
-        )}
         <div className="pt-2">
           <AssignmentActions
             id={a.id}
@@ -103,9 +107,42 @@ export default async function TutorAssignmentPage({
             description={a.description}
             type={a.type}
             dueAt={a.due_at}
+            studentId={a.student_id}
           />
         </div>
       </header>
+
+      <Card>
+        <CardContent className="flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-3">
+            <SectionHeading>Your review</SectionHeading>
+            {pdfUrl && (
+              <a
+                href={pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+              >
+                Open PDF
+              </a>
+            )}
+          </div>
+          <ReviewControls assignmentId={a.id} status={a.review_status} />
+        </CardContent>
+      </Card>
+
+      <section className="flex flex-col gap-4">
+        <SectionHeading>Assignment</SectionHeading>
+        {pdfUrl ? (
+          <FilePreview url={pdfUrl} mimeType="application/pdf" title={a.title} />
+        ) : (
+          <Card className="py-10">
+            <CardContent className="text-center text-sm text-muted-foreground">
+              The assignment file could not be loaded.
+            </CardContent>
+          </Card>
+        )}
+      </section>
 
       <section className="flex flex-col gap-4">
         <SectionHeading>Submitted work</SectionHeading>
@@ -116,40 +153,17 @@ export default async function TutorAssignmentPage({
             </CardContent>
           </Card>
         ) : (
-          <Card className="py-0">
-            <CardContent className="divide-y divide-border px-0">
-              {submissions.map((s) => (
-                <div
-                  key={s.id}
-                  className="flex items-center justify-between px-6 py-4"
-                >
-                  <div className="text-sm">
-                    <div>{formatDateTime(s.created_at)}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {s.mime_type === "application/pdf" ? "PDF" : "Image"}
-                      {s.size_bytes ? ` · ${humanFileSize(s.size_bytes)}` : ""}
-                    </div>
-                  </div>
-                  {s.url && (
-                    <a
-                      href={s.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-                    >
-                      Open
-                    </a>
-                  )}
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+          <SubmissionList submissions={submissions} canDelete={false} />
         )}
       </section>
 
       <section className="flex flex-col gap-4">
         <SectionHeading>Comments</SectionHeading>
-        <CommentThread comments={comments} />
+        <LiveCommentThread
+          assignmentId={id}
+          initial={comments}
+          participants={participants}
+        />
         <CommentForm assignmentId={id} action={addComment} />
       </section>
     </div>

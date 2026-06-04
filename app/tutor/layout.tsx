@@ -24,7 +24,7 @@ export default async function TutorLayout({
             <TutorNav />
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
-            <NotificationBell userId={ctx.userId} />
+            <NotificationBell userId={ctx.userId} role="tutor" />
             <ThemeToggle />
             <SignOutButton />
           </div>

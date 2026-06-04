@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Bell } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatDateTime } from "@/lib/format";
@@ -11,31 +12,42 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 interface NotificationRow {
   id: string;
   body: string;
   created_at: string;
   read_at: string | null;
+  assignment_id: string | null;
 }
 
 /**
- * In-app notifications via Supabase Realtime. Loads the latest notifications,
- * then subscribes to INSERTs scoped to this recipient. RLS guarantees a client
- * only ever sees its own rows.
+ * In-app notifications via Supabase Realtime. Loads the latest, then subscribes
+ * to INSERTs scoped to this recipient. Items deep-link to the relevant
+ * assignment and are marked read individually (opening the popover no longer
+ * silently clears everything); there is an explicit "Mark all as read".
  */
-export function NotificationBell({ userId }: { userId: string }) {
+export function NotificationBell({
+  userId,
+  role,
+}: {
+  userId: string;
+  role: "tutor" | "student";
+}) {
+  const router = useRouter();
   const [supabase] = useState(() => createClient());
   const [items, setItems] = useState<NotificationRow[]>([]);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     let active = true;
 
     supabase
       .from("notifications")
-      .select("id, body, created_at, read_at")
+      .select("id, body, created_at, read_at, assignment_id")
       .order("created_at", { ascending: false })
-      .limit(20)
+      .limit(30)
       .then(({ data }) => {
         if (active && data) setItems(data);
       });
@@ -52,7 +64,7 @@ export function NotificationBell({ userId }: { userId: string }) {
         },
         (payload) => {
           const row = payload.new as NotificationRow;
-          setItems((prev) => [row, ...prev].slice(0, 20));
+          setItems((prev) => [row, ...prev].slice(0, 30));
         },
       )
       .subscribe();
@@ -65,16 +77,31 @@ export function NotificationBell({ userId }: { userId: string }) {
 
   const unread = items.filter((i) => !i.read_at).length;
 
-  async function markAllRead() {
-    if (unread === 0) return;
-    const ids = items.filter((i) => !i.read_at).map((i) => i.id);
+  async function markRead(ids: string[]) {
+    if (ids.length === 0) return;
     const now = new Date().toISOString();
-    setItems((prev) => prev.map((i) => ({ ...i, read_at: i.read_at ?? now })));
+    setItems((prev) =>
+      prev.map((i) =>
+        ids.includes(i.id) ? { ...i, read_at: i.read_at ?? now } : i,
+      ),
+    );
     await supabase.from("notifications").update({ read_at: now }).in("id", ids);
   }
 
+  function markAllRead() {
+    void markRead(items.filter((i) => !i.read_at).map((i) => i.id));
+  }
+
+  function onItemClick(n: NotificationRow) {
+    if (!n.read_at) void markRead([n.id]);
+    if (n.assignment_id) {
+      setOpen(false);
+      router.push(`/${role}/assignments/${n.assignment_id}`);
+    }
+  }
+
   return (
-    <Popover onOpenChange={(open) => open && markAllRead()}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         render={
           <Button
@@ -95,8 +122,17 @@ export function NotificationBell({ userId }: { userId: string }) {
         }
       />
       <PopoverContent align="end" className="w-80 p-0">
-        <div className="border-b border-border px-4 py-3 text-sm font-medium">
-          Notifications
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+          <span className="text-sm font-medium">Notifications</span>
+          {unread > 0 && (
+            <button
+              type="button"
+              onClick={markAllRead}
+              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Mark all as read
+            </button>
+          )}
         </div>
         <ul className="max-h-96 divide-y divide-border overflow-y-auto">
           {items.length === 0 && (
@@ -104,14 +140,33 @@ export function NotificationBell({ userId }: { userId: string }) {
               No notifications yet.
             </li>
           )}
-          {items.map((n) => (
-            <li key={n.id} className="px-4 py-3">
-              <p className="text-sm">{n.body}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                {formatDateTime(n.created_at)}
-              </p>
-            </li>
-          ))}
+          {items.map((n) => {
+            const clickable = Boolean(n.assignment_id);
+            return (
+              <li key={n.id}>
+                <button
+                  type="button"
+                  onClick={() => onItemClick(n)}
+                  disabled={!clickable && !!n.read_at}
+                  className={cn(
+                    "flex w-full flex-col items-start gap-0.5 px-4 py-3 text-left transition-colors",
+                    clickable && "hover:bg-muted/50",
+                    !n.read_at && "bg-primary/5",
+                  )}
+                >
+                  <span className="flex items-start gap-2 text-sm">
+                    {!n.read_at && (
+                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
+                    )}
+                    <span>{n.body}</span>
+                  </span>
+                  <span className="pl-0 text-xs text-muted-foreground">
+                    {formatDateTime(n.created_at)}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </PopoverContent>
     </Popover>

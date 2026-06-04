@@ -2,6 +2,26 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import type { CommentView } from "@/components/comment-thread";
 
+/**
+ * Assignment ids with unread notifications for the current user. Powers the
+ * "unread activity" dot on assignment lists. RLS scopes notifications to the
+ * recipient, so this only ever returns the caller's own.
+ */
+export async function unreadAssignmentIds(): Promise<Set<string>> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("notifications")
+    .select("assignment_id")
+    .is("read_at", null)
+    .not("assignment_id", "is", null);
+
+  return new Set(
+    (data ?? [])
+      .map((n) => n.assignment_id)
+      .filter((id): id is string => Boolean(id)),
+  );
+}
+
 /** Loads an assignment's comments with resolved author name + role. */
 export async function loadComments(
   assignmentId: string,
@@ -30,6 +50,7 @@ export async function loadComments(
       id: c.id,
       body: c.body,
       created_at: c.created_at,
+      authorId: c.author_id,
       authorName: a?.full_name || a?.email || "User",
       authorRole: a?.role ?? "student",
     };

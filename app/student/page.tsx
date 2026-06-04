@@ -1,5 +1,6 @@
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { unreadAssignmentIds } from "@/lib/queries";
 import { RequestHomeworkButton } from "@/components/request-homework-button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -10,14 +11,17 @@ export default async function StudentDashboard() {
   const supabase = await createClient();
 
   // RLS limits this to the student's own assignments.
-  const { data: assignments } = await supabase
-    .from("assignments")
-    .select("id, title, type, due_at, completion_pct")
-    .order("due_at", { ascending: true });
+  const [{ data: assignments }, unread] = await Promise.all([
+    supabase
+      .from("assignments")
+      .select("id, title, type, due_at, completion_pct, review_status")
+      .order("due_at", { ascending: true }),
+    unreadAssignmentIds(),
+  ]);
 
   const all = assignments ?? [];
-  const active = all.filter((a) => a.completion_pct < 100);
-  const completed = all.filter((a) => a.completion_pct >= 100);
+  const active = all.filter((a) => a.review_status !== "approved");
+  const completed = all.filter((a) => a.review_status === "approved");
 
   return (
     <div className="flex flex-col gap-10">
@@ -30,13 +34,12 @@ export default async function StudentDashboard() {
         <SectionHeading>Active</SectionHeading>
         {active.length === 0 ? (
           <Card className="py-10">
-            <CardContent className="flex flex-col items-center gap-4 text-center text-sm text-muted-foreground">
+            <CardContent className="text-center text-sm text-muted-foreground">
               <p>
                 {completed.length > 0
-                  ? "All caught up — nothing due right now."
-                  : "Nothing due right now."}
+                  ? "All caught up — nothing to work on right now."
+                  : "Nothing to work on right now. Use “Request more homework” above when you’re ready."}
               </p>
-              <RequestHomeworkButton />
             </CardContent>
           </Card>
         ) : (
@@ -49,6 +52,8 @@ export default async function StudentDashboard() {
                 type={a.type}
                 dueAt={a.due_at}
                 pct={a.completion_pct}
+                reviewStatus={a.review_status}
+                unread={unread.has(a.id)}
               />
             ))}
           </ul>
@@ -67,6 +72,8 @@ export default async function StudentDashboard() {
                 type={a.type}
                 dueAt={a.due_at}
                 pct={a.completion_pct}
+                reviewStatus={a.review_status}
+                unread={unread.has(a.id)}
               />
             ))}
           </ul>
