@@ -29,6 +29,19 @@ interface StudentOption {
 
 const accept = ASSIGNMENT_MIME as readonly string[];
 
+type FieldErrors = Partial<
+  Record<"student" | "title" | "due" | "file", string>
+>;
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return (
+    <p className="text-sm text-destructive" role="alert">
+      {message}
+    </p>
+  );
+}
+
 export function NewAssignmentForm({
   students,
   defaultStudentId = "",
@@ -44,6 +57,7 @@ export function NewAssignmentForm({
   );
   const [fileName, setFileName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [errors, setErrors] = useState<FieldErrors>({});
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -53,31 +67,25 @@ export function NewAssignmentForm({
     const dueLocal = String(data.get("due_at") ?? "");
     const file = fileRef.current?.files?.[0];
 
-    if (!studentId || !title || !dueLocal) {
-      toast.error("Student, title and due date are required.");
-      return;
-    }
-    if (!file) {
-      toast.error("Attach the assignment PDF.");
-      return;
-    }
-    if (!accept.includes(file.type)) {
-      toast.error("The assignment file must be a PDF.");
-      return;
-    }
-    if (file.size > MAX_FILE_BYTES) {
-      toast.error("That file is larger than 20 MB.");
-      return;
-    }
+    const next: FieldErrors = {};
+    if (!studentId) next.student = "Choose a student.";
+    if (!title) next.title = "Give the assignment a title.";
+    if (!dueLocal) next.due = "Set a due date.";
+    if (!file) next.file = "Attach the assignment PDF.";
+    else if (!accept.includes(file.type)) next.file = "The file must be a PDF.";
+    else if (file.size > MAX_FILE_BYTES) next.file = "That file is larger than 20 MB.";
+
+    setErrors(next);
+    if (Object.keys(next).length > 0) return;
 
     setBusy(true);
     const id = crypto.randomUUID();
-    const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+    const safeName = file!.name.replace(/[^\w.\-]+/g, "_");
     const path = `${studentId}/${id}/${safeName}`;
 
     const { error: upErr } = await supabase.storage
       .from(BUCKET_ASSIGNMENTS)
-      .upload(path, file, { contentType: file.type });
+      .upload(path, file!, { contentType: file!.type });
 
     if (upErr) {
       toast.error(upErr.message);
@@ -103,14 +111,17 @@ export function NewAssignmentForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-6">
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <Label>Student</Label>
         <Select
           value={studentId}
-          onValueChange={(v) => setStudentId(v ?? "")}
+          onValueChange={(v) => {
+            setStudentId(v ?? "");
+            setErrors((e) => ({ ...e, student: undefined }));
+          }}
         >
-          <SelectTrigger>
+          <SelectTrigger aria-invalid={!!errors.student}>
             <SelectValue placeholder="Choose a student…" />
           </SelectTrigger>
           <SelectContent>
@@ -121,6 +132,7 @@ export function NewAssignmentForm({
             ))}
           </SelectContent>
         </Select>
+        <FieldError message={errors.student} />
       </div>
 
       <div className="flex flex-col gap-2">
@@ -147,9 +159,11 @@ export function NewAssignmentForm({
           id="title"
           name="title"
           type="text"
-          required
+          aria-invalid={!!errors.title}
           placeholder="Quadratic equations — set 3"
+          onChange={() => setErrors((e) => ({ ...e, title: undefined }))}
         />
+        <FieldError message={errors.title} />
       </div>
 
       <div className="flex flex-col gap-2">
@@ -159,7 +173,14 @@ export function NewAssignmentForm({
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="due_at">Due</Label>
-        <Input id="due_at" name="due_at" type="datetime-local" required />
+        <Input
+          id="due_at"
+          name="due_at"
+          type="datetime-local"
+          aria-invalid={!!errors.due}
+          onChange={() => setErrors((e) => ({ ...e, due: undefined }))}
+        />
+        <FieldError message={errors.due} />
       </div>
 
       <div className="flex flex-col gap-2">
@@ -171,19 +192,24 @@ export function NewAssignmentForm({
             type="file"
             accept="application/pdf"
             className="hidden"
-            onChange={(e) => setFileName(e.target.files?.[0]?.name ?? "")}
+            onChange={(e) => {
+              setFileName(e.target.files?.[0]?.name ?? "");
+              setErrors((er) => ({ ...er, file: undefined }));
+            }}
           />
           <Button
             type="button"
             variant="outline"
+            aria-invalid={!!errors.file}
             onClick={() => fileRef.current?.click()}
           >
-            Choose PDF
+            {fileName ? "Change PDF" : "Choose PDF"}
           </Button>
           <span className="truncate text-sm text-muted-foreground">
             {fileName || "No file chosen"}
           </span>
         </div>
+        <FieldError message={errors.file} />
       </div>
 
       <Button type="submit" disabled={busy} className="self-start">

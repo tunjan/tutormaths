@@ -1,11 +1,9 @@
-import Link from "next/link";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { ProgressBar } from "@/components/ui/progress-bar";
-import { DueBadge } from "@/components/ui/due-badge";
 import { RequestHomeworkButton } from "@/components/request-homework-button";
 import { Card, CardContent } from "@/components/ui/card";
-import { dueState, formatDateTime, typeLabel } from "@/lib/format";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { AssignmentRow } from "@/components/assignment-row";
 
 export default async function StudentDashboard() {
   await requireStudent();
@@ -23,23 +21,35 @@ export default async function StudentDashboard() {
 
   return (
     <div className="flex flex-col gap-10">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold tracking-tight">My homework</h1>
         <RequestHomeworkButton />
       </div>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-medium text-muted-foreground">Active</h2>
+        <SectionHeading>Active</SectionHeading>
         {active.length === 0 ? (
           <Card className="py-10">
-            <CardContent className="text-center text-sm text-muted-foreground">
-              Nothing due right now.
+            <CardContent className="flex flex-col items-center gap-4 text-center text-sm text-muted-foreground">
+              <p>
+                {completed.length > 0
+                  ? "All caught up — nothing due right now."
+                  : "Nothing due right now."}
+              </p>
+              <RequestHomeworkButton />
             </CardContent>
           </Card>
         ) : (
           <ul className="flex flex-col gap-3">
             {active.map((a) => (
-              <Row key={a.id} {...a} />
+              <AssignmentRow
+                key={a.id}
+                href={`/student/assignments/${a.id}`}
+                title={a.title}
+                type={a.type}
+                dueAt={a.due_at}
+                pct={a.completion_pct}
+              />
             ))}
           </ul>
         )}
@@ -47,51 +57,21 @@ export default async function StudentDashboard() {
 
       {completed.length > 0 && (
         <section className="flex flex-col gap-4">
-          <h2 className="text-sm font-medium text-muted-foreground">
-            Completed
-          </h2>
+          <SectionHeading>Completed</SectionHeading>
           <ul className="flex flex-col gap-3">
             {completed.map((a) => (
-              <Row key={a.id} {...a} />
+              <AssignmentRow
+                key={a.id}
+                href={`/student/assignments/${a.id}`}
+                title={a.title}
+                type={a.type}
+                dueAt={a.due_at}
+                pct={a.completion_pct}
+              />
             ))}
           </ul>
         </section>
       )}
     </div>
-  );
-}
-
-function Row({
-  id,
-  title,
-  type,
-  due_at,
-  completion_pct,
-}: {
-  id: string;
-  title: string;
-  type: "problem_set" | "reading_notes";
-  due_at: string;
-  completion_pct: number;
-}) {
-  return (
-    <li>
-      <Link href={`/student/assignments/${id}`} className="group block">
-        <Card className="gap-4 py-5 transition-all group-hover:ring-primary/40">
-          <CardContent className="flex flex-col gap-4 px-5">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="font-medium">{title}</div>
-                <div className="mt-0.5 text-sm text-muted-foreground">
-                  {typeLabel(type)} · due {formatDateTime(due_at)}
-                </div>
-              </div>
-              <DueBadge state={dueState(due_at, completion_pct)} />
-            </div>
-            <ProgressBar value={completion_pct} />
-          </CardContent>
-        </Card>
-      </Link>
-    </li>
   );
 }

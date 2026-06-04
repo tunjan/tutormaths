@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ChevronLeft } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { signedUrl } from "@/lib/storage";
@@ -9,6 +11,7 @@ import { DueBadge } from "@/components/ui/due-badge";
 import { CommentThread } from "@/components/comment-thread";
 import { CommentForm } from "@/components/comment-form";
 import { AssignmentActions } from "@/components/assignment-actions";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -62,6 +65,13 @@ export default async function TutorAssignmentPage({
   return (
     <div className="flex flex-col gap-10">
       <header className="flex flex-col gap-3">
+        <Link
+          href="/tutor"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ChevronLeft className="size-4" />
+          Dashboard
+        </Link>
         <div className="flex items-start justify-between gap-4">
           <h1 className="text-2xl font-semibold tracking-tight">{a.title}</h1>
           <DueBadge state={dueState(a.due_at, a.completion_pct)} />
@@ -98,9 +108,7 @@ export default async function TutorAssignmentPage({
       </header>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-medium text-muted-foreground">
-          Submitted work
-        </h2>
+        <SectionHeading>Submitted work</SectionHeading>
         {submissions.length === 0 ? (
           <Card className="py-10">
             <CardContent className="text-center text-sm text-muted-foreground">
@@ -140,7 +148,7 @@ export default async function TutorAssignmentPage({
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-medium text-muted-foreground">Comments</h2>
+        <SectionHeading>Comments</SectionHeading>
         <CommentThread comments={comments} />
         <CommentForm assignmentId={id} action={addComment} />
       </section>

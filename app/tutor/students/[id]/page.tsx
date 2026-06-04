@@ -3,12 +3,12 @@ import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { ProgressBar } from "@/components/ui/progress-bar";
-import { DueBadge } from "@/components/ui/due-badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { AssignmentRow } from "@/components/assignment-row";
 import { cn } from "@/lib/utils";
-import { dueState, formatDate, formatDateTime, typeLabel } from "@/lib/format";
+import { formatDate } from "@/lib/format";
 
 export default async function StudentDetailPage({
   params,
@@ -108,24 +108,14 @@ function AssignmentList({ items }: { items: AssignmentItem[] }) {
   return (
     <ul className="flex flex-col gap-3">
       {items.map((a) => (
-        <li key={a.id}>
-          <Link href={`/tutor/assignments/${a.id}`} className="group block">
-            <Card className="gap-4 py-5 transition-all group-hover:ring-primary/40">
-              <CardContent className="flex flex-col gap-4 px-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className="font-medium">{a.title}</div>
-                    <div className="mt-0.5 text-sm text-muted-foreground">
-                      {typeLabel(a.type)} · due {formatDateTime(a.due_at)}
-                    </div>
-                  </div>
-                  <DueBadge state={dueState(a.due_at, a.completion_pct)} />
-                </div>
-                <ProgressBar value={a.completion_pct} />
-              </CardContent>
-            </Card>
-          </Link>
-        </li>
+        <AssignmentRow
+          key={a.id}
+          href={`/tutor/assignments/${a.id}`}
+          title={a.title}
+          type={a.type}
+          dueAt={a.due_at}
+          pct={a.completion_pct}
+        />
       ))}
     </ul>
   );
@@ -153,7 +143,7 @@ function Section({
 }) {
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-sm font-medium text-muted-foreground">{title}</h2>
+      <SectionHeading>{title}</SectionHeading>
       {children}
     </section>
   );

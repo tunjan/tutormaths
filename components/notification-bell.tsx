@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Bell } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatDateTime } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -76,10 +77,17 @@ export function NotificationBell({ userId }: { userId: string }) {
     <Popover onOpenChange={(open) => open && markAllRead()}>
       <PopoverTrigger
         render={
-          <Button variant="outline" size="sm" className="gap-2">
-            Notifications
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="relative"
+            aria-label={
+              unread > 0 ? `Notifications (${unread} unread)` : "Notifications"
+            }
+          >
+            <Bell />
             {unread > 0 && (
-              <Badge className="h-5 min-w-5 justify-center px-1 tabular-nums">
+              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 justify-center px-1 text-[10px] tabular-nums">
                 {unread}
               </Badge>
             )}

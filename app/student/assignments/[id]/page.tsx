@@ -10,6 +10,7 @@ import { CompletionControl } from "@/components/completion-control";
 import { SubmissionUploader } from "@/components/submission-uploader";
 import { CommentThread } from "@/components/comment-thread";
 import { CommentForm } from "@/components/comment-form";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -95,9 +96,7 @@ export default async function StudentAssignmentPage({
       </Card>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-medium text-muted-foreground">
-          Submit your work
-        </h2>
+        <SectionHeading>Submit your work</SectionHeading>
         <SubmissionUploader assignmentId={id} studentId={ctx.userId} />
         {submissions.length > 0 && (
           <Card className="py-0">
@@ -132,7 +131,7 @@ export default async function StudentAssignmentPage({
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-medium text-muted-foreground">Comments</h2>
+        <SectionHeading>Comments</SectionHeading>
         <CommentThread comments={comments} />
         <CommentForm assignmentId={id} action={addComment} />
       </section>

@@ -11,6 +11,38 @@ export function formatDate(iso: string): string {
   );
 }
 
+const relativeFmt = new Intl.RelativeTimeFormat("en-GB", { numeric: "auto" });
+
+/**
+ * Human, scannable relative phrasing for a timestamp: "in 3 hours",
+ * "2 days ago", "tomorrow". The absolute time is still available via
+ * formatDateTime() for tooltips/detail pages.
+ */
+export function relativeTime(iso: string): string {
+  const diffMs = new Date(iso).getTime() - Date.now();
+  const abs = Math.abs(diffMs);
+  const units: [Intl.RelativeTimeFormatUnit, number][] = [
+    ["day", 86_400_000],
+    ["hour", 3_600_000],
+    ["minute", 60_000],
+  ];
+  for (const [unit, ms] of units) {
+    if (abs >= ms || unit === "minute") {
+      return relativeFmt.format(Math.round(diffMs / ms), unit);
+    }
+  }
+  return relativeFmt.format(0, "minute");
+}
+
+/**
+ * The due line shown on cards/rows. Completed work shows nothing time-sensitive;
+ * everything else gets a relative phrase ("due in 3 hours", "due 2 days ago").
+ */
+export function dueDescription(dueAtIso: string, state: DueState): string {
+  if (state === "done") return `completed`;
+  return `due ${relativeTime(dueAtIso)}`;
+}
+
 export type DueState = "done" | "overdue" | "due-soon" | "upcoming";
 
 export function dueState(dueAtIso: string, completionPct: number): DueState {

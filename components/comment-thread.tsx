@@ -20,7 +20,7 @@ export function CommentThread({ comments }: { comments: CommentView[] }) {
       {comments.map((c) => (
         <li
           key={c.id}
-          className="rounded-xl border border-border bg-card p-4 ring-1 ring-foreground/5"
+          className="rounded-xl bg-card p-4 ring-1 ring-foreground/10"
         >
           <div className="flex items-center justify-between gap-2">
             <span className="flex items-center gap-2 text-sm font-medium">

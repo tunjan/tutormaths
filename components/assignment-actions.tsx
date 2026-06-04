@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { updateAssignment, deleteAssignment } from "@/app/tutor/actions";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +14,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils";
 
 interface Props {
   id: string;
@@ -42,24 +54,37 @@ export function AssignmentActions({ id, title, description, type, dueAt }: Props
         <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
           Edit
         </Button>
-        <Button
-          variant="destructive"
-          size="sm"
-          disabled={deleting}
-          onClick={() => {
-            if (
-              !confirm(
-                "Delete this assignment? Its submissions, comments and files will be permanently removed.",
-              )
-            )
-              return;
-            startDelete(async () => {
-              await deleteAssignment(id);
-            });
-          }}
-        >
-          {deleting ? "Deleting…" : "Delete"}
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger
+            render={
+              <Button variant="destructive" size="sm" disabled={deleting}>
+                {deleting ? "Deleting…" : "Delete"}
+              </Button>
+            }
+          />
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete this assignment?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Its submissions, comments and files will be permanently removed.
+                This can&rsquo;t be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className={cn(buttonVariants({ variant: "destructive" }))}
+                onClick={() =>
+                  startDelete(async () => {
+                    await deleteAssignment(id);
+                  })
+                }
+              >
+                Delete assignment
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     );
   }
@@ -72,7 +97,7 @@ export function AssignmentActions({ id, title, description, type, dueAt }: Props
         setEditing(false);
         toast.success("Assignment updated.");
       }}
-      className="flex w-full flex-col gap-4 rounded-xl border border-border bg-card p-5 ring-1 ring-foreground/5"
+      className="flex w-full flex-col gap-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10"
     >
       <input type="hidden" name="id" value={id} />
       <div className="flex flex-col gap-2">

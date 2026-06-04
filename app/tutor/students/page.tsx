@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { formatDate } from "@/lib/format";
 
 export default async function StudentsPage() {
@@ -40,9 +41,9 @@ export default async function StudentsPage() {
       </Card>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-sm font-medium text-muted-foreground">
+        <SectionHeading>
           {students?.length ?? 0} student{students?.length === 1 ? "" : "s"}
-        </h2>
+        </SectionHeading>
         {!students || students.length === 0 ? (
           <Card className="py-10">
             <CardContent className="text-center text-sm text-muted-foreground">
