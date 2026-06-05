@@ -32,7 +32,7 @@ export function CommentForm({
         required
         rows={3}
         placeholder="Write a comment…"
-        className="min-h-20"
+        className="min-h-20 bg-card"
       />
       <Button type="submit" className="self-end">
         Post comment

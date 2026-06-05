@@ -13,41 +13,50 @@
 :root {
   --radius: 0.5rem; /* 8px anchor for cards/buttons */
 
-  --background: #ffffff;
-  --foreground: #18181b;
-  --card: #ffffff;
-  --card-foreground: #18181b;
-  --popover: #ffffff;
-  --popover-foreground: #18181b;
+  /* Primary background: warm off-white / alabaster — soft, non-sterile,
+     editorial paper quality (replaces pure-white #fff). */
+  --background: #faf8f4;
+  /* Typography & branding: deep charcoal / soft black, not absolute black. */
+  --foreground: #2a2926;
 
-  /* Brand accent = primary */
+  /* Layering white: pure white for foreground elements (cards, the central
+     search input) so they "lift" off the warm background via contrast. */
+  --card: #ffffff;
+  --card-foreground: #2a2926;
+  --popover: #ffffff;
+  --popover-foreground: #2a2926;
+
+  /* Functional chroma: subtle teal/cyan accent (notification dots, focus
+     ring) — draws attention without disrupting the neutral harmony. */
   --primary: #0e7490;
   --primary-foreground: #ffffff;
 
-  --secondary: #f7f7f8;
-  --secondary-foreground: #18181b;
-  --muted: #f7f7f8;
-  --muted-foreground: #6b7280;
+  /* Secondary background: soft greige / warm grey for UI containers and
+     subtle hover surfaces. */
+  --secondary: #efeae2;
+  --secondary-foreground: #2a2926;
+  --muted: #efeae2;
+  --muted-foreground: #726d64;
 
   /* shadcn "accent" = subtle hover surface (NOT the brand colour) */
-  --accent: #f7f7f8;
-  --accent-foreground: #18181b;
+  --accent: #efeae2;
+  --accent-foreground: #2a2926;
 
   --destructive: #dc2626;
 
   /* Warning = "due soon" (token-based, was a hardcoded amber) */
   --warning: #b45309;
-  --warning-muted: #fef3c7;
+  --warning-muted: #fbf0d9;
 
   /* Info = "awaiting review" — distinct from success (teal) and warning (amber) */
   --info: #1d4ed8;
-  --info-muted: #dbeafe;
+  --info-muted: #dde6f3;
 
-  /* App backdrop behind cards (login, etc.) — switchable for dark mode */
-  --surface: #f7f7f8;
+  /* App backdrop behind cards (login, etc.) — warm greige, switchable for dark mode */
+  --surface: #f3eee6;
 
-  --border: #e5e7eb;
-  --input: #e5e7eb;
+  --border: #e6e0d6;
+  --input: #e6e0d6;
   --ring: #0e7490;
 
   --chart-1: oklch(0.646 0.222 195);
@@ -56,13 +65,16 @@
   --chart-4: oklch(0.828 0.189 200);
   --chart-5: oklch(0.769 0.188 190);
 
-  --sidebar: #f7f7f8;
-  --sidebar-foreground: #18181b;
+  /* Secondary background: the sidebar uses a deeper desaturated warm grey
+     for borderless structural separation from the main workspace. */
+  --sidebar: #ece6dc;
+  --sidebar-foreground: #2a2926;
   --sidebar-primary: #0e7490;
   --sidebar-primary-foreground: #ffffff;
+  /* Active nav item lifts to pure white against the greige sidebar. */
   --sidebar-accent: #ffffff;
-  --sidebar-accent-foreground: #18181b;
-  --sidebar-border: #e5e7eb;
+  --sidebar-accent-foreground: #2a2926;
+  --sidebar-border: #ddd6ca;
   --sidebar-ring: #0e7490;
 }
 
@@ -148,6 +160,13 @@
   --color-text-secondary: #6b7280;
   --color-brand: #0e7490;
   --color-brand-hover: #155e75;
+
+  /* Earthy/organic accents — deep forest greens & moss tones for grounding
+     promotional banners and photographic contexts in a real-world palette. */
+  --color-forest: #2f4434;
+  --color-forest-hover: #25382a;
+  --color-moss: #6b7f5b;
+  --color-moss-muted: #e4e7da;
 
   --text-xs: 0.75rem;
   --text-xs--line-height: 1.5;
