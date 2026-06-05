@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export interface LoginState {
   error?: string;
@@ -21,6 +22,14 @@ export async function signIn(
 
   if (!email || !password) {
     return { error: "Enter your email and password." };
+  }
+
+  // Throttle credential attempts per IP before hitting the auth backend.
+  const { success, retryAfter } = await checkRateLimit("auth");
+  if (!success) {
+    return {
+      error: `Too many sign-in attempts. Try again in ${retryAfter}s.`,
+    };
   }
 
   const supabase = await createClient();

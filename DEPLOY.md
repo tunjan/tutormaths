@@ -53,10 +53,27 @@ Set for **Production** (and Preview if you want preview deploys to work):
 | `SUPABASE_SERVICE_ROLE_KEY` | secret key | **server-only — never expose** |
 | `RESEND_API_KEY` | Resend key | server-only |
 | `RESEND_FROM_EMAIL` | `Maths Tasks <homework@akuira.cafe>` | verified domain |
+| `UPSTASH_REDIS_REST_URL` | Upstash REST URL | rate limiting; see below |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash REST token | server-only |
 
 If you don't set `NEXT_PUBLIC_SITE_URL`, the app falls back to Vercel's
 production URL automatically (`getSiteUrl()` in `lib/site-url.ts`), but setting
 it to your canonical domain is recommended.
+
+**Rate limiting (Upstash):** sign-in and student-creation are throttled by
+`lib/rate-limit.ts`, backed by Upstash Redis (in-memory counters don't work
+across serverless instances). Provision it in one click via **Vercel
+Marketplace → Upstash** — it sets `UPSTASH_REDIS_REST_URL` /
+`UPSTASH_REDIS_REST_TOKEN` automatically. If both are unset the app still runs
+but rate limiting is **disabled** (a warning is logged in production), so set
+them before going live.
+
+**Security headers / CSP:** `next.config.ts` sends a strict CSP plus HSTS,
+`X-Frame-Options`, `nosniff`, etc. The CSP's `connect-src` allow-list is built
+from `NEXT_PUBLIC_SUPABASE_URL` **at build time**, so that variable must be set
+to the real project URL in Vercel before/at build — otherwise the browser will
+block Supabase REST + Realtime. (Vercel builds with the project env, so this is
+automatic once the var above is set.)
 
 ## 4. Deploy, then point Supabase Auth at the domain
 After the first deploy you'll have a URL (e.g. `https://tutormaths.vercel.app`).

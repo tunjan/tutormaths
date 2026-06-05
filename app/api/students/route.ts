@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { type NextRequest, NextResponse } from "next/server";
 import { getAuthContext } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 /**
  * Privileged: create a student account with an auto-generated temporary
@@ -17,6 +18,16 @@ export async function POST(request: NextRequest) {
   const ctx = await getAuthContext();
   if (!ctx || ctx.role !== "tutor") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Per-tutor throttle on account creation (admin API calls are expensive and
+  // send email). Keyed by user id so it can't be sidestepped by changing IP.
+  const { success, retryAfter } = await checkRateLimit("api", ctx.userId);
+  if (!success) {
+    return NextResponse.json(
+      { error: "Too many requests. Slow down." },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } },
+    );
   }
 
   let payload: { email?: string; full_name?: string };
