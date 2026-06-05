@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireTutor } from "@/lib/auth";
-import { LogoMark } from "@/components/logo";
+import { Logo, LogoMark } from "@/components/logo";
 import { TutorNav } from "@/components/tutor-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notification-bell";
@@ -15,13 +15,14 @@ export default async function TutorLayout({
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center px-4 py-3 sm:px-6">
-          <Link href="/tutor" aria-label="Maths Tasks home" className="justify-self-start">
-            <LogoMark className="size-8" />
+      <header className="sticky top-0 z-10 border-b border-border bg-background/85 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:gap-6 sm:px-6">
+          <Link href="/tutor" aria-label="Maths Tasks home">
+            <Logo className="hidden sm:flex" />
+            <LogoMark className="size-8 sm:hidden" />
           </Link>
           <TutorNav />
-          <div className="flex items-center justify-self-end gap-1 sm:gap-2">
+          <div className="ml-auto flex items-center gap-1 sm:gap-2">
             <NotificationBell userId={ctx.userId} role="tutor" />
             <ThemeToggle />
             <SignOutButton />

@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { Clock, Inbox, Plus, Users } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { unreadAssignmentIds } from "@/lib/queries";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   TutorAssignmentBrowser,
   type BrowserItem,
@@ -56,37 +55,66 @@ export default async function TutorDashboard() {
 
   return (
     <div className="flex flex-col gap-10">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">Dashboard</h1>
+          <p className="mt-1.5 text-[0.95rem] text-muted-foreground">
+            {!hasStudents ? (
+              "Let's get you set up."
+            ) : awaiting === 0 && overdue === 0 ? (
+              "You're all caught up."
+            ) : (
+              <>
+                {awaiting > 0 && (
+                  <>
+                    {awaiting} to review
+                    {overdue > 0 && " · "}
+                  </>
+                )}
+                {overdue > 0 && (
+                  <span className="text-destructive">{overdue} overdue</span>
+                )}
+              </>
+            )}
+          </p>
+        </div>
         {hasStudents && (
           <Link
             href="/tutor/assignments/new"
-            className={cn(buttonVariants(), "shrink-0")}
+            className={cn(
+              buttonVariants(),
+              "shrink-0 gap-2 shadow-[var(--shadow-calm)]",
+            )}
           >
+            <Plus className="size-4" />
             New assignment
           </Link>
         )}
-      </div>
+      </header>
 
       {hasStudents ? (
         <>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+          <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <Stat
+              icon={<Users className="size-[1.05rem]" />}
               label="Students"
               value={students?.length ?? 0}
               href="/tutor/students"
             />
             <Stat
+              icon={<Inbox className="size-[1.05rem]" />}
               label="Awaiting review"
               value={awaiting}
               href={awaiting > 0 ? "#awaiting" : undefined}
             />
             <Stat
+              icon={<Clock className="size-[1.05rem]" />}
               label="Overdue"
               value={overdue}
               href={overdue > 0 ? "#overdue" : undefined}
+              tone="destructive"
             />
-          </div>
+          </dl>
 
           <TutorAssignmentBrowser items={items} />
         </>
@@ -100,51 +128,58 @@ export default async function TutorDashboard() {
 /** First-run guidance: a tutor with no students yet can't do anything else. */
 function Onboarding() {
   return (
-    <Card className="py-10">
-      <CardContent className="flex flex-col items-center gap-5 px-6 text-center">
-        <div className="flex flex-col gap-1.5">
-          <h2 className="text-lg font-semibold tracking-tight">
-            Welcome to Maths Tasks
-          </h2>
-          <p className="mx-auto max-w-md text-sm text-muted-foreground">
-            Get set up in two steps: invite a student, then send them their
-            first assignment. You&rsquo;ll review their work and track progress
-            right here.
-          </p>
-        </div>
-        <Link href="/tutor/students" className={cn(buttonVariants())}>
-          Invite your first student
-        </Link>
-      </CardContent>
-    </Card>
+    <div className="mx-auto flex max-w-xl flex-col items-center gap-6 rounded-2xl border border-border bg-card px-6 py-16 text-center shadow-[var(--shadow-calm)]">
+      <div className="flex flex-col gap-2">
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Welcome to Maths Tasks
+        </h2>
+        <p className="mx-auto max-w-md text-sm text-muted-foreground">
+          Get set up in two steps: invite a student, then send them their first
+          assignment. You&rsquo;ll review their work and track progress right
+          here.
+        </p>
+      </div>
+      <Link href="/tutor/students" className={cn(buttonVariants())}>
+        Invite your first student
+      </Link>
+    </div>
   );
 }
 
 function Stat({
+  icon,
   label,
   value,
   href,
+  tone,
 }: {
+  icon: React.ReactNode;
   label: string;
   value: number;
   href?: string;
+  tone?: "destructive";
 }) {
+  // A calm stat card: a quiet icon tile beside a figure and label. The figure
+  // takes its tone only when it represents something that needs attention.
   const inner = (
-    <Card className="h-full gap-1 py-5 transition-all group-hover/stat:ring-primary/40">
-      <CardContent className="px-5">
-        <div className="flex items-center justify-between gap-2">
-          <div className="text-3xl font-semibold tracking-tight tabular-nums">
-            {value}
-          </div>
-          {href && (
-            <ArrowRight className="size-4 text-muted-foreground/60 transition-transform group-hover/stat:translate-x-0.5" />
+    <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-4 shadow-[var(--shadow-calm)] transition-colors group-hover/stat:border-primary/30">
+      <span className="flex size-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
+        {icon}
+      </span>
+      <div>
+        <div
+          className={cn(
+            "text-2xl font-semibold tracking-tight tabular-nums",
+            tone === "destructive" && value > 0 && "text-destructive",
           )}
+        >
+          {value}
         </div>
-        <div className="mt-1 text-sm text-muted-foreground">{label}</div>
-      </CardContent>
-    </Card>
+        <div className="text-sm text-muted-foreground">{label}</div>
+      </div>
+    </div>
   );
-  if (!href) return inner;
+  if (!href) return <div>{inner}</div>;
   // In-page anchors (#awaiting / #overdue) scroll within the dashboard; route
   // links (e.g. /tutor/students) navigate.
   return href.startsWith("#") ? (

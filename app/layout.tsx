@@ -4,6 +4,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 
+// Calm & Focused is all-sans: Inter carries both body and headings
+// (`--font-heading` resolves to the sans stack in globals.css).
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -19,7 +21,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${inter.variable} font-sans`}
+      suppressHydrationWarning
+    >
       <body className="bg-background text-foreground antialiased">
         <ThemeProvider
           attribute="class"

@@ -5,117 +5,130 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================================================
-   shadcn/ui (Base UI) semantic tokens, tuned to the Maths Tasks brand:
-   primary + ring = the single accent #0E7490; surfaces/borders match the
-   original palette; Inter is the sans font. Light is the default theme; the
-   .dark block is activated by next-themes via a `dark` class on <html>.
+   "Calm & Focused" visual language. A content-first, mostly-monochrome system:
+   cool near-white grounds, generous whitespace, soft white surfaces carried by
+   faint borders + a gentle shadow (cards, not hairline rules), and a SINGLE
+   calm slate-blue accent. Status hues (warning/info/destructive/success) are
+   desaturated so the "needs attention" zones read clearly without shouting.
+   Type is all-sans. Light is the default; `.dark` is toggled by next-themes.
    ========================================================================== */
 :root {
-  --radius: 0.5rem; /* 8px anchor for cards/buttons */
+  --radius: 0.75rem; /* 12px — soft, rounded; calm not clinical */
 
-  /* Primary background: warm off-white / alabaster — soft, non-sterile,
-     editorial paper quality (replaces pure-white #fff). */
-  --background: #faf8f4;
-  /* Typography & branding: deep charcoal / soft black, not absolute black. */
-  --foreground: #2a2926;
+  /* Ground: a cool, very soft near-white. */
+  --background: #f6f7f8;
+  /* Ink: a cool near-black for body and headings. Never pure black. */
+  --foreground: #1d2125;
 
-  /* Layering white: pure white for foreground elements (cards, the central
-     search input) so they "lift" off the warm background via contrast. */
+  /* Surfaces lift off the ground as clean white cards with soft elevation. */
   --card: #ffffff;
-  --card-foreground: #2a2926;
+  --card-foreground: #1d2125;
   --popover: #ffffff;
-  --popover-foreground: #2a2926;
+  --popover-foreground: #1d2125;
 
-  /* Functional chroma: subtle teal/cyan accent (notification dots, focus
-     ring) — draws attention without disrupting the neutral harmony. */
-  --primary: #0e7490;
+  /* The single accent: a calm, focused slate-blue. Primary actions + brand. */
+  --primary: #3f5d82;
   --primary-foreground: #ffffff;
 
-  /* Secondary background: soft greige / warm grey for UI containers and
-     subtle hover surfaces. */
-  --secondary: #efeae2;
-  --secondary-foreground: #2a2926;
-  --muted: #efeae2;
-  --muted-foreground: #726d64;
+  /* Cool greige for quiet containers and hover surfaces. */
+  --secondary: #eef0f2;
+  --secondary-foreground: #1d2125;
+  --muted: #eef0f2;
+  --muted-foreground: #697079;
 
   /* shadcn "accent" = subtle hover surface (NOT the brand colour) */
-  --accent: #efeae2;
-  --accent-foreground: #2a2926;
+  --accent: #eef1f4;
+  --accent-foreground: #1d2125;
 
-  --destructive: #dc2626;
+  /* Desaturated rose — destructive without alarm-red shrillness. */
+  --destructive: #b04a42;
+  --destructive-muted: #f7ebe9;
 
-  /* Warning = "due soon" (token-based, was a hardcoded amber) */
-  --warning: #b45309;
-  --warning-muted: #fbf0d9;
+  /* Warning = "due soon" — muted amber. */
+  --warning: #8a6418;
+  --warning-muted: #f6efe0;
 
-  /* Info = "awaiting review" — distinct from success (teal) and warning (amber) */
-  --info: #1d4ed8;
-  --info-muted: #dde6f3;
+  /* Info = "awaiting review" — a quiet steel blue, distinct from the accent. */
+  --info: #3a6390;
+  --info-muted: #eaf0f6;
 
-  /* App backdrop behind cards (login, etc.) — warm greige, switchable for dark mode */
-  --surface: #f3eee6;
+  /* Success = "approved" — a calm, muted green. */
+  --success: #3c7559;
+  --success-muted: #e9f1ec;
 
-  --border: #e6e0d6;
-  --input: #e6e0d6;
-  --ring: #0e7490;
+  /* App backdrop behind centered cards (login, etc.) — a shade off the ground. */
+  --surface: #f1f3f4;
 
-  --chart-1: oklch(0.646 0.222 195);
-  --chart-2: oklch(0.6 0.118 220);
-  --chart-3: oklch(0.398 0.07 227);
-  --chart-4: oklch(0.828 0.189 200);
-  --chart-5: oklch(0.769 0.188 190);
+  /* Faint cool rules + soft elevation do the structural work. */
+  --border: #e6e8ea;
+  --input: #dde0e3;
+  --ring: #3f5d82;
 
-  /* Secondary background: the sidebar uses a deeper desaturated warm grey
-     for borderless structural separation from the main workspace. */
-  --sidebar: #ece6dc;
-  --sidebar-foreground: #2a2926;
-  --sidebar-primary: #0e7490;
+  /* Soft elevation for lifted surfaces (cards, popovers, primary buttons). */
+  --shadow-calm: 0 1px 2px rgb(29 33 37 / 0.04), 0 4px 16px rgb(29 33 37 / 0.04);
+
+  --chart-1: oklch(0.5 0.08 250);
+  --chart-2: oklch(0.55 0.07 200);
+  --chart-3: oklch(0.62 0.07 150);
+  --chart-4: oklch(0.55 0.09 70);
+  --chart-5: oklch(0.5 0.1 30);
+
+  /* Sidebar: a touch off the ground for borderless structural separation. */
+  --sidebar: #f1f3f4;
+  --sidebar-foreground: #1d2125;
+  --sidebar-primary: #3f5d82;
   --sidebar-primary-foreground: #ffffff;
-  /* Active nav item lifts to pure white against the greige sidebar. */
   --sidebar-accent: #ffffff;
-  --sidebar-accent-foreground: #2a2926;
-  --sidebar-border: #ddd6ca;
-  --sidebar-ring: #0e7490;
+  --sidebar-accent-foreground: #1d2125;
+  --sidebar-border: #e6e8ea;
+  --sidebar-ring: #3f5d82;
 }
 
 .dark {
-  --background: oklch(0.145 0.01 70);
-  --foreground: oklch(0.93 0.01 80);
-  --card: oklch(0.19 0.01 70);
-  --card-foreground: oklch(0.93 0.01 80);
-  --popover: oklch(0.19 0.01 70);
-  --popover-foreground: oklch(0.93 0.01 80);
-  --primary: oklch(0.7 0.12 200);
-  --primary-foreground: oklch(0.145 0.01 70);
-  --secondary: oklch(0.24 0.01 70);
-  --secondary-foreground: oklch(0.93 0.01 80);
-  --muted: oklch(0.24 0.01 70);
-  --muted-foreground: oklch(0.65 0.01 70);
-  --accent: oklch(0.24 0.01 70);
-  --accent-foreground: oklch(0.93 0.01 80);
-  --destructive: oklch(0.704 0.191 22.216);
-  --warning: #fbbf24;
-  --warning-muted: oklch(0.3 0.06 70);
-  --info: #60a5fa;
-  --info-muted: oklch(0.3 0.06 260);
-  --surface: oklch(0.11 0.01 70);
-  --border: oklch(1 0.01 70 / 10%);
-  --input: oklch(1 0.01 70 / 15%);
-  --ring: oklch(0.556 0 0);
+  --background: #15171a;
+  --foreground: #e6e8ea;
+  --card: #1c1f23;
+  --card-foreground: #e6e8ea;
+  --popover: #1c1f23;
+  --popover-foreground: #e6e8ea;
+  --primary: #7d9bc4;
+  --primary-foreground: #11161d;
+  --secondary: #23272c;
+  --secondary-foreground: #e6e8ea;
+  --muted: #23272c;
+  --muted-foreground: #9aa1a9;
+  --accent: #23272c;
+  --accent-foreground: #e6e8ea;
+  --destructive: #d98a82;
+  --destructive-muted: #2f2220;
+  --warning: #d6a861;
+  --warning-muted: #322a1c;
+  --info: #8badd6;
+  --info-muted: #1f2a36;
+  --success: #7fb398;
+  --success-muted: #1d2a23;
+  --surface: #101214;
+  --border: oklch(1 0.01 250 / 9%);
+  --input: oklch(1 0.01 250 / 13%);
+  --ring: #7d9bc4;
 
-  --sidebar: oklch(0.165 0.01 70);
-  --sidebar-foreground: oklch(0.93 0.01 80);
-  --sidebar-primary: oklch(0.7 0.12 200);
-  --sidebar-primary-foreground: oklch(0.145 0.01 70);
-  --sidebar-accent: oklch(0.22 0.01 70);
-  --sidebar-accent-foreground: oklch(0.93 0.01 80);
-  --sidebar-border: oklch(1 0.01 70 / 8%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --shadow-calm: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.24);
+
+  --sidebar: #17191c;
+  --sidebar-foreground: #e6e8ea;
+  --sidebar-primary: #7d9bc4;
+  --sidebar-primary-foreground: #11161d;
+  --sidebar-accent: #23272c;
+  --sidebar-accent-foreground: #e6e8ea;
+  --sidebar-border: oklch(1 0.01 250 / 7%);
+  --sidebar-ring: #7d9bc4;
 }
 
 @theme inline {
   --font-sans: var(--font-sans);
-  --font-heading: var(--font-sans);
+  /* Calm & Focused is all-sans; `font-heading` now resolves to the sans stack
+     so existing heading markup needs no change. */
+  --font-heading: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -131,10 +144,13 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-muted: var(--destructive-muted);
   --color-warning: var(--warning);
   --color-warning-muted: var(--warning-muted);
   --color-info: var(--info);
   --color-info-muted: var(--info-muted);
+  --color-success: var(--success);
+  --color-success-muted: var(--success-muted);
   --color-surface: var(--surface);
   --color-border: var(--border);
   --color-input: var(--input);
@@ -165,10 +181,10 @@
    shadcn's semantic `accent`. Defined after @theme inline so these win.
    ========================================================================== */
 @theme {
-  --color-text-primary: #18181b;
-  --color-text-secondary: #6b7280;
-  --color-brand: #0e7490;
-  --color-brand-hover: #155e75;
+  --color-text-primary: #1d2125;
+  --color-text-secondary: #697079;
+  --color-brand: #3f5d82;
+  --color-brand-hover: #35506f;
 
   /* Earthy/organic accents — deep forest greens & moss tones for grounding
      promotional banners and photographic contexts in a real-world palette. */

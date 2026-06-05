@@ -2,11 +2,9 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Clock, Inbox, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
-import { SectionHeading } from "@/components/ui/section-heading";
 import { AssignmentRow } from "@/components/assignment-row";
 import { cn } from "@/lib/utils";
 
@@ -56,7 +54,7 @@ export function TutorAssignmentBrowser({ items }: { items: BrowserItem[] }) {
   }, [items, query]);
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-8">
       <div className="relative">
         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -70,51 +68,44 @@ export function TutorAssignmentBrowser({ items }: { items: BrowserItem[] }) {
       </div>
 
       {awaiting.length > 0 && (
-        <section
-          id="awaiting"
-          className="flex scroll-mt-24 flex-col gap-4 rounded-2xl border border-info/30 bg-info-muted/40 p-4 sm:p-5"
-        >
-          <div className="flex items-center gap-2">
-            <SectionHeading className="text-info">
-              Awaiting your review
-            </SectionHeading>
-            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-info px-1.5 text-xs font-semibold text-white tabular-nums dark:text-background">
-              {awaiting.length}
-            </span>
-          </div>
+        <section id="awaiting" className="scroll-mt-24">
+          <SectionHead
+            tone="info"
+            icon={<Inbox className="size-4" />}
+            title="Awaiting your review"
+            count={awaiting.length}
+          />
           <List items={awaiting} />
         </section>
       )}
 
       {overdue.length > 0 && (
-        <section id="overdue" className="flex scroll-mt-24 flex-col gap-4">
-          <div className="flex items-center gap-2">
-            <SectionHeading className="text-destructive">Overdue</SectionHeading>
-            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive/10 px-1.5 text-xs font-semibold text-destructive tabular-nums">
-              {overdue.length}
-            </span>
-          </div>
+        <section id="overdue" className="scroll-mt-24">
+          <SectionHead
+            tone="destructive"
+            icon={<Clock className="size-4" />}
+            title="Overdue"
+            count={overdue.length}
+          />
           <List items={overdue} />
         </section>
       )}
 
-      <section className="flex flex-col gap-4">
-        <SectionHeading>Active assignments</SectionHeading>
+      <section>
+        <SectionHead title="Active assignments" count={active.length} />
         {active.length === 0 ? (
           query ? (
             <Empty>No active assignments match your search.</Empty>
           ) : (
-            <Card className="py-10">
-              <CardContent className="flex flex-col items-center gap-4 text-center text-sm text-muted-foreground">
-                <p>No active assignments yet.</p>
-                <Link
-                  href="/tutor/assignments/new"
-                  className={cn(buttonVariants())}
-                >
-                  Create an assignment
-                </Link>
-              </CardContent>
-            </Card>
+            <div className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground shadow-[var(--shadow-calm)]">
+              <p>No active assignments yet.</p>
+              <Link
+                href="/tutor/assignments/new"
+                className={cn(buttonVariants())}
+              >
+                Create an assignment
+              </Link>
+            </div>
           )
         ) : (
           <List items={active} />
@@ -122,8 +113,8 @@ export function TutorAssignmentBrowser({ items }: { items: BrowserItem[] }) {
       </section>
 
       {(completed.length > 0 || query.trim()) && (
-        <section className="flex flex-col gap-4">
-          <SectionHeading>Completed</SectionHeading>
+        <section>
+          <SectionHead title="Completed" count={completed.length} muted />
           {completed.length > 0 ? (
             <List items={completed} />
           ) : (
@@ -135,42 +126,89 @@ export function TutorAssignmentBrowser({ items }: { items: BrowserItem[] }) {
   );
 }
 
-function Group({ title, items }: { title: string; items: BrowserItem[] }) {
+function SectionHead({
+  title,
+  count,
+  icon,
+  tone,
+  muted,
+}: {
+  title: string;
+  count: number;
+  icon?: React.ReactNode;
+  tone?: "info" | "destructive";
+  muted?: boolean;
+}) {
+  const tileCls =
+    tone === "info"
+      ? "bg-info/10 text-info"
+      : tone === "destructive"
+        ? "bg-destructive/10 text-destructive"
+        : "bg-secondary text-muted-foreground";
+  const countCls =
+    tone === "info"
+      ? "bg-info text-white dark:text-background"
+      : tone === "destructive"
+        ? "bg-destructive/10 text-destructive"
+        : "bg-secondary text-muted-foreground";
   return (
-    <section className="flex flex-col gap-4">
-      <SectionHeading>{title}</SectionHeading>
-      <List items={items} />
-    </section>
+    <div className="mb-3 flex items-center gap-2.5 px-1">
+      {icon && (
+        <span
+          className={cn(
+            "flex size-7 items-center justify-center rounded-lg",
+            tileCls,
+          )}
+        >
+          {icon}
+        </span>
+      )}
+      <h2
+        className={cn(
+          "text-[0.95rem] font-semibold",
+          muted && "text-muted-foreground",
+        )}
+      >
+        {title}
+      </h2>
+      {count > 0 && (
+        <span
+          className={cn(
+            "flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-semibold tabular-nums",
+            countCls,
+          )}
+        >
+          {count}
+        </span>
+      )}
+    </div>
   );
 }
 
 function List({ items }: { items: BrowserItem[] }) {
   return (
-    <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+    <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-calm)]">
       {items.map((a) => (
-        <li key={a.id}>
-          <AssignmentRow
-            href={`/tutor/assignments/${a.id}`}
-            title={a.title}
-            type={a.type}
-            dueAt={a.due_at}
-            pct={a.completion_pct}
-            reviewStatus={a.review_status}
-            student={a.student}
-            unread={a.unread}
-          />
-        </li>
+        <AssignmentRow
+          key={a.id}
+          href={`/tutor/assignments/${a.id}`}
+          title={a.title}
+          type={a.type}
+          dueAt={a.due_at}
+          pct={a.completion_pct}
+          reviewStatus={a.review_status}
+          student={a.student}
+          unread={a.unread}
+        />
       ))}
-    </ul>
+    </div>
   );
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <Card className="py-10">
-      <CardContent className="text-center text-sm text-muted-foreground">
-        {children}
-      </CardContent>
-    </Card>
+    <p className="rounded-2xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground shadow-[var(--shadow-calm)]">
+      {children}
+    </p>
   );
 }
