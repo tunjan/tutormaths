@@ -33,10 +33,10 @@ export function TutorAssignmentBrowser({ items }: { items: BrowserItem[] }) {
     const q = query.trim().toLowerCase();
     const matched = q
       ? items.filter(
-          (a) =>
-            a.title.toLowerCase().includes(q) ||
-            a.student.toLowerCase().includes(q),
-        )
+        (a) =>
+          a.title.toLowerCase().includes(q) ||
+          a.student.toLowerCase().includes(q),
+      )
       : items;
     const now = Date.now();
     const isLate = (a: BrowserItem) => new Date(a.due_at).getTime() < now;
@@ -165,7 +165,7 @@ function SectionHead({
       )}
       <h2
         className={cn(
-          "text-[0.95rem] font-bold uppercase tracking-wider bg-card px-2 border-l-2 border-foreground",
+          "text-[0.95rem] font-bold uppercase tracking-wider bg-card ",
           muted && "text-muted-foreground",
         )}
       >
