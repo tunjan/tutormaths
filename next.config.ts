@@ -26,6 +26,10 @@ const csp = [
   `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}`,
   `style-src 'self' 'unsafe-inline'`,
   `img-src 'self' data: blob: ${supabaseOrigin}`.trim(),
+  // PDF previews are private Supabase Storage objects rendered in an <iframe>
+  // via a signed URL, so the Supabase origin must be allowed as a frame source
+  // (otherwise it falls back to default-src 'self' and the preview is blocked).
+  `frame-src 'self' blob: ${supabaseOrigin}`.trim(),
   `font-src 'self' data:`,
   `connect-src 'self' ${supabaseOrigin} ${supabaseWs}`.trim(),
   `frame-ancestors 'none'`,

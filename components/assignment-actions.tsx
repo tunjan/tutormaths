@@ -159,7 +159,7 @@ export function AssignmentActions({
 
       <dialog
         ref={dialogRef}
-        className="w-full max-w-lg rounded-2xl border-none bg-card p-6 text-foreground shadow-xl ring-1 ring-foreground/10 backdrop:bg-foreground/30 max-h-[85vh] overflow-y-auto"
+        className="fixed left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl border-none bg-card p-6 text-foreground shadow-xl ring-1 ring-foreground/10 backdrop:bg-foreground/30 max-h-[85vh] overflow-y-auto"
       >
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <input type="hidden" name="id" value={id} />

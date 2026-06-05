@@ -10,12 +10,14 @@ import {
   BUCKET_ASSIGNMENTS,
   MAX_FILE_BYTES,
 } from "@/lib/constants";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FileDropzone } from "@/components/ui/file-dropzone";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
+import { SectionHeading } from "@/components/ui/section-heading";
 import {
   Select,
   SelectContent,
@@ -23,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 interface StudentOption {
   id: string;
@@ -133,80 +136,95 @@ export function NewAssignmentForm({
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <Label>Student</Label>
-        <Select
-          value={studentId}
-          onValueChange={(v) => {
-            setStudentId(v ?? "");
-            setErrors((e) => ({ ...e, student: undefined }));
-          }}
-        >
-          <SelectTrigger aria-invalid={!!errors.student}>
-            <SelectValue placeholder="Choose a student…" />
-          </SelectTrigger>
-          <SelectContent>
-            {students.map((s) => (
-              <SelectItem key={s.id} value={s.id}>
-                {s.full_name || s.email}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <FieldError message={errors.student} />
-      </div>
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-8">
+      <fieldset className="flex flex-col gap-4">
+        <SectionHeading>Recipient</SectionHeading>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-2">
+            <Label>Student</Label>
+            <Select
+              value={studentId}
+              onValueChange={(v) => {
+                setStudentId(v ?? "");
+                setErrors((e) => ({ ...e, student: undefined }));
+              }}
+            >
+              <SelectTrigger aria-invalid={!!errors.student}>
+                <SelectValue placeholder="Choose a student…" />
+              </SelectTrigger>
+              <SelectContent>
+                {students.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.full_name || s.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FieldError message={errors.student} />
+          </div>
 
-      <div className="flex flex-col gap-2">
-        <Label>Type</Label>
-        <Select
-          value={type}
-          onValueChange={(v) =>
-            setType((v as "problem_set" | "reading_notes") ?? "problem_set")
-          }
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="problem_set">Problem set</SelectItem>
-            <SelectItem value="reading_notes">Reading notes</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+          <div className="flex flex-col gap-2">
+            <Label>Type</Label>
+            <Select
+              value={type}
+              onValueChange={(v) =>
+                setType((v as "problem_set" | "reading_notes") ?? "problem_set")
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="problem_set">Problem set</SelectItem>
+                <SelectItem value="reading_notes">Reading notes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </fieldset>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="title">Title</Label>
-        <Input
-          id="title"
-          name="title"
-          type="text"
-          aria-invalid={!!errors.title}
-          placeholder="Quadratic equations — set 3"
-          onChange={() => setErrors((e) => ({ ...e, title: undefined }))}
-        />
-        <FieldError message={errors.title} />
-      </div>
+      <fieldset className="flex flex-col gap-4">
+        <SectionHeading>Details</SectionHeading>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="title">Title</Label>
+          <Input
+            id="title"
+            name="title"
+            type="text"
+            aria-invalid={!!errors.title}
+            placeholder="Quadratic equations — set 3"
+            onChange={() => setErrors((e) => ({ ...e, title: undefined }))}
+          />
+          <FieldError message={errors.title} />
+        </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="description">Description (optional)</Label>
-        <Textarea id="description" name="description" rows={3} />
-      </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="due_at">Due</Label>
+            <DateTimePicker
+              id="due_at"
+              name="due_at"
+              defaultValue={defaultDue()}
+              invalid={!!errors.due}
+              onChange={() => setErrors((e) => ({ ...e, due: undefined }))}
+            />
+            <FieldError message={errors.due} />
+          </div>
+        </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="due_at">Due</Label>
-        <DateTimePicker
-          id="due_at"
-          name="due_at"
-          defaultValue={defaultDue()}
-          invalid={!!errors.due}
-          onChange={() => setErrors((e) => ({ ...e, due: undefined }))}
-        />
-        <FieldError message={errors.due} />
-      </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="description">Description (optional)</Label>
+          <Textarea
+            id="description"
+            name="description"
+            rows={3}
+            placeholder="Notes for the student — focus areas, page numbers, hints…"
+          />
+        </div>
+      </fieldset>
 
-      <div className="flex flex-col gap-2">
-        <Label>Assignment PDF</Label>
+      <fieldset className="flex flex-col gap-4">
+        <SectionHeading>Assignment file</SectionHeading>
         <FileDropzone
           accept="application/pdf"
           hint="PDF, up to 20 MB"
@@ -217,11 +235,19 @@ export function NewAssignmentForm({
           }}
         />
         <FieldError message={errors.file} />
-      </div>
+      </fieldset>
 
-      <Button type="submit" disabled={busy} className="self-start">
-        {busy ? "Creating…" : "Create assignment"}
-      </Button>
+      <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-end">
+        <Link
+          href="/tutor"
+          className={cn(buttonVariants({ variant: "ghost" }))}
+        >
+          Cancel
+        </Link>
+        <Button type="submit" disabled={busy}>
+          {busy ? "Creating…" : "Create assignment"}
+        </Button>
+      </div>
     </form>
   );
 }
