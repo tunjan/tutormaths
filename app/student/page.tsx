@@ -23,9 +23,9 @@ export default async function StudentDashboard() {
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <header className="flex flex-wrap items-end justify-between gap-4 bg-card p-6 border-2 border-foreground">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">My homework</h1>
+          <h1 className="text-3xl font-black uppercase tracking-tighter">My homework</h1>
           <p className="mt-1.5 text-[0.95rem] text-muted-foreground">
             {active.length === 0
               ? completed.length > 0
@@ -38,15 +38,15 @@ export default async function StudentDashboard() {
       </header>
 
       <section>
-        <h2 className="mb-3 px-1 text-[0.95rem] font-semibold">Active</h2>
+        <h2 className="mb-3 px-1 text-[0.95rem] font-bold uppercase tracking-wider">Active</h2>
         {active.length === 0 ? (
-          <p className="rounded-2xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground shadow-[var(--shadow-calm)]">
+          <p className="border-2 border-foreground bg-card px-6 py-12 text-center text-sm font-medium">
             {completed.length > 0
               ? "All caught up — nothing to work on right now."
               : "Nothing to work on right now. Use “Request more homework” above when you’re ready."}
           </p>
         ) : (
-          <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-calm)]">
+          <div className="divide-y-2 divide-foreground border-2 border-foreground bg-card">
             {active.map((a) => (
               <AssignmentRow
                 key={a.id}
@@ -65,10 +65,10 @@ export default async function StudentDashboard() {
 
       {completed.length > 0 && (
         <section>
-          <h2 className="mb-3 px-1 text-[0.95rem] font-semibold text-muted-foreground">
+          <h2 className="mb-3 px-1 text-[0.95rem] font-bold uppercase tracking-wider text-muted-foreground">
             Completed
           </h2>
-          <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-calm)]">
+          <div className="divide-y-2 divide-foreground border-2 border-foreground bg-card">
             {completed.map((a) => (
               <AssignmentRow
                 key={a.id}

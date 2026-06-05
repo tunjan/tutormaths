@@ -149,10 +149,6 @@ export default async function StudentAssignmentPage({
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Your progress</CardTitle>
-              <CardDescription>
-                A tracker just for you. To hand work in, use “Submit your work”
-                above.
-              </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-5">
               <ProgressBar value={a.completion_pct} />
@@ -187,9 +183,6 @@ function ReviewBanner({ status }: { status: ReviewStatus }) {
   if (status === "approved") {
     return (
       <div className="flex items-center gap-3 rounded-xl bg-primary/10 px-4 py-4 text-primary ring-1 ring-primary/20">
-        <span aria-hidden className="text-2xl leading-none">
-          🎉
-        </span>
         <div className="flex items-center gap-2">
           <CheckCircle2 className="size-5 shrink-0" />
           <span className="text-sm font-medium">

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { requireTutor } from "@/lib/auth";
-import { Logo, LogoMark } from "@/components/logo";
 import { TutorNav } from "@/components/tutor-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notification-bell";
@@ -15,11 +14,10 @@ export default async function TutorLayout({
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-10 border-b border-border bg-background/85 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:gap-6 sm:px-6">
-          <Link href="/tutor" aria-label="Maths Tasks home">
-            <Logo className="hidden sm:flex" />
-            <LogoMark className="size-8 sm:hidden" />
+      <header className="sticky top-0 z-10 border-b-2 border-foreground bg-background">
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-6">
+          <Link href="/tutor" aria-label="Maths Tasks home" className="font-heading text-xl font-black uppercase tracking-tighter">
+            Maths Tasks
           </Link>
           <TutorNav />
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
@@ -29,7 +27,7 @@ export default async function TutorLayout({
           </div>
         </div>
       </header>
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">{children}</div>
+      <div className="mx-auto max-w-6xl px-6 py-12">{children}</div>
     </div>
   );
 }

@@ -23,7 +23,7 @@ export function LoginForm() {
           autoComplete="email"
           required
           placeholder="you@example.com"
-          className="h-11 rounded-lg px-3.5 text-base md:text-base"
+          className="input-glow h-11 rounded-lg px-3.5 text-base md:text-base"
         />
       </div>
 
@@ -43,14 +43,14 @@ export function LoginForm() {
           type="password"
           autoComplete="current-password"
           required
-          className="h-11 rounded-lg px-3.5 text-base md:text-base"
+          className="input-glow h-11 rounded-lg px-3.5 text-base md:text-base"
         />
       </div>
 
       <Button
         type="submit"
         disabled={pending}
-        className="h-11 w-full text-base"
+        className="btn-gradient h-11 w-full border-0 text-base"
       >
         {pending ? "Signing in…" : "Sign in"}
       </Button>

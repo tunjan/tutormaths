@@ -55,9 +55,9 @@ export default async function TutorDashboard() {
 
   return (
     <div className="flex flex-col gap-10">
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <header className="flex flex-wrap items-end justify-between gap-4 bg-card p-6 border-2 border-foreground">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">Dashboard</h1>
+          <h1 className="text-3xl font-black uppercase tracking-tighter">Dashboard</h1>
           <p className="mt-1.5 text-[0.95rem] text-muted-foreground">
             {!hasStudents ? (
               "Let's get you set up."
@@ -128,7 +128,7 @@ export default async function TutorDashboard() {
 /** First-run guidance: a tutor with no students yet can't do anything else. */
 function Onboarding() {
   return (
-    <div className="mx-auto flex max-w-xl flex-col items-center gap-6 rounded-2xl border border-border bg-card px-6 py-16 text-center shadow-[var(--shadow-calm)]">
+    <div className="mx-auto flex max-w-xl flex-col items-center gap-6 border-2 border-foreground bg-card px-6 py-16 text-center">
       <div className="flex flex-col gap-2">
         <h2 className="text-2xl font-semibold tracking-tight">
           Welcome to Maths Tasks
@@ -162,8 +162,8 @@ function Stat({
   // A calm stat card: a quiet icon tile beside a figure and label. The figure
   // takes its tone only when it represents something that needs attention.
   const inner = (
-    <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-4 shadow-[var(--shadow-calm)] transition-colors group-hover/stat:border-primary/30">
-      <span className="flex size-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
+    <div className="flex items-center gap-3 border-2 border-foreground bg-card px-5 py-4 hover:bg-foreground hover:text-background transition-colors group-hover/stat:bg-foreground group-hover/stat:text-background">
+      <span className="flex size-9 items-center justify-center border-2 border-current bg-background text-current">
         {icon}
       </span>
       <div>

@@ -97,7 +97,7 @@ export function TutorAssignmentBrowser({ items }: { items: BrowserItem[] }) {
           query ? (
             <Empty>No active assignments match your search.</Empty>
           ) : (
-            <div className="flex flex-col items-center gap-4 rounded-2xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground shadow-[var(--shadow-calm)]">
+            <div className="flex flex-col items-center gap-4 border-2 border-foreground bg-card px-6 py-12 text-center font-medium">
               <p>No active assignments yet.</p>
               <Link
                 href="/tutor/assignments/new"
@@ -165,7 +165,7 @@ function SectionHead({
       )}
       <h2
         className={cn(
-          "text-[0.95rem] font-semibold",
+          "text-[0.95rem] font-bold uppercase tracking-wider bg-card px-2 border-l-2 border-foreground",
           muted && "text-muted-foreground",
         )}
       >
@@ -187,7 +187,7 @@ function SectionHead({
 
 function List({ items }: { items: BrowserItem[] }) {
   return (
-    <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-calm)]">
+    <div className="stagger-children divide-y-2 divide-foreground overflow-hidden border-2 border-foreground bg-card">
       {items.map((a) => (
         <AssignmentRow
           key={a.id}
@@ -207,7 +207,7 @@ function List({ items }: { items: BrowserItem[] }) {
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-2xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground shadow-[var(--shadow-calm)]">
+    <p className="border-2 border-foreground bg-card px-6 py-12 text-center text-sm font-medium">
       {children}
     </p>
   );

@@ -53,7 +53,7 @@ export function AssignmentRow({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-4 px-5 py-4 transition-colors hover:bg-accent/60"
+      className="group flex items-center gap-4 px-5 py-4 transition-all duration-200 hover:bg-accent/40"
     >
       {student ? (
         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-muted-foreground">
@@ -69,7 +69,7 @@ export function AssignmentRow({
         <div className="flex items-center gap-2">
           {unread && (
             <span
-              className="size-2 shrink-0 rounded-full bg-primary"
+              className="pulse-glow size-2 shrink-0 rounded-full bg-primary"
               aria-label="Unread activity"
             />
           )}
@@ -89,7 +89,7 @@ export function AssignmentRow({
         <div className="hidden w-28 items-center gap-2 md:flex">
           <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
             <span
-              className="block h-full rounded-full bg-primary/70"
+              className="progress-gradient block h-full rounded-full"
               style={{ width: `${pct}%` }}
             />
           </span>

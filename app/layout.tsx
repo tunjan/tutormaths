@@ -4,7 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 
-// Calm & Focused is all-sans: Inter carries both body and headings
+// Swiss Minimalist: Inter serves as our robust Grotesque sans equivalent
 // (`--font-heading` resolves to the sans stack in globals.css).
 const inter = Inter({
   subsets: ["latin"],

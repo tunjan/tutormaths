@@ -5,129 +5,123 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================================================
-   "Calm & Focused" visual language. A content-first, mostly-monochrome system:
-   cool near-white grounds, generous whitespace, soft white surfaces carried by
-   faint borders + a gentle shadow (cards, not hairline rules), and a SINGLE
-   calm slate-blue accent. Status hues (warning/info/destructive/success) are
-   desaturated so the "needs attention" zones read clearly without shouting.
-   Type is all-sans. Light is the default; `.dark` is toggled by next-themes.
+   "Swiss Minimalist" visual language. Stark, functional, content-first.
+   Pure grayscale values, no border radius, strict grid alignments.
+   Active states highlighted with high-contrast borders.
    ========================================================================== */
 :root {
-  --radius: 0.75rem; /* 12px — soft, rounded; calm not clinical */
+  --radius: 0;
 
-  /* Ground: a cool, very soft near-white. */
-  --background: #f6f7f8;
-  /* Ink: a cool near-black for body and headings. Never pure black. */
-  --foreground: #1d2125;
+  /* Ground: pure white. */
+  --background: #ffffff;
+  /* Ink: pure black. */
+  --foreground: #000000;
 
-  /* Surfaces lift off the ground as clean white cards with soft elevation. */
+  /* Surfaces */
   --card: #ffffff;
-  --card-foreground: #1d2125;
+  --card-foreground: #000000;
   --popover: #ffffff;
-  --popover-foreground: #1d2125;
+  --popover-foreground: #000000;
 
-  /* The single accent: a calm, focused slate-blue. Primary actions + brand. */
-  --primary: #3f5d82;
+  /* Primary actions: stark black. */
+  --primary: #000000;
   --primary-foreground: #ffffff;
 
-  /* Cool greige for quiet containers and hover surfaces. */
-  --secondary: #eef0f2;
-  --secondary-foreground: #1d2125;
-  --muted: #eef0f2;
-  --muted-foreground: #697079;
+  /* Secondary / Muted: light gray for hierarchy, not background cards. */
+  --secondary: #f0f0f0;
+  --secondary-foreground: #000000;
+  --muted: #f0f0f0;
+  --muted-foreground: #666666;
 
-  /* shadcn "accent" = subtle hover surface (NOT the brand colour) */
-  --accent: #eef1f4;
-  --accent-foreground: #1d2125;
+  /* Hover accent */
+  --accent: #f0f0f0;
+  --accent-foreground: #000000;
 
-  /* Desaturated rose — destructive without alarm-red shrillness. */
-  --destructive: #b04a42;
-  --destructive-muted: #f7ebe9;
+  /* Status hues (stark pure colors if needed, but primarily grayscale) */
+  --destructive: #cc0000;
+  --destructive-muted: #fcedec;
+  --warning: #e6b800;
+  --warning-muted: #fffbec;
+  --info: #0000cc;
+  --info-muted: #ecedfc;
+  --success: #008000;
+  --success-muted: #e6f2e6;
 
-  /* Warning = "due soon" — muted amber. */
-  --warning: #8a6418;
-  --warning-muted: #f6efe0;
+  /* App backdrop */
+  --surface: #ffffff;
 
-  /* Info = "awaiting review" — a quiet steel blue, distinct from the accent. */
-  --info: #3a6390;
-  --info-muted: #eaf0f6;
+  /* Borders: stark, functional. */
+  --border: #e0e0e0; /* Subtle default boundary */
+  --input: #e0e0e0;
+  --ring: #000000; /* High contrast active state */
 
-  /* Success = "approved" — a calm, muted green. */
-  --success: #3c7559;
-  --success-muted: #e9f1ec;
+  /* No shadows in minimalist design, rely on borders. */
+  --shadow-calm: none;
 
-  /* App backdrop behind centered cards (login, etc.) — a shade off the ground. */
-  --surface: #f1f3f4;
+  /* Grid background for modular aesthetic */
+  --grid-color: rgba(0, 0, 0, 0.05);
 
-  /* Faint cool rules + soft elevation do the structural work. */
-  --border: #e6e8ea;
-  --input: #dde0e3;
-  --ring: #3f5d82;
+  --chart-1: oklch(0.5 0 0);
+  --chart-2: oklch(0.6 0 0);
+  --chart-3: oklch(0.7 0 0);
+  --chart-4: oklch(0.8 0 0);
+  --chart-5: oklch(0.9 0 0);
 
-  /* Soft elevation for lifted surfaces (cards, popovers, primary buttons). */
-  --shadow-calm: 0 1px 2px rgb(29 33 37 / 0.04), 0 4px 16px rgb(29 33 37 / 0.04);
-
-  --chart-1: oklch(0.5 0.08 250);
-  --chart-2: oklch(0.55 0.07 200);
-  --chart-3: oklch(0.62 0.07 150);
-  --chart-4: oklch(0.55 0.09 70);
-  --chart-5: oklch(0.5 0.1 30);
-
-  /* Sidebar: a touch off the ground for borderless structural separation. */
-  --sidebar: #f1f3f4;
-  --sidebar-foreground: #1d2125;
-  --sidebar-primary: #3f5d82;
+  /* Sidebar */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #000000;
+  --sidebar-primary: #000000;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #ffffff;
-  --sidebar-accent-foreground: #1d2125;
-  --sidebar-border: #e6e8ea;
-  --sidebar-ring: #3f5d82;
+  --sidebar-accent: #f0f0f0;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: #e0e0e0;
+  --sidebar-ring: #000000;
 }
 
 .dark {
-  --background: #15171a;
-  --foreground: #e6e8ea;
-  --card: #1c1f23;
-  --card-foreground: #e6e8ea;
-  --popover: #1c1f23;
-  --popover-foreground: #e6e8ea;
-  --primary: #7d9bc4;
-  --primary-foreground: #11161d;
-  --secondary: #23272c;
-  --secondary-foreground: #e6e8ea;
-  --muted: #23272c;
-  --muted-foreground: #9aa1a9;
-  --accent: #23272c;
-  --accent-foreground: #e6e8ea;
-  --destructive: #d98a82;
-  --destructive-muted: #2f2220;
-  --warning: #d6a861;
-  --warning-muted: #322a1c;
-  --info: #8badd6;
-  --info-muted: #1f2a36;
-  --success: #7fb398;
-  --success-muted: #1d2a23;
-  --surface: #101214;
-  --border: oklch(1 0.01 250 / 9%);
-  --input: oklch(1 0.01 250 / 13%);
-  --ring: #7d9bc4;
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #000000;
+  --card-foreground: #ffffff;
+  --popover: #000000;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #ffffff;
+  --muted: #1a1a1a;
+  --muted-foreground: #999999;
+  --accent: #1a1a1a;
+  --accent-foreground: #ffffff;
+  --destructive: #ff3333;
+  --destructive-muted: #330000;
+  --warning: #ffcc00;
+  --warning-muted: #332900;
+  --info: #3333ff;
+  --info-muted: #000033;
+  --success: #33cc33;
+  --success-muted: #003300;
+  --surface: #000000;
+  --border: #333333;
+  --input: #333333;
+  --ring: #ffffff;
 
-  --shadow-calm: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px rgb(0 0 0 / 0.24);
+  --shadow-calm: none;
 
-  --sidebar: #17191c;
-  --sidebar-foreground: #e6e8ea;
-  --sidebar-primary: #7d9bc4;
-  --sidebar-primary-foreground: #11161d;
-  --sidebar-accent: #23272c;
-  --sidebar-accent-foreground: #e6e8ea;
-  --sidebar-border: oklch(1 0.01 250 / 7%);
-  --sidebar-ring: #7d9bc4;
+  --grid-color: rgba(255, 255, 255, 0.05);
+
+  --sidebar: #000000;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #1a1a1a;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #333333;
+  --sidebar-ring: #ffffff;
 }
 
 @theme inline {
   --font-sans: var(--font-sans);
-  /* Calm & Focused is all-sans; `font-heading` now resolves to the sans stack
-     so existing heading markup needs no change. */
   --font-heading: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -168,30 +162,23 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
 }
 
-/* ============================================================================
-   Maths Tasks legacy tokens (used by pages not yet migrated to shadcn).
-   The brand teal lives under `brand`/`brand-hover` so it never collides with
-   shadcn's semantic `accent`. Defined after @theme inline so these win.
-   ========================================================================== */
 @theme {
-  --color-text-primary: #1d2125;
-  --color-text-secondary: #697079;
-  --color-brand: #3f5d82;
-  --color-brand-hover: #35506f;
+  --color-text-primary: var(--foreground);
+  --color-text-secondary: var(--muted-foreground);
+  --color-brand: var(--primary);
+  --color-brand-hover: var(--foreground);
 
-  /* Earthy/organic accents — deep forest greens & moss tones for grounding
-     promotional banners and photographic contexts in a real-world palette. */
-  --color-forest: #2f4434;
-  --color-forest-hover: #25382a;
-  --color-moss: #6b7f5b;
-  --color-moss-muted: #e4e7da;
+  --color-forest: var(--primary);
+  --color-forest-hover: var(--foreground);
+  --color-moss: var(--secondary);
+  --color-moss-muted: var(--muted);
 
   --text-xs: 0.75rem;
   --text-xs--line-height: 1.5;
@@ -206,8 +193,8 @@
   --text-2xl: 2rem;
   --text-2xl--line-height: 1.25;
 
-  --radius-card: 8px;
-  --radius-input: 6px;
+  --radius-card: 0;
+  --radius-input: 0;
 }
 
 @layer base {
@@ -222,8 +209,34 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image: 
+      linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: top left;
   }
   html {
     @apply font-sans antialiased;
   }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.shimmer {
+  background-color: var(--muted);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--foreground) 5%, transparent) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
 }
