@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { unstable_rethrow } from "next/navigation";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { createAssignment } from "@/app/tutor/actions";
@@ -119,7 +120,12 @@ export function NewAssignmentForm({
       });
       // createAssignment redirects on success.
     } catch (err) {
-      // The row was never created — remove the now-orphaned upload.
+      // createAssignment's success path calls redirect(), which throws a
+      // NEXT_REDIRECT control-flow error. Re-throw framework errors so Next can
+      // navigate — otherwise we'd treat a successful create as a failure, show
+      // "NEXT_REDIRECT" as a toast, and delete the PDF we just uploaded.
+      unstable_rethrow(err);
+      // A genuine failure: the row was never created — remove the orphaned upload.
       await supabase.storage.from(BUCKET_ASSIGNMENTS).remove([path]);
       toast.error((err as Error).message);
       setBusy(false);

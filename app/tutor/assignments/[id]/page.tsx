@@ -112,62 +112,68 @@ export default async function TutorAssignmentPage({
         </div>
       </header>
 
-      {/* The work comes first: review the assignment and the student's
-          submission, then record a verdict. */}
-      <section className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-3">
-          <SectionHeading>Assignment</SectionHeading>
-          {pdfUrl && (
-            <a
-              href={pdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-            >
-              Open PDF
-            </a>
+      {/* On laptops the assignment PDF gets its own tall, sticky column on the
+          left while the review workflow (submission, verdict, comments) sits
+          beside it on the right. On mobile everything stacks in reading order:
+          the work first, then the verdict, then the conversation. */}
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-8">
+        <section className="flex flex-col gap-4 lg:sticky lg:top-24">
+          <div className="flex items-center justify-between gap-3">
+            <SectionHeading>Assignment</SectionHeading>
+            {pdfUrl && (
+              <a
+                href={pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+              >
+                Open PDF
+              </a>
+            )}
+          </div>
+          {pdfUrl ? (
+            <FilePreview url={pdfUrl} mimeType="application/pdf" title={a.title} />
+          ) : (
+            <Card className="py-10">
+              <CardContent className="text-center text-sm text-muted-foreground">
+                The assignment file could not be loaded.
+              </CardContent>
+            </Card>
           )}
+        </section>
+
+        <div className="flex flex-col gap-10">
+          <section className="flex flex-col gap-4">
+            <SectionHeading>Submitted work</SectionHeading>
+            {submissions.length === 0 ? (
+              <Card className="py-10">
+                <CardContent className="text-center text-sm text-muted-foreground">
+                  No work submitted yet.
+                </CardContent>
+              </Card>
+            ) : (
+              <SubmissionList submissions={submissions} canDelete={false} />
+            )}
+          </section>
+
+          <Card>
+            <CardContent className="flex flex-col gap-4">
+              <SectionHeading>Your review</SectionHeading>
+              <ReviewControls assignmentId={a.id} status={a.review_status} />
+            </CardContent>
+          </Card>
+
+          <section className="flex flex-col gap-4">
+            <SectionHeading>Comments</SectionHeading>
+            <LiveCommentThread
+              assignmentId={id}
+              initial={comments}
+              participants={participants}
+            />
+            <CommentForm assignmentId={id} action={addComment} />
+          </section>
         </div>
-        {pdfUrl ? (
-          <FilePreview url={pdfUrl} mimeType="application/pdf" title={a.title} />
-        ) : (
-          <Card className="py-10">
-            <CardContent className="text-center text-sm text-muted-foreground">
-              The assignment file could not be loaded.
-            </CardContent>
-          </Card>
-        )}
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <SectionHeading>Submitted work</SectionHeading>
-        {submissions.length === 0 ? (
-          <Card className="py-10">
-            <CardContent className="text-center text-sm text-muted-foreground">
-              No work submitted yet.
-            </CardContent>
-          </Card>
-        ) : (
-          <SubmissionList submissions={submissions} canDelete={false} />
-        )}
-      </section>
-
-      <Card>
-        <CardContent className="flex flex-col gap-4">
-          <SectionHeading>Your review</SectionHeading>
-          <ReviewControls assignmentId={a.id} status={a.review_status} />
-        </CardContent>
-      </Card>
-
-      <section className="flex flex-col gap-4">
-        <SectionHeading>Comments</SectionHeading>
-        <LiveCommentThread
-          assignmentId={id}
-          initial={comments}
-          participants={participants}
-        />
-        <CommentForm assignmentId={id} action={addComment} />
-      </section>
+      </div>
     </div>
   );
 }

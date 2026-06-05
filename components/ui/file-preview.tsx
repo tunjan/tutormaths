@@ -27,14 +27,14 @@ export function FilePreview({
         <iframe
           src={url}
           title={title ?? "PDF preview"}
-          className="h-[70vh] w-full"
+          className="h-[70vh] w-full lg:h-[calc(100vh-9rem)]"
         />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={url}
           alt={title ?? "Submitted work"}
-          className="max-h-[70vh] w-full object-contain"
+          className="max-h-[70vh] w-full object-contain lg:max-h-[calc(100vh-9rem)]"
         />
       )}
     </div>

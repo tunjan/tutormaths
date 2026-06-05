@@ -107,7 +107,7 @@ type AssignmentItem = {
 
 function AssignmentList({ items }: { items: AssignmentItem[] }) {
   return (
-    <ul className="flex flex-col gap-3">
+    <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
       {items.map((a) => (
         <AssignmentRow
           key={a.id}

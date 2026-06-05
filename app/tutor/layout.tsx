@@ -16,7 +16,7 @@ export default async function TutorLayout({
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <div className="flex items-center gap-6">
             <Link href="/tutor" aria-label="Maths Tasks home">
               <Logo />
@@ -30,7 +30,7 @@ export default async function TutorLayout({
           </div>
         </div>
       </header>
-      <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">{children}</div>
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">{children}</div>
     </div>
   );
 }
