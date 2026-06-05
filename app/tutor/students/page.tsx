@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -38,8 +38,17 @@ export default async function StudentsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-10">
-      <h1 className="text-2xl font-semibold tracking-tight">Students</h1>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <Link
+          href="/tutor"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ChevronLeft className="size-4" />
+          Dashboard
+        </Link>
+        <h1 className="text-2xl font-semibold tracking-tight">Students</h1>
+      </div>
 
       <Card>
         <CardHeader>

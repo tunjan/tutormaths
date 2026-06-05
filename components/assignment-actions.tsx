@@ -62,53 +62,12 @@ export function AssignmentActions({
   studentId,
 }: Props) {
   const [supabase] = useState(() => createClient());
-  const [editing, setEditing] = useState(false);
   const [formType, setFormType] = useState(type);
   const [deleting, startDelete] = useTransition();
   const fileRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [fileName, setFileName] = useState("");
   const [busy, setBusy] = useState(false);
-
-  if (!editing) {
-    return (
-      <div className="flex gap-2">
-        <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
-          Edit
-        </Button>
-        <AlertDialog>
-          <AlertDialogTrigger
-            render={
-              <Button variant="destructive" size="sm" disabled={deleting}>
-                {deleting ? "Deleting…" : "Delete"}
-              </Button>
-            }
-          />
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete this assignment?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Its submissions, comments and files will be permanently removed.
-                This can&rsquo;t be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                className={cn(buttonVariants({ variant: "destructive" }))}
-                onClick={() =>
-                  startDelete(async () => {
-                    await deleteAssignment(id);
-                  })
-                }
-              >
-                Delete assignment
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-    );
-  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -145,8 +104,8 @@ export function AssignmentActions({
       }
 
       await updateAssignment(formData);
-      setEditing(false);
       setFileName("");
+      dialogRef.current?.close();
       toast.success("Assignment updated.");
     } catch (err) {
       toast.error((err as Error).message);
@@ -156,88 +115,133 @@ export function AssignmentActions({
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="flex w-full flex-col gap-4 rounded-xl bg-card p-5 ring-1 ring-foreground/10"
-    >
-      <input type="hidden" name="id" value={id} />
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="edit-title">Title</Label>
-        <Input id="edit-title" name="title" defaultValue={title} required />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="edit-description">Description</Label>
-        <Textarea
-          id="edit-description"
-          name="description"
-          defaultValue={description ?? ""}
-          rows={3}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label>Type</Label>
-        <Select
-          value={formType}
-          onValueChange={(v) =>
-            setFormType((v as "problem_set" | "reading_notes") ?? formType)
-          }
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="problem_set">Problem set</SelectItem>
-            <SelectItem value="reading_notes">Reading notes</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="edit-due">Due</Label>
-        <DateTimePicker
-          id="edit-due"
-          name="due_at"
-          defaultValue={toLocalInput(dueAt)}
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label>Replace PDF (optional)</Label>
-        <div className="flex items-center gap-3">
-          <input
-            ref={fileRef}
-            type="file"
-            accept="application/pdf"
-            className="hidden"
-            onChange={(e) => setFileName(e.target.files?.[0]?.name ?? "")}
-          />
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => fileRef.current?.click()}
-          >
-            {fileName ? "Change PDF" : "Choose new PDF"}
-          </Button>
-          <span className="truncate text-sm text-muted-foreground">
-            {fileName || "Keep current file"}
-          </span>
-        </div>
-      </div>
+    <>
       <div className="flex gap-2">
-        <Button type="submit" disabled={busy}>
-          {busy ? "Saving…" : "Save changes"}
-        </Button>
         <Button
-          type="button"
-          variant="ghost"
-          disabled={busy}
-          onClick={() => {
-            setEditing(false);
-            setFileName("");
-          }}
+          variant="outline"
+          size="sm"
+          onClick={() => dialogRef.current?.showModal()}
         >
-          Cancel
+          Edit
         </Button>
+        <AlertDialog>
+          <AlertDialogTrigger
+            render={
+              <Button variant="destructive" size="sm" disabled={deleting}>
+                {deleting ? "Deleting…" : "Delete"}
+              </Button>
+            }
+          />
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete this assignment?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Its submissions, comments and files will be permanently removed.
+                This can&rsquo;t be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className={cn(buttonVariants({ variant: "destructive" }))}
+                onClick={() =>
+                  startDelete(async () => {
+                    await deleteAssignment(id);
+                  })
+                }
+              >
+                Delete assignment
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
-    </form>
+
+      <dialog
+        ref={dialogRef}
+        className="w-full max-w-lg rounded-2xl border-none bg-card p-6 text-foreground shadow-xl ring-1 ring-foreground/10 backdrop:bg-foreground/30 max-h-[85vh] overflow-y-auto"
+      >
+        <form onSubmit={onSubmit} className="flex flex-col gap-4">
+          <input type="hidden" name="id" value={id} />
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="edit-title">Title</Label>
+            <Input id="edit-title" name="title" defaultValue={title} required />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="edit-description">Description</Label>
+            <Textarea
+              id="edit-description"
+              name="description"
+              defaultValue={description ?? ""}
+              rows={3}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label>Type</Label>
+            <Select
+              value={formType}
+              onValueChange={(v) =>
+                setFormType((v as "problem_set" | "reading_notes") ?? formType)
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="problem_set">Problem set</SelectItem>
+                <SelectItem value="reading_notes">Reading notes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="edit-due">Due</Label>
+            <DateTimePicker
+              id="edit-due"
+              name="due_at"
+              defaultValue={toLocalInput(dueAt)}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label>Replace PDF (optional)</Label>
+            <div className="flex items-center gap-3">
+              <input
+                ref={fileRef}
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                onChange={(e) => setFileName(e.target.files?.[0]?.name ?? "")}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileRef.current?.click()}
+              >
+                {fileName ? "Change PDF" : "Choose new PDF"}
+              </Button>
+              <span className="truncate text-sm text-muted-foreground">
+                {fileName || "Keep current file"}
+              </span>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button type="submit" disabled={busy}>
+              {busy ? "Saving…" : "Save changes"}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              disabled={busy}
+              onClick={() => {
+                dialogRef.current?.close();
+                setFileName("");
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </dialog>
+    </>
   );
 }

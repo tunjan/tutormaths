@@ -121,7 +121,16 @@ export function TutorAssignmentBrowser({ items }: { items: BrowserItem[] }) {
         )}
       </section>
 
-      {completed.length > 0 && <Group title="Completed" items={completed} />}
+      {(completed.length > 0 || query.trim()) && (
+        <section className="flex flex-col gap-4">
+          <SectionHeading>Completed</SectionHeading>
+          {completed.length > 0 ? (
+            <List items={completed} />
+          ) : (
+            <Empty>No completed assignments match your search.</Empty>
+          )}
+        </section>
+      )}
     </div>
   );
 }
@@ -139,17 +148,18 @@ function List({ items }: { items: BrowserItem[] }) {
   return (
     <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
       {items.map((a) => (
-        <AssignmentRow
-          key={a.id}
-          href={`/tutor/assignments/${a.id}`}
-          title={a.title}
-          type={a.type}
-          dueAt={a.due_at}
-          pct={a.completion_pct}
-          reviewStatus={a.review_status}
-          student={a.student}
-          unread={a.unread}
-        />
+        <li key={a.id}>
+          <AssignmentRow
+            href={`/tutor/assignments/${a.id}`}
+            title={a.title}
+            type={a.type}
+            dueAt={a.due_at}
+            pct={a.completion_pct}
+            reviewStatus={a.review_status}
+            student={a.student}
+            unread={a.unread}
+          />
+        </li>
       ))}
     </ul>
   );

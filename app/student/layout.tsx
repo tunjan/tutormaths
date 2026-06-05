@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireStudent } from "@/lib/auth";
-import { Logo } from "@/components/logo";
+import { LogoMark } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notification-bell";
 import { SignOutButton } from "@/components/sign-out-button";
@@ -15,11 +15,14 @@ export default async function StudentLayout({
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <Link href="/student" aria-label="Maths Tasks home">
-            <Logo />
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center px-4 py-3 sm:px-6">
+          <Link href="/student" aria-label="Maths Tasks home" className="justify-self-start">
+            <LogoMark className="size-8" />
           </Link>
-          <div className="flex items-center gap-1 sm:gap-2">
+          <span className="hidden text-sm font-medium text-muted-foreground sm:block">
+            Maths Tasks
+          </span>
+          <div className="flex items-center justify-self-end gap-1 sm:gap-2">
             <NotificationBell userId={ctx.userId} role="student" />
             <ThemeToggle />
             <SignOutButton />

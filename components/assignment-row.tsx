@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -38,34 +39,35 @@ export function AssignmentRow({
   const showBar = pct > 0 && pct < 100 && reviewStatus !== "approved";
 
   return (
-    <li>
-      <Link href={href} className="group block">
-        <Card className="gap-4 py-5 transition-all group-hover:ring-primary/40">
-          <CardContent className="flex flex-col gap-4 px-5">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 font-medium">
-                  {unread && (
-                    <span
-                      className="size-2 shrink-0 rounded-full bg-primary"
-                      aria-label="Unread activity"
-                    />
-                  )}
-                  <span className="truncate">{title}</span>
-                </div>
-                <div
-                  className="mt-0.5 text-sm text-muted-foreground"
-                  title={formatDateTime(dueAt)}
-                >
-                  {meta}
-                </div>
+    <Link href={href} className="group block">
+      <Card className="gap-4 py-5 transition-all group-hover:ring-primary/40">
+        <CardContent className="flex flex-col gap-4 px-5">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 font-medium">
+                {unread && (
+                  <span
+                    className="size-2 shrink-0 rounded-full bg-primary"
+                    aria-label="Unread activity"
+                  />
+                )}
+                <span className="truncate">{title}</span>
               </div>
-              <AssignmentStatusBadge reviewStatus={reviewStatus} dueAt={dueAt} />
+              <div
+                className="mt-0.5 text-sm text-muted-foreground"
+                title={formatDateTime(dueAt)}
+              >
+                {meta}
+              </div>
             </div>
-            {showBar && <ProgressBar value={pct} />}
-          </CardContent>
-        </Card>
-      </Link>
-    </li>
+            <div className="flex shrink-0 items-center gap-2">
+              <AssignmentStatusBadge reviewStatus={reviewStatus} dueAt={dueAt} />
+              <ChevronRight className="size-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5" />
+            </div>
+          </div>
+          {showBar && <ProgressBar value={pct} />}
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
