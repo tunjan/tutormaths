@@ -27,18 +27,18 @@ export function TutorNav() {
 
   return (
     <>
-      {/* Desktop: inline links with an active state */}
-      <nav className="hidden items-center gap-6 text-sm sm:flex">
+      {/* Desktop: quiet pill tabs with a filled active state */}
+      <nav className="hidden items-center gap-1 text-sm sm:flex">
         {links.map((l) => (
           <Link
             key={l.href}
             href={l.href}
             aria-current={isActive(pathname, l.href, l.exact) ? "page" : undefined}
             className={cn(
-              "transition-colors hover:text-foreground",
+              "rounded-lg px-3 py-1.5 transition-colors",
               isActive(pathname, l.href, l.exact)
-                ? "font-medium text-foreground"
-                : "text-muted-foreground",
+                ? "bg-secondary font-medium text-foreground"
+                : "text-muted-foreground hover:bg-accent hover:text-foreground",
             )}
           >
             {l.label}

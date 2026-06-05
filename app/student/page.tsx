@@ -2,8 +2,6 @@ import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { unreadAssignmentIds } from "@/lib/queries";
 import { RequestHomeworkButton } from "@/components/request-homework-button";
-import { Card, CardContent } from "@/components/ui/card";
-import { SectionHeading } from "@/components/ui/section-heading";
 import { AssignmentRow } from "@/components/assignment-row";
 
 export default async function StudentDashboard() {
@@ -24,61 +22,66 @@ export default async function StudentDashboard() {
   const completed = all.filter((a) => a.review_status === "approved");
 
   return (
-    <div className="flex flex-col gap-10">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight">My homework</h1>
+    <div className="flex flex-col gap-8">
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight">My homework</h1>
+          <p className="mt-1.5 text-[0.95rem] text-muted-foreground">
+            {active.length === 0
+              ? completed.length > 0
+                ? "All caught up — nice work."
+                : "Nothing to do right now."
+              : `${active.length} ${active.length === 1 ? "task" : "tasks"} to do`}
+          </p>
+        </div>
         <RequestHomeworkButton />
-      </div>
+      </header>
 
-      <section className="flex flex-col gap-4">
-        <SectionHeading>Active</SectionHeading>
+      <section>
+        <h2 className="mb-3 px-1 text-[0.95rem] font-semibold">Active</h2>
         {active.length === 0 ? (
-          <Card className="py-10">
-            <CardContent className="text-center text-sm text-muted-foreground">
-              <p>
-                {completed.length > 0
-                  ? "All caught up — nothing to work on right now."
-                  : "Nothing to work on right now. Use “Request more homework” above when you’re ready."}
-              </p>
-            </CardContent>
-          </Card>
+          <p className="rounded-2xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground shadow-[var(--shadow-calm)]">
+            {completed.length > 0
+              ? "All caught up — nothing to work on right now."
+              : "Nothing to work on right now. Use “Request more homework” above when you’re ready."}
+          </p>
         ) : (
-          <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-calm)]">
             {active.map((a) => (
-              <li key={a.id}>
-                <AssignmentRow
-                  href={`/student/assignments/${a.id}`}
-                  title={a.title}
-                  type={a.type}
-                  dueAt={a.due_at}
-                  pct={a.completion_pct}
-                  reviewStatus={a.review_status}
-                  unread={unread.has(a.id)}
-                />
-              </li>
+              <AssignmentRow
+                key={a.id}
+                href={`/student/assignments/${a.id}`}
+                title={a.title}
+                type={a.type}
+                dueAt={a.due_at}
+                pct={a.completion_pct}
+                reviewStatus={a.review_status}
+                unread={unread.has(a.id)}
+              />
             ))}
-          </ul>
+          </div>
         )}
       </section>
 
       {completed.length > 0 && (
-        <section className="flex flex-col gap-4">
-          <SectionHeading>Completed</SectionHeading>
-          <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+        <section>
+          <h2 className="mb-3 px-1 text-[0.95rem] font-semibold text-muted-foreground">
+            Completed
+          </h2>
+          <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-calm)]">
             {completed.map((a) => (
-              <li key={a.id}>
-                <AssignmentRow
-                  href={`/student/assignments/${a.id}`}
-                  title={a.title}
-                  type={a.type}
-                  dueAt={a.due_at}
-                  pct={a.completion_pct}
-                  reviewStatus={a.review_status}
-                  unread={unread.has(a.id)}
-                />
-              </li>
+              <AssignmentRow
+                key={a.id}
+                href={`/student/assignments/${a.id}`}
+                title={a.title}
+                type={a.type}
+                dueAt={a.due_at}
+                pct={a.completion_pct}
+                reviewStatus={a.review_status}
+                unread={unread.has(a.id)}
+              />
             ))}
-          </ul>
+          </div>
         </section>
       )}
     </div>

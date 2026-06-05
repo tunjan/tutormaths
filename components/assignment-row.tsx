@@ -1,8 +1,6 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
-import { ProgressBar } from "@/components/ui/progress-bar";
+import { BookOpen, ChevronRight, FileText } from "lucide-react";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   type ReviewStatus,
   formatDateTime,
@@ -23,6 +21,16 @@ export interface AssignmentRowProps {
   unread?: boolean;
 }
 
+function initials(name: string): string {
+  return name
+    .split(" ")
+    .map((p) => p[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
 export function AssignmentRow({
   href,
   title,
@@ -37,37 +45,62 @@ export function AssignmentRow({
     reviewStatus === "approved" ? "completed" : `due ${relativeTime(dueAt)}`;
   const meta = [student, typeLabel(type), dueText].filter(Boolean).join(" · ");
   const showBar = pct > 0 && pct < 100 && reviewStatus !== "approved";
+  const TypeIcon = type === "reading_notes" ? BookOpen : FileText;
 
+  // A calm card-row: a leading identity tile (the student's initials on the
+  // tutor's lists, otherwise a quiet type glyph), the title and metadata, then
+  // an optional progress track and the single dominant status chip.
   return (
-    <Link href={href} className="group block">
-      <Card className="gap-4 py-5 transition-all group-hover:ring-primary/40">
-        <CardContent className="flex flex-col gap-4 px-5">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 font-medium">
-                {unread && (
-                  <span
-                    className="size-2 shrink-0 rounded-full bg-primary"
-                    aria-label="Unread activity"
-                  />
-                )}
-                <span className="truncate">{title}</span>
-              </div>
-              <div
-                className="mt-0.5 text-sm text-muted-foreground"
-                title={formatDateTime(dueAt)}
-              >
-                {meta}
-              </div>
-            </div>
-            <div className="flex shrink-0 items-center gap-2">
-              <AssignmentStatusBadge reviewStatus={reviewStatus} dueAt={dueAt} />
-              <ChevronRight className="size-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5" />
-            </div>
-          </div>
-          {showBar && <ProgressBar value={pct} />}
-        </CardContent>
-      </Card>
+    <Link
+      href={href}
+      className="group flex items-center gap-4 px-5 py-4 transition-colors hover:bg-accent/60"
+    >
+      {student ? (
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-muted-foreground">
+          {initials(student)}
+        </span>
+      ) : (
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
+          <TypeIcon className="size-4" />
+        </span>
+      )}
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          {unread && (
+            <span
+              className="size-2 shrink-0 rounded-full bg-primary"
+              aria-label="Unread activity"
+            />
+          )}
+          <span className="truncate text-[0.95rem] font-medium text-foreground">
+            {title}
+          </span>
+        </div>
+        <p
+          className="mt-0.5 truncate text-sm text-muted-foreground"
+          title={formatDateTime(dueAt)}
+        >
+          {meta}
+        </p>
+      </div>
+
+      {showBar && (
+        <div className="hidden w-28 items-center gap-2 md:flex">
+          <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+            <span
+              className="block h-full rounded-full bg-primary/70"
+              style={{ width: `${pct}%` }}
+            />
+          </span>
+          <span className="w-8 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
+            {pct}%
+          </span>
+        </div>
+      )}
+
+      <AssignmentStatusBadge reviewStatus={reviewStatus} dueAt={dueAt} />
+      <ChevronRight className="size-4 shrink-0 text-muted-foreground/30 transition-transform group-hover:translate-x-0.5 group-hover:text-muted-foreground/60" />
     </Link>
   );
 }
