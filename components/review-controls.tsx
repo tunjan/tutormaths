@@ -18,14 +18,8 @@ export function ReviewControls({
   assignmentId: string;
   status: ReviewStatus;
 }) {
-  if (status === "assigned") {
-    return (
-      <p className="text-sm text-muted-foreground">
-        Nothing to review yet — the student hasn&rsquo;t submitted any work.
-      </p>
-    );
-  }
-
+  // Hooks must run unconditionally and in a stable order, so they come before
+  // any early return (rules-of-hooks).
   const [pending, startTransition] = useTransition();
 
   function decide(decision: "approved" | "needs_work") {
@@ -37,6 +31,14 @@ export function ReviewControls({
           : "Returned for revision — the student has been notified.",
       );
     });
+  }
+
+  if (status === "assigned") {
+    return (
+      <p className="text-sm text-muted-foreground">
+        Nothing to review yet — the student hasn&rsquo;t submitted any work.
+      </p>
+    );
   }
 
   return (
