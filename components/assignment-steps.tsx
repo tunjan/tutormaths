@@ -30,12 +30,15 @@ export function AssignmentSteps({ status }: { status: ReviewStatus }) {
   const states = nodesFor(status);
 
   return (
-    <ol className="flex items-center gap-2" aria-label="Assignment progress">
+    <ol className="flex w-full items-center gap-2" aria-label="Assignment progress">
       {labels.map((label, i) => {
         const state = states[i];
         const isLast = i === labels.length - 1;
         return (
-          <li key={label} className="flex flex-1 items-center gap-2">
+          <li
+            key={label}
+            className={cn("flex items-center gap-2", !isLast && "flex-1")}
+          >
             <span className="flex items-center gap-2">
               <span
                 aria-hidden

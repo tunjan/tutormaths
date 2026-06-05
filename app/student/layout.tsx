@@ -15,7 +15,7 @@ export default async function StudentLayout({
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <Link href="/student" aria-label="Maths Tasks home">
             <Logo />
           </Link>
@@ -26,7 +26,7 @@ export default async function StudentLayout({
           </div>
         </div>
       </header>
-      <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">{children}</div>
+      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">{children}</div>
     </div>
   );
 }

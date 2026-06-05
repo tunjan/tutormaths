@@ -43,7 +43,7 @@ export default async function StudentDashboard() {
             </CardContent>
           </Card>
         ) : (
-          <ul className="flex flex-col gap-3">
+          <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             {active.map((a) => (
               <AssignmentRow
                 key={a.id}
@@ -63,7 +63,7 @@ export default async function StudentDashboard() {
       {completed.length > 0 && (
         <section className="flex flex-col gap-4">
           <SectionHeading>Completed</SectionHeading>
-          <ul className="flex flex-col gap-3">
+          <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             {completed.map((a) => (
               <AssignmentRow
                 key={a.id}

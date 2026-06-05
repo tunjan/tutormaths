@@ -137,7 +137,7 @@ function Group({ title, items }: { title: string; items: BrowserItem[] }) {
 
 function List({ items }: { items: BrowserItem[] }) {
   return (
-    <ul className="flex flex-col gap-3">
+    <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
       {items.map((a) => (
         <AssignmentRow
           key={a.id}

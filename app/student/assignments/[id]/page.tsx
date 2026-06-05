@@ -105,68 +105,76 @@ export default async function StudentAssignmentPage({
 
       <ReviewBanner status={a.review_status} />
 
-      <section className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-3">
-          <SectionHeading>Assignment</SectionHeading>
-          {pdfUrl && (
-            <a
-              href={pdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-            >
-              Open PDF
-            </a>
+      {/* On laptops the assignment PDF gets its own tall, sticky column on the
+          left so it stays in view while you submit work and read comments in
+          the right column. On mobile everything stacks: read the assignment,
+          submit your work, track progress, then talk to your tutor. */}
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-8">
+        <section className="flex flex-col gap-4 lg:sticky lg:top-24">
+          <div className="flex items-center justify-between gap-3">
+            <SectionHeading>Assignment</SectionHeading>
+            {pdfUrl && (
+              <a
+                href={pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+              >
+                Open PDF
+              </a>
+            )}
+          </div>
+          {pdfUrl ? (
+            <FilePreview url={pdfUrl} mimeType="application/pdf" title={a.title} />
+          ) : (
+            <Card className="py-10">
+              <CardContent className="text-center text-sm text-muted-foreground">
+                The assignment file could not be loaded.
+              </CardContent>
+            </Card>
           )}
-        </div>
-        {pdfUrl ? (
-          <FilePreview url={pdfUrl} mimeType="application/pdf" title={a.title} />
-        ) : (
-          <Card className="py-10">
-            <CardContent className="text-center text-sm text-muted-foreground">
-              The assignment file could not be loaded.
+        </section>
+
+        <div className="flex flex-col gap-10">
+          {/* Submitting is the step that actually reaches the tutor, so it leads —
+              progress tracking is secondary and lives below it. */}
+          <section className="flex flex-col gap-4">
+            <SectionHeading>Submit your work</SectionHeading>
+            <SubmissionUploader assignmentId={id} studentId={ctx.userId} />
+            {submissions.length > 0 && (
+              <SubmissionList submissions={submissions} canDelete />
+            )}
+          </section>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Your progress</CardTitle>
+              <CardDescription>
+                A tracker just for you. To hand work in, use “Submit your work”
+                above.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-5">
+              <ProgressBar value={a.completion_pct} />
+              <CompletionControl
+                assignmentId={id}
+                initial={a.completion_pct}
+                hasSubmissions={submissions.length > 0}
+              />
             </CardContent>
           </Card>
-        )}
-      </section>
 
-      {/* Submitting is the step that actually reaches the tutor, so it leads —
-          progress tracking is secondary and lives below it. */}
-      <section className="flex flex-col gap-4">
-        <SectionHeading>Submit your work</SectionHeading>
-        <SubmissionUploader assignmentId={id} studentId={ctx.userId} />
-        {submissions.length > 0 && (
-          <SubmissionList submissions={submissions} canDelete />
-        )}
-      </section>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Your progress</CardTitle>
-          <CardDescription>
-            A tracker just for you. To hand work in, use “Submit your work”
-            above.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-5">
-          <ProgressBar value={a.completion_pct} />
-          <CompletionControl
-            assignmentId={id}
-            initial={a.completion_pct}
-            hasSubmissions={submissions.length > 0}
-          />
-        </CardContent>
-      </Card>
-
-      <section className="flex flex-col gap-4">
-        <SectionHeading>Comments</SectionHeading>
-        <LiveCommentThread
-          assignmentId={id}
-          initial={comments}
-          participants={participants}
-        />
-        <CommentForm assignmentId={id} action={addComment} />
-      </section>
+          <section className="flex flex-col gap-4">
+            <SectionHeading>Comments</SectionHeading>
+            <LiveCommentThread
+              assignmentId={id}
+              initial={comments}
+              participants={participants}
+            />
+            <CommentForm assignmentId={id} action={addComment} />
+          </section>
+        </div>
+      </div>
     </div>
   );
 }
