@@ -161,7 +161,7 @@ export function NotificationBell({
                     <span>{n.body}</span>
                   </span>
                   <span
-                    className="pl-0 text-xs text-muted-foreground"
+                    className={cn("text-xs text-muted-foreground", !n.read_at && "pl-3.5")}
                     title={formatDateTime(n.created_at)}
                   >
                     {relativeTime(n.created_at)}

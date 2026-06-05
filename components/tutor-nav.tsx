@@ -49,6 +49,8 @@ export function TutorNav() {
       {/* Mobile: a menu popover */}
       <div className="sm:hidden">
         <Popover>
+          {/* render= delegates to Button which provides focus-visible styling,
+              consistent with the pattern in notification-bell.tsx */}
           <PopoverTrigger
             render={
               <Button variant="ghost" size="icon-sm" aria-label="Open menu">

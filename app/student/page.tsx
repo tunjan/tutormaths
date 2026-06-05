@@ -45,16 +45,17 @@ export default async function StudentDashboard() {
         ) : (
           <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             {active.map((a) => (
-              <AssignmentRow
-                key={a.id}
-                href={`/student/assignments/${a.id}`}
-                title={a.title}
-                type={a.type}
-                dueAt={a.due_at}
-                pct={a.completion_pct}
-                reviewStatus={a.review_status}
-                unread={unread.has(a.id)}
-              />
+              <li key={a.id}>
+                <AssignmentRow
+                  href={`/student/assignments/${a.id}`}
+                  title={a.title}
+                  type={a.type}
+                  dueAt={a.due_at}
+                  pct={a.completion_pct}
+                  reviewStatus={a.review_status}
+                  unread={unread.has(a.id)}
+                />
+              </li>
             ))}
           </ul>
         )}
@@ -65,16 +66,17 @@ export default async function StudentDashboard() {
           <SectionHeading>Completed</SectionHeading>
           <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             {completed.map((a) => (
-              <AssignmentRow
-                key={a.id}
-                href={`/student/assignments/${a.id}`}
-                title={a.title}
-                type={a.type}
-                dueAt={a.due_at}
-                pct={a.completion_pct}
-                reviewStatus={a.review_status}
-                unread={unread.has(a.id)}
-              />
+              <li key={a.id}>
+                <AssignmentRow
+                  href={`/student/assignments/${a.id}`}
+                  title={a.title}
+                  type={a.type}
+                  dueAt={a.due_at}
+                  pct={a.completion_pct}
+                  reviewStatus={a.review_status}
+                  unread={unread.has(a.id)}
+                />
+              </li>
             ))}
           </ul>
         </section>

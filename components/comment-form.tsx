@@ -1,8 +1,18 @@
 "use client";
 
 import { useRef } from "react";
+import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" disabled={pending} className="self-end">
+      {pending ? "Posting…" : "Post comment"}
+    </Button>
+  );
+}
 
 /**
  * Comment composer. The server action is passed in by the page so the same
@@ -34,9 +44,7 @@ export function CommentForm({
         placeholder="Write a comment…"
         className="min-h-20 bg-card"
       />
-      <Button type="submit" className="self-end">
-        Post comment
-      </Button>
+      <SubmitButton />
     </form>
   );
 }

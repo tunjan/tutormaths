@@ -18,6 +18,14 @@ export function ReviewControls({
   assignmentId: string;
   status: ReviewStatus;
 }) {
+  if (status === "assigned") {
+    return (
+      <p className="text-sm text-muted-foreground">
+        Nothing to review yet — the student hasn&rsquo;t submitted any work.
+      </p>
+    );
+  }
+
   const [pending, startTransition] = useTransition();
 
   function decide(decision: "approved" | "needs_work") {

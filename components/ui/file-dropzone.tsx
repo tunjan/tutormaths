@@ -57,6 +57,7 @@ export function FileDropzone({
       role="button"
       tabIndex={0}
       aria-disabled={!interactive}
+      aria-live="polite"
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
