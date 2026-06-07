@@ -13,9 +13,9 @@ export default async function StudentLayout({
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-10 border-b-2 border-foreground bg-background">
+      <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-sm supports-[backdrop-filter]:bg-background/70">
         <div className="mx-auto flex h-16 max-w-7xl items-center px-6">
-          <Link href="/student" aria-label="Maths Tasks home" className="font-heading text-xl font-black uppercase tracking-tighter">
+          <Link href="/student" aria-label="Maths Tasks home" className="hidden sm:inline-block font-heading text-lg font-semibold tracking-tight">
             Maths Tasks
           </Link>
           <div className="ml-auto flex items-center gap-1 sm:gap-2">

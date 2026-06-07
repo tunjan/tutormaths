@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { BookOpen, ChevronRight, FileText } from "lucide-react";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import {
@@ -53,7 +53,7 @@ export function AssignmentRow({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-4 px-5 py-4 transition-all duration-200 hover:bg-accent/40"
+      className="group flex items-center gap-4 px-5 py-4 transition-colors duration-200 hover:bg-accent active:bg-accent/70"
     >
       {student ? (
         <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-muted-foreground">

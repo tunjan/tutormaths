@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ViewTransitions } from "next-view-transitions";
 
 // Swiss Minimalist: Inter serves as our robust Grotesque sans equivalent
 // (`--font-heading` resolves to the sans stack in globals.css).
@@ -27,14 +28,16 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="bg-background text-foreground antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-        >
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        <ViewTransitions>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </ViewTransitions>
       </body>
     </html>
   );

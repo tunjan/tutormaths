@@ -151,7 +151,6 @@ export default async function StudentAssignmentPage({
               <CardTitle className="text-base">Your progress</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-5">
-              <ProgressBar value={a.completion_pct} />
               <CompletionControl
                 assignmentId={id}
                 initial={a.completion_pct}

@@ -34,7 +34,7 @@ export function Logo({ className }: { className?: string }) {
   return (
     <span className={cn("flex items-center gap-2.5", className)}>
       <LogoMark className="size-8" />
-      <span className="font-heading text-lg font-semibold tracking-tight">
+      <span className="hidden sm:inline-block font-heading text-lg font-semibold tracking-tight">
         Maths Tasks
       </span>
     </span>

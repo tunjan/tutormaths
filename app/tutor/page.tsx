@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { Clock, Inbox, Plus, Users } from "lucide-react";
+import { Link } from "next-view-transitions";
+import { Plus } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { unreadAssignmentIds } from "@/lib/queries";
@@ -55,9 +55,9 @@ export default async function TutorDashboard() {
 
   return (
     <div className="flex flex-col gap-10">
-      <header className="flex flex-wrap items-end justify-between gap-4 bg-card p-6 border-2 border-foreground">
+      <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black uppercase tracking-tighter">Dashboard</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
           <p className="mt-1.5 text-[0.95rem] text-muted-foreground">
             {!hasStudents ? (
               "Let's get you set up."
@@ -81,10 +81,7 @@ export default async function TutorDashboard() {
         {hasStudents && (
           <Link
             href="/tutor/assignments/new"
-            className={cn(
-              buttonVariants(),
-              "shrink-0 gap-2 shadow-[var(--shadow-calm)]",
-            )}
+            className={cn(buttonVariants(), "shrink-0 gap-2")}
           >
             <Plus className="size-4" />
             New assignment
@@ -96,19 +93,16 @@ export default async function TutorDashboard() {
         <>
           <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <Stat
-              icon={<Users className="size-[1.05rem]" />}
               label="Students"
               value={students?.length ?? 0}
               href="/tutor/students"
             />
             <Stat
-              icon={<Inbox className="size-[1.05rem]" />}
               label="Awaiting review"
               value={awaiting}
               href={awaiting > 0 ? "#awaiting" : undefined}
             />
             <Stat
-              icon={<Clock className="size-[1.05rem]" />}
               label="Overdue"
               value={overdue}
               href={overdue > 0 ? "#overdue" : undefined}
@@ -128,9 +122,9 @@ export default async function TutorDashboard() {
 /** First-run guidance: a tutor with no students yet can't do anything else. */
 function Onboarding() {
   return (
-    <div className="mx-auto flex max-w-xl flex-col items-center gap-6 border-2 border-foreground bg-card px-6 py-16 text-center">
+    <div className="mx-auto flex max-w-xl flex-col items-center gap-6 rounded-xl border border-border bg-card px-6 py-16 text-center shadow-sm">
       <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-semibold tracking-tight">
+        <h2 className="text-xl font-semibold tracking-tight">
           Welcome to Maths Tasks
         </h2>
         <p className="mx-auto max-w-md text-sm text-muted-foreground">
@@ -147,25 +141,20 @@ function Onboarding() {
 }
 
 function Stat({
-  icon,
   label,
   value,
   href,
   tone,
 }: {
-  icon: React.ReactNode;
   label: string;
   value: number;
   href?: string;
   tone?: "destructive";
 }) {
-  // A calm stat card: a quiet icon tile beside a figure and label. The figure
+  // A calm stat card: a figure and label. The figure
   // takes its tone only when it represents something that needs attention.
   const inner = (
-    <div className="flex items-center gap-3 border-2 border-foreground bg-card px-5 py-4 hover:bg-foreground hover:text-background transition-colors group-hover/stat:bg-foreground group-hover/stat:text-background">
-      <span className="flex size-9 items-center justify-center border-2 border-current bg-background text-current">
-        {icon}
-      </span>
+    <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-4 shadow-sm transition-all duration-200 hover:border-foreground/20 hover:bg-accent group-hover/stat:border-foreground/20 group-hover/stat:bg-accent">
       <div>
         <div
           className={cn(

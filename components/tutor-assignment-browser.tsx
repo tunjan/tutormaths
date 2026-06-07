@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { Clock, Inbox, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { buttonVariants } from "@/components/ui/button";
@@ -97,7 +97,7 @@ export function TutorAssignmentBrowser({ items }: { items: BrowserItem[] }) {
           query ? (
             <Empty>No active assignments match your search.</Empty>
           ) : (
-            <div className="flex flex-col items-center gap-4 border-2 border-foreground bg-card px-6 py-12 text-center font-medium">
+            <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card px-6 py-12 text-center text-muted-foreground shadow-sm">
               <p>No active assignments yet.</p>
               <Link
                 href="/tutor/assignments/new"
@@ -165,7 +165,7 @@ function SectionHead({
       )}
       <h2
         className={cn(
-          "text-[0.95rem] font-bold uppercase tracking-wider bg-card ",
+          "text-sm font-semibold tracking-tight",
           muted && "text-muted-foreground",
         )}
       >
@@ -187,7 +187,7 @@ function SectionHead({
 
 function List({ items }: { items: BrowserItem[] }) {
   return (
-    <div className="stagger-children divide-y-2 divide-foreground overflow-hidden border-2 border-foreground bg-card">
+    <div className="stagger-children divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-sm">
       {items.map((a) => (
         <AssignmentRow
           key={a.id}
@@ -207,7 +207,7 @@ function List({ items }: { items: BrowserItem[] }) {
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="border-2 border-foreground bg-card px-6 py-12 text-center text-sm font-medium">
+    <p className="rounded-xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground shadow-sm">
       {children}
     </p>
   );
