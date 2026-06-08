@@ -25,6 +25,7 @@ export type Database = {
           review_status: Database["public"]["Enums"]["review_status"]
           reviewed_at: string | null
           student_id: string
+          student_opened_at: string | null
           title: string
           tutor_id: string
           type: Database["public"]["Enums"]["assignment_type"]
@@ -40,6 +41,7 @@ export type Database = {
           review_status?: Database["public"]["Enums"]["review_status"]
           reviewed_at?: string | null
           student_id: string
+          student_opened_at?: string | null
           title: string
           tutor_id: string
           type: Database["public"]["Enums"]["assignment_type"]
@@ -55,6 +57,7 @@ export type Database = {
           review_status?: Database["public"]["Enums"]["review_status"]
           reviewed_at?: string | null
           student_id?: string
+          student_opened_at?: string | null
           title?: string
           tutor_id?: string
           type?: Database["public"]["Enums"]["assignment_type"]

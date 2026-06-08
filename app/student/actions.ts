@@ -88,6 +88,28 @@ export async function deleteSubmission(submissionId: string): Promise<void> {
   revalidatePath(`/student/assignments/${sub.assignment_id}`);
 }
 
+/**
+ * Stamps the first time the student opens an assignment so the tutor can see
+ * it has been read. Write-once: the `is(null)` filter means only the first open
+ * lands, and the guard trigger refuses any later change. Revalidates the tutor
+ * views so the receipt shows up the next time the tutor loads the page.
+ */
+export async function markAssignmentOpened(assignmentId: string): Promise<void> {
+  const ctx = await requireStudent();
+  if (!assignmentId) return;
+
+  const supabase = await createClient();
+  await supabase
+    .from("assignments")
+    .update({ student_opened_at: new Date().toISOString() })
+    .eq("id", assignmentId)
+    .eq("student_id", ctx.userId)
+    .is("student_opened_at", null);
+
+  revalidatePath(`/tutor/assignments/${assignmentId}`);
+  revalidatePath("/tutor");
+}
+
 /** Asks the tutor for more homework (writes a notification via RPC). */
 export async function requestMoreHomework(): Promise<void> {
   await requireStudent();

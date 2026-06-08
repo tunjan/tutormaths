@@ -14,6 +14,7 @@ import { SubmissionList } from "@/components/submission-list";
 import { LiveCommentThread, type Participant } from "@/components/live-comment-thread";
 import { CommentForm } from "@/components/comment-form";
 import { MarkAssignmentRead } from "@/components/mark-assignment-read";
+import { MarkAssignmentOpened } from "@/components/mark-assignment-opened";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { BackLink } from "@/components/ui/back-link";
 import { buttonVariants } from "@/components/ui/button";
@@ -77,6 +78,7 @@ export default async function StudentAssignmentPage({
   return (
     <div className="flex flex-col gap-10">
       <MarkAssignmentRead assignmentId={id} />
+      <MarkAssignmentOpened assignmentId={id} />
       <header className="flex flex-col gap-3">
         <BackLink href="/student">My practice</BackLink>
         <div className="flex items-start justify-between gap-4">
@@ -91,7 +93,7 @@ export default async function StudentAssignmentPage({
         )}
       </header>
 
-      <div className="rounded-xl bg-card px-4 py-4 ring-1 ring-foreground/10">
+      <div className="rounded-xl border border-border bg-card px-4 py-4 shadow-sm">
         <AssignmentSteps status={a.review_status} />
       </div>
 
@@ -173,7 +175,7 @@ function ReviewBanner({ status }: { status: ReviewStatus }) {
   // more celebratory treatment than the other states.
   if (status === "approved") {
     return (
-      <div className="flex items-center gap-3 rounded-xl bg-primary/10 px-4 py-4 text-primary ring-1 ring-primary/20">
+      <div className="flex items-center gap-3 rounded-xl bg-success-muted px-4 py-4 text-success ring-1 ring-success/20">
         <div className="flex items-center gap-2">
           <CheckCircle2 className="size-5 shrink-0" />
           <span className="text-sm font-medium">

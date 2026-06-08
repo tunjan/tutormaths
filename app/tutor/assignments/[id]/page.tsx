@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { signedUrl } from "@/lib/storage";
@@ -84,6 +85,17 @@ export default async function TutorAssignmentPage({
           {student?.full_name || student?.email} · {typeLabel(a.type)} · due{" "}
           {formatDateTime(a.due_at)}
         </p>
+        {a.student_opened_at ? (
+          <p className="flex items-center gap-1.5 text-sm text-success">
+            <Eye className="size-4 shrink-0" />
+            Opened by student · {formatDateTime(a.student_opened_at)}
+          </p>
+        ) : (
+          <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <EyeOff className="size-4 shrink-0" />
+            Not opened by student yet
+          </p>
+        )}
         {a.description && (
           <p className="whitespace-pre-wrap text-sm">{a.description}</p>
         )}
