@@ -5,7 +5,6 @@ import { createClient } from "@/lib/supabase/server";
 import { signedUrl } from "@/lib/storage";
 import { loadComments } from "@/lib/queries";
 import { addComment } from "@/lib/actions/comments";
-import { ProgressBar } from "@/components/ui/progress-bar";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import { FilePreview } from "@/components/ui/file-preview";
 import { CompletionControl } from "@/components/completion-control";
@@ -21,7 +20,6 @@ import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";

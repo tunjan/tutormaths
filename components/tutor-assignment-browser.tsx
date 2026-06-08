@@ -26,7 +26,7 @@ export interface BrowserItem {
  * as the list grows. Matches title or student name; sections are split by the
  * review workflow — work awaiting review surfaces first.
  */
-export function TutorAssignmentBrowser({ items }: { items: BrowserItem[] }) {
+export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[]; nowMs: number }) {
   const [query, setQuery] = useState("");
 
   const { awaiting, overdue, active, completed } = useMemo(() => {
@@ -38,8 +38,7 @@ export function TutorAssignmentBrowser({ items }: { items: BrowserItem[] }) {
           a.student.toLowerCase().includes(q),
       )
       : items;
-    const now = Date.now();
-    const isLate = (a: BrowserItem) => new Date(a.due_at).getTime() < now;
+    const isLate = (a: BrowserItem) => new Date(a.due_at).getTime() < nowMs;
     const open = matched.filter(
       (a) => a.review_status === "assigned" || a.review_status === "needs_work",
     );
@@ -51,7 +50,7 @@ export function TutorAssignmentBrowser({ items }: { items: BrowserItem[] }) {
       active: open.filter((a) => !isLate(a)),
       completed: matched.filter((a) => a.review_status === "approved"),
     };
-  }, [items, query]);
+  }, [items, query, nowMs]);
 
   return (
     <div className="flex flex-col gap-8">

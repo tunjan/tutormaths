@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { requireStudent } from "@/lib/auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notification-bell";

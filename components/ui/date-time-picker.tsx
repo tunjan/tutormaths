@@ -19,6 +19,9 @@ const TRIGGER_LABEL = new Intl.DateTimeFormat("en-GB", {
   dateStyle: "medium",
   timeStyle: "short",
 });
+const FULL_DATE = new Intl.DateTimeFormat("en-GB", {
+  dateStyle: "full",
+});
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -66,12 +69,14 @@ export function DateTimePicker({
   defaultValue = "",
   id,
   invalid,
+  "aria-describedby": ariaDescribedBy,
   onChange,
 }: {
   name: string;
   defaultValue?: string;
   id?: string;
   invalid?: boolean;
+  "aria-describedby"?: string;
   onChange?: (value: string) => void;
 }) {
   const init = parseValue(defaultValue);
@@ -115,6 +120,7 @@ export function DateTimePicker({
             variant="outline"
             id={id}
             aria-invalid={invalid}
+            aria-describedby={ariaDescribedBy}
             className={cn(
               "h-9 w-full justify-between px-3 font-normal",
               !selected && "text-muted-foreground",
@@ -173,6 +179,8 @@ export function DateTimePicker({
                 type="button"
                 onClick={() => setSelected(d)}
                 aria-pressed={isSelected}
+                aria-label={FULL_DATE.format(d)}
+                aria-current={isToday ? "date" : undefined}
                 className={cn(
                   "flex size-8 items-center justify-center rounded-md text-sm tabular-nums transition-colors",
                   isSelected

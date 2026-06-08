@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,16 +26,27 @@ export function CommentForm({
   action: (formData: FormData) => Promise<void>;
 }) {
   const ref = useRef<HTMLFormElement>(null);
+  const [globalError, setGlobalError] = useState("");
 
   return (
     <form
       ref={ref}
       action={async (formData) => {
-        await action(formData);
-        ref.current?.reset();
+        try {
+          await action(formData);
+          ref.current?.reset();
+          setGlobalError("");
+        } catch (e) {
+          setGlobalError((e as Error).message);
+        }
       }}
       className="flex flex-col gap-3"
     >
+      {globalError && (
+        <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
+          {globalError}
+        </div>
+      )}
       <input type="hidden" name="assignment_id" value={assignmentId} />
       <Textarea
         name="body"

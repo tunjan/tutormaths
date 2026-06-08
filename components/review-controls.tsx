@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Check, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { reviewSubmission } from "@/app/tutor/actions";
@@ -21,15 +21,21 @@ export function ReviewControls({
   // Hooks must run unconditionally and in a stable order, so they come before
   // any early return (rules-of-hooks).
   const [pending, startTransition] = useTransition();
+  const [globalError, setGlobalError] = useState("");
 
   function decide(decision: "approved" | "needs_work") {
     startTransition(async () => {
-      await reviewSubmission(assignmentId, decision);
-      toast.success(
-        decision === "approved"
-          ? "Approved — the student has been notified."
-          : "Returned for revision — the student has been notified.",
-      );
+      try {
+        await reviewSubmission(assignmentId, decision);
+        toast.success(
+          decision === "approved"
+            ? "Approved — the student has been notified."
+            : "Returned for revision — the student has been notified.",
+        );
+        setGlobalError("");
+      } catch (e) {
+        setGlobalError((e as Error).message);
+      }
     });
   }
 
@@ -42,7 +48,13 @@ export function ReviewControls({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-col gap-3">
+      {globalError && (
+        <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
+          {globalError}
+        </div>
+      )}
+      <div className="flex flex-wrap items-center gap-2">
       <Button
         type="button"
         onClick={() => decide("approved")}
@@ -60,6 +72,7 @@ export function ReviewControls({
         <RotateCcw />
         {status === "needs_work" ? "Changes requested" : "Return for revision"}
       </Button>
+      </div>
     </div>
   );
 }

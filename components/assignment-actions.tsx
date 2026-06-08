@@ -68,6 +68,7 @@ export function AssignmentActions({
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [fileName, setFileName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [globalError, setGlobalError] = useState("");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -97,6 +98,7 @@ export function AssignmentActions({
           .upload(path, file, { contentType: file.type });
         if (upErr) {
           toast.error(upErr.message);
+          setGlobalError(upErr.message);
           setBusy(false);
           return;
         }
@@ -107,8 +109,10 @@ export function AssignmentActions({
       setFileName("");
       dialogRef.current?.close();
       toast.success("Assignment updated.");
+      setGlobalError("");
     } catch (err) {
       toast.error((err as Error).message);
+      setGlobalError((err as Error).message);
     } finally {
       setBusy(false);
     }
@@ -161,6 +165,11 @@ export function AssignmentActions({
         ref={dialogRef}
         className="fixed left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl border-none bg-card p-6 text-foreground shadow-xl ring-1 ring-foreground/10 backdrop:bg-foreground/30 max-h-[85vh] overflow-y-auto"
       >
+        {globalError && (
+          <div className="mb-4 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
+            {globalError}
+          </div>
+        )}
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <input type="hidden" name="id" value={id} />
           <div className="flex flex-col gap-2">
@@ -177,14 +186,14 @@ export function AssignmentActions({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Type</Label>
+            <Label id="edit-type-label">Type</Label>
             <Select
               value={formType}
               onValueChange={(v) =>
                 setFormType((v as "problem_set" | "reading_notes") ?? formType)
               }
             >
-              <SelectTrigger>
+              <SelectTrigger aria-labelledby="edit-type-label">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

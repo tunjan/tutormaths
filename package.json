@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "rm -rf .next && next build --experimental-build-mode compile",
     "types": "echo 'Use: supabase gen types typescript --project-id oahyvncrknjnusphwfti --schema public > lib/database.types.ts'"
   },
   "dependencies": {

@@ -16,6 +16,7 @@ interface Created {
 export function InviteStudentForm() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [globalError, setGlobalError] = useState("");
   const [created, setCreated] = useState<Created | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -23,6 +24,7 @@ export function InviteStudentForm() {
     const form = e.currentTarget;
     const data = new FormData(form);
     setBusy(true);
+    setGlobalError("");
 
     const res = await fetch("/api/students", {
       method: "POST",
@@ -42,12 +44,17 @@ export function InviteStudentForm() {
       router.refresh();
     } else {
       const { error } = await res.json().catch(() => ({ error: "Failed." }));
-      toast.error(error ?? "Failed to invite student.");
+      setGlobalError(error ?? "Failed to invite student.");
     }
   }
 
   return (
     <div className="flex flex-col gap-4">
+      {globalError && (
+        <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
+          {globalError}
+        </div>
+      )}
       <form
         onSubmit={onSubmit}
         className="flex flex-col gap-4 sm:flex-row sm:items-end"

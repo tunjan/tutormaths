@@ -29,17 +29,20 @@ export function SubmissionUploader({
   const [supabase] = useState(() => createClient());
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [globalError, setGlobalError] = useState("");
   const [, startTransition] = useTransition();
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
 
+    setGlobalError("");
+
     if (!accept.includes(file.type)) {
-      toast.error("Only PDF or JPG files are accepted.");
+      setGlobalError("Only PDF or JPG files are accepted.");
       return;
     }
     if (file.size > MAX_FILE_BYTES) {
-      toast.error("That file is larger than 20 MB.");
+      setGlobalError("That file is larger than 20 MB.");
       return;
     }
 
@@ -52,7 +55,7 @@ export function SubmissionUploader({
       .upload(path, file, { contentType: file.type });
 
     if (upErr) {
-      toast.error(upErr.message);
+      setGlobalError(upErr.message);
       setBusy(false);
       return;
     }
@@ -67,19 +70,26 @@ export function SubmissionUploader({
       toast.success("Work submitted.");
       startTransition(() => router.refresh());
     } catch (e) {
-      toast.error((e as Error).message);
+      setGlobalError((e as Error).message);
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <FileDropzone
-      accept="application/pdf,image/jpeg"
-      hint="PDF or JPG, up to 20 MB"
-      busy={busy}
-      busyLabel="Uploading…"
-      onFile={(f) => void handleFile(f)}
-    />
+    <div className="flex flex-col gap-3">
+      {globalError && (
+        <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
+          {globalError}
+        </div>
+      )}
+      <FileDropzone
+        accept="application/pdf,image/jpeg"
+        hint="PDF or JPG, up to 20 MB"
+        busy={busy}
+        busyLabel="Uploading…"
+        onFile={(f) => void handleFile(f)}
+      />
+    </div>
   );
 }

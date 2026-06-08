@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { requireTutor } from "@/lib/auth";
 import { TutorNav } from "@/components/tutor-nav";
 import { ThemeToggle } from "@/components/theme-toggle";

@@ -45,10 +45,12 @@ export default async function TutorDashboard() {
   // not approved). Submitted-but-late work lives under "Awaiting your review".
   // This definition matches the Overdue section in TutorAssignmentBrowser so
   // the headline number and the list always agree.
+  // eslint-disable-next-line react-hooks/purity
+  const nowMs = Date.now();
   const overdue = all.filter(
     (a) =>
       (a.review_status === "assigned" || a.review_status === "needs_work") &&
-      new Date(a.due_at).getTime() < Date.now(),
+      new Date(a.due_at).getTime() < nowMs,
   ).length;
 
   const hasStudents = (students?.length ?? 0) > 0;
@@ -110,7 +112,7 @@ export default async function TutorDashboard() {
             />
           </dl>
 
-          <TutorAssignmentBrowser items={items} />
+          <TutorAssignmentBrowser items={items} nowMs={nowMs} />
         </>
       ) : (
         <Onboarding />

@@ -35,12 +35,8 @@ export function FileDropzone({
   const [dragging, setDragging] = useState(false);
   const interactive = !busy && !disabled;
 
-  function open() {
-    if (interactive) inputRef.current?.click();
-  }
-
   return (
-    <div
+    <label
       onDragOver={(e) => {
         if (!interactive) return;
         e.preventDefault();
@@ -51,21 +47,14 @@ export function FileDropzone({
         if (!interactive) return;
         e.preventDefault();
         setDragging(false);
-        onFile(e.dataTransfer.files[0]);
-      }}
-      onClick={open}
-      role="button"
-      tabIndex={0}
-      aria-disabled={!interactive}
-      aria-live="polite"
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          open();
+        if (e.dataTransfer.files[0]) {
+          onFile(e.dataTransfer.files[0]);
         }
       }}
+      aria-disabled={!interactive}
+      aria-live="polite"
       className={cn(
-        "flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed px-6 py-10 text-center text-sm transition",
+        "flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed px-6 py-10 text-center text-sm transition focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
         interactive ? "cursor-pointer" : "cursor-default opacity-80",
         dragging
           ? "border-primary bg-primary/5 text-primary"
@@ -94,9 +83,10 @@ export function FileDropzone({
         ref={inputRef}
         type="file"
         accept={accept}
-        className="hidden"
+        disabled={!interactive}
+        className="sr-only"
         onChange={(e) => onFile(e.target.files?.[0])}
       />
-    </div>
+    </label>
   );
 }

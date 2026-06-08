@@ -38,7 +38,9 @@ export function LiveCommentThread({
     initial.map(resolve),
   );
   const participantsRef = useRef(participants);
-  participantsRef.current = participants;
+  useEffect(() => {
+    participantsRef.current = participants;
+  }, [participants]);
 
   useEffect(() => {
     const supabase = createClient();

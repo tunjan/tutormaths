@@ -15,18 +15,6 @@ const eslintConfig = [
   },
   ...next,
   ...nextTs,
-  {
-    // The React Compiler-era hook rules that eslint-config-next 16 newly turns
-    // on flag several pre-existing, idiomatic patterns (the next-themes mount
-    // guard, ref-sync during render, Date.now() inside filters/useMemo).
-    // Demote them to warnings so they stay visible without blocking CI; revisit
-    // when adopting the React Compiler in earnest.
-    rules: {
-      "react-hooks/purity": "warn",
-      "react-hooks/refs": "warn",
-      "react-hooks/set-state-in-effect": "warn",
-    },
-  },
 ];
 
 export default eslintConfig;

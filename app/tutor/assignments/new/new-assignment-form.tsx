@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { unstable_rethrow } from "next/navigation";
-import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { createAssignment } from "@/app/tutor/actions";
 import {
@@ -50,10 +49,10 @@ function defaultDue(): string {
   )}:${pad(d.getMinutes())}`;
 }
 
-function FieldError({ message }: { message?: string }) {
+function FieldError({ message, id }: { message?: string; id?: string }) {
   if (!message) return null;
   return (
-    <p className="text-sm text-destructive" role="alert">
+    <p id={id} className="text-sm text-destructive" role="alert">
       {message}
     </p>
   );
@@ -74,6 +73,7 @@ export function NewAssignmentForm({
   );
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [globalError, setGlobalError] = useState("");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -94,6 +94,7 @@ export function NewAssignmentForm({
     else if (file.size > MAX_FILE_BYTES) next.file = "That file is larger than 20 MB.";
 
     setErrors(next);
+    setGlobalError("");
     if (Object.keys(next).length > 0) return;
 
     setBusy(true);
@@ -106,7 +107,7 @@ export function NewAssignmentForm({
       .upload(path, file!, { contentType: file!.type });
 
     if (upErr) {
-      toast.error(upErr.message);
+      setGlobalError(upErr.message);
       setBusy(false);
       return;
     }
@@ -130,7 +131,7 @@ export function NewAssignmentForm({
       unstable_rethrow(err);
       // A genuine failure: the row was never created — remove the orphaned upload.
       await supabase.storage.from(BUCKET_ASSIGNMENTS).remove([path]);
-      toast.error((err as Error).message);
+      setGlobalError((err as Error).message);
       setBusy(false);
     }
   }
@@ -141,7 +142,7 @@ export function NewAssignmentForm({
         <SectionHeading>Recipient</SectionHeading>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
-            <Label>Student</Label>
+            <Label id="student-label">Student</Label>
             <Select
               value={studentId}
               onValueChange={(v) => {
@@ -149,7 +150,11 @@ export function NewAssignmentForm({
                 setErrors((e) => ({ ...e, student: undefined }));
               }}
             >
-              <SelectTrigger aria-invalid={!!errors.student}>
+              <SelectTrigger 
+                aria-labelledby="student-label" 
+                aria-invalid={!!errors.student}
+                aria-describedby={errors.student ? "student-error" : undefined}
+              >
                 <SelectValue placeholder="Choose a student…" />
               </SelectTrigger>
               <SelectContent>
@@ -160,18 +165,18 @@ export function NewAssignmentForm({
                 ))}
               </SelectContent>
             </Select>
-            <FieldError message={errors.student} />
+            <FieldError id="student-error" message={errors.student} />
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label>Type</Label>
+            <Label id="type-label">Type</Label>
             <Select
               value={type}
               onValueChange={(v) =>
                 setType((v as "problem_set" | "reading_notes") ?? "problem_set")
               }
             >
-              <SelectTrigger>
+              <SelectTrigger aria-labelledby="type-label">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -206,9 +211,10 @@ export function NewAssignmentForm({
               name="due_at"
               defaultValue={defaultDue()}
               invalid={!!errors.due}
+              aria-describedby={errors.due ? "due-error" : undefined}
               onChange={() => setErrors((e) => ({ ...e, due: undefined }))}
             />
-            <FieldError message={errors.due} />
+            <FieldError id="due-error" message={errors.due} />
           </div>
         </div>
 
@@ -234,10 +240,15 @@ export function NewAssignmentForm({
             setErrors((er) => ({ ...er, file: undefined }));
           }}
         />
-        <FieldError message={errors.file} />
+        <FieldError id="file-error" message={errors.file} />
       </fieldset>
 
       <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-end">
+        {globalError && (
+          <div className="sm:mr-auto rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
+            {globalError}
+          </div>
+        )}
         <Link
           href="/tutor"
           className={cn(buttonVariants({ variant: "ghost" }))}
