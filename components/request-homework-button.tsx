@@ -29,13 +29,13 @@ export function RequestHomeworkButton() {
             className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary"
             disabled={pending || done}
           >
-            {done ? "Request sent" : pending ? "Sending…" : "Request more homework"}
+            {done ? "Request sent" : pending ? "Sending…" : "Request more practice"}
           </Button>
         }
       />
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Request more homework?</AlertDialogTitle>
+          <AlertDialogTitle>Request more practice?</AlertDialogTitle>
           <AlertDialogDescription>
             Your tutor will be notified that you&rsquo;re ready for more work.
           </AlertDialogDescription>

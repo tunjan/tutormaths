@@ -18,7 +18,7 @@ export default function ResetPage() {
         <p className="text-sm text-muted-foreground">Reset your password</p>
       </div>
 
-      <Card className="w-full max-w-md gap-8 rounded-2xl py-10 shadow-sm">
+      <Card className="w-full max-w-md gap-8 rounded-2xl py-10">
         <CardHeader className="gap-2 px-10 text-center">
           <CardTitle className="text-xl font-medium">
             Forgot your password?

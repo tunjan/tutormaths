@@ -27,7 +27,7 @@ const SUBJECTS: Record<string, string> = {
   tutor_comment: "Your tutor left a comment",
   student_comment: "New comment from your student",
   submission_updated: "A student updated their work",
-  homework_requested: "A student requested more homework",
+  homework_requested: "A student requested more practice",
   work_approved: "Your work was approved",
   work_returned: "Your tutor asked for changes",
 };

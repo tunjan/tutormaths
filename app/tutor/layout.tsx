@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireTutor } from "@/lib/auth";
 import { TutorNav } from "@/components/tutor-nav";
+import { Logo } from "@/components/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notification-bell";
 import { SignOutButton } from "@/components/sign-out-button";
@@ -16,8 +17,8 @@ export default async function TutorLayout({
     <div className="min-h-screen">
       <header className="sticky top-0 z-10 border-b border-border bg-background/80 backdrop-blur-sm supports-[backdrop-filter]:bg-background/70">
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-6">
-          <Link href="/tutor" aria-label="Maths Tasks home" className="hidden sm:inline-block font-heading text-lg font-semibold tracking-tight">
-            Maths Tasks
+          <Link href="/tutor" aria-label="Maths Tasks home" className="shrink-0">
+            <Logo />
           </Link>
           <TutorNav />
           <div className="ml-auto flex items-center gap-1 sm:gap-2">

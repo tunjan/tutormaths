@@ -15,7 +15,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Maths Tasks",
-  description: "Private mathematics homework for tutoring students.",
+  description: "Private mathematics practice for tutoring students.",
 };
 
 export default function RootLayout({

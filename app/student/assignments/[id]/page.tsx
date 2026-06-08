@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, CheckCircle2, RotateCcw, Clock } from "lucide-react";
+import { CheckCircle2, RotateCcw, Clock } from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { signedUrl } from "@/lib/storage";
@@ -17,6 +16,7 @@ import { LiveCommentThread, type Participant } from "@/components/live-comment-t
 import { CommentForm } from "@/components/comment-form";
 import { MarkAssignmentRead } from "@/components/mark-assignment-read";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { BackLink } from "@/components/ui/back-link";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -80,13 +80,7 @@ export default async function StudentAssignmentPage({
     <div className="flex flex-col gap-10">
       <MarkAssignmentRead assignmentId={id} />
       <header className="flex flex-col gap-3">
-        <Link
-          href="/student"
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ChevronLeft className="size-4" />
-          My homework
-        </Link>
+        <BackLink href="/student">My practice</BackLink>
         <div className="flex items-start justify-between gap-4">
           <h1 className="text-2xl font-semibold tracking-tight">{a.title}</h1>
           <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />

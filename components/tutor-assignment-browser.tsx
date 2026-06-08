@@ -97,7 +97,7 @@ export function TutorAssignmentBrowser({ items }: { items: BrowserItem[] }) {
           query ? (
             <Empty>No active assignments match your search.</Empty>
           ) : (
-            <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card px-6 py-12 text-center text-muted-foreground shadow-sm">
+            <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card px-6 py-12 text-center text-muted-foreground">
               <p>No active assignments yet.</p>
               <Link
                 href="/tutor/assignments/new"
@@ -187,7 +187,7 @@ function SectionHead({
 
 function List({ items }: { items: BrowserItem[] }) {
   return (
-    <div className="stagger-children divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+    <div className="stagger-children divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
       {items.map((a) => (
         <AssignmentRow
           key={a.id}
@@ -207,7 +207,7 @@ function List({ items }: { items: BrowserItem[] }) {
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground shadow-sm">
+    <p className="rounded-xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground">
       {children}
     </p>
   );

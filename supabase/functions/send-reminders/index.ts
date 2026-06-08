@@ -130,7 +130,7 @@ Deno.serve(async () => {
             body: JSON.stringify({
               from: fromEmail,
               to: student.email,
-              subject: `Homework due soon: ${a.title}`,
+              subject: `Practice due soon: ${a.title}`,
               html: `<p>Hi ${student.full_name || "there"},</p><p>${body}</p>`,
             }),
           });

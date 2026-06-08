@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { BackLink } from "@/components/ui/back-link";
 import { formatDate } from "@/lib/format";
 
 export default async function StudentsPage() {
@@ -39,14 +40,8 @@ export default async function StudentsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <Link
-          href="/tutor"
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ChevronLeft className="size-4" />
-          Dashboard
-        </Link>
+      <div className="flex flex-col items-start gap-3">
+        <BackLink href="/tutor">Dashboard</BackLink>
         <h1 className="text-2xl font-semibold tracking-tight">Students</h1>
       </div>
 

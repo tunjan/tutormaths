@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { ChevronLeft, FileText, CalendarClock, BellRing } from "lucide-react";
+import { FileText, CalendarClock, BellRing } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { NewAssignmentForm } from "./new-assignment-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { BackLink } from "@/components/ui/back-link";
 
 const tips = [
   {
@@ -48,13 +49,7 @@ export default async function NewAssignmentPage({
   return (
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-3">
-        <Link
-          href="/tutor"
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ChevronLeft className="size-4" />
-          Dashboard
-        </Link>
+        <BackLink href="/tutor">Dashboard</BackLink>
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
             New assignment

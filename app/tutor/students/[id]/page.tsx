@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { BackLink } from "@/components/ui/back-link";
 import { AssignmentRow } from "@/components/assignment-row";
 import { cn } from "@/lib/utils";
 import { formatDate, type ReviewStatus } from "@/lib/format";
@@ -45,13 +45,9 @@ export default async function StudentDetailPage({
   return (
     <div className="flex flex-col gap-10">
       <div>
-        <Link
-          href="/tutor/students"
-          className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ChevronLeft className="size-4" />
+        <BackLink href="/tutor/students" className="mb-4">
           All students
-        </Link>
+        </BackLink>
 
         <div className="flex items-start justify-between gap-4">
           <div>

@@ -122,7 +122,7 @@ export default async function TutorDashboard() {
 /** First-run guidance: a tutor with no students yet can't do anything else. */
 function Onboarding() {
   return (
-    <div className="mx-auto flex max-w-xl flex-col items-center gap-6 rounded-xl border border-border bg-card px-6 py-16 text-center shadow-sm">
+    <div className="mx-auto flex max-w-xl flex-col items-center gap-6 rounded-xl border border-border bg-card px-6 py-16 text-center">
       <div className="flex flex-col gap-2">
         <h2 className="text-xl font-semibold tracking-tight">
           Welcome to Maths Tasks
@@ -154,7 +154,7 @@ function Stat({
   // A calm stat card: a figure and label. The figure
   // takes its tone only when it represents something that needs attention.
   const inner = (
-    <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-4 shadow-sm transition-all duration-200 hover:border-foreground/20 hover:bg-accent group-hover/stat:border-foreground/20 group-hover/stat:bg-accent">
+    <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-4 transition-all duration-200 hover:border-foreground/20 hover:bg-accent group-hover/stat:border-foreground/20 group-hover/stat:bg-accent">
       <div>
         <div
           className={cn(
