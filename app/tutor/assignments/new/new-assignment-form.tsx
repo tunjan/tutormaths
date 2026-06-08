@@ -155,7 +155,12 @@ export function NewAssignmentForm({
                 aria-invalid={!!errors.student}
                 aria-describedby={errors.student ? "student-error" : undefined}
               >
-                <SelectValue placeholder="Choose a student…" />
+                <SelectValue placeholder="Choose a student…">
+                  {studentId 
+                    ? students.find((s) => s.id === studentId)?.full_name || 
+                      students.find((s) => s.id === studentId)?.email
+                    : undefined}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {students.map((s) => (
@@ -177,7 +182,9 @@ export function NewAssignmentForm({
               }
             >
               <SelectTrigger aria-labelledby="type-label">
-                <SelectValue />
+                <SelectValue>
+                  {type === "problem_set" ? "Problem set" : type === "reading_notes" ? "Reading notes" : undefined}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="problem_set">Problem set</SelectItem>

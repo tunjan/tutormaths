@@ -9,7 +9,7 @@ import {
 } from "@/lib/format";
 
 const dueStyles: Record<Exclude<DueState, "done">, string> = {
-  overdue: "border-transparent bg-destructive/10 text-destructive",
+  overdue: "border-transparent bg-destructive-muted text-destructive",
   "due-soon": "border-transparent bg-warning-muted text-warning",
   upcoming: "border-border text-muted-foreground",
 };

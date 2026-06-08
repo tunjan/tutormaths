@@ -68,7 +68,7 @@ function SubmissionItem({
   return (
     <div className="px-6 py-4">
       {globalError && (
-        <div className="mb-3 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
+        <div className="mb-3 rounded-md bg-destructive-muted px-3 py-2 text-sm text-destructive" role="alert">
           {globalError}
         </div>
       )}
