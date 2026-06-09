@@ -1,14 +1,20 @@
 import { Link } from "next-view-transitions";
-import { Plus } from "lucide-react";
+import {
+  ClipboardCheck,
+  FileClock,
+  TriangleAlert,
+  Users,
+} from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { unreadAssignmentIds } from "@/lib/queries";
-import { buttonVariants } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
+import { AddStudentButton } from "@/components/add-student-button";
+import { AssignTaskButton } from "@/components/assign-task-button";
 import {
   TutorAssignmentBrowser,
   type BrowserItem,
 } from "@/components/tutor-assignment-browser";
-import { cn } from "@/lib/utils";
 
 export default async function TutorDashboard() {
   await requireTutor();
@@ -41,10 +47,10 @@ export default async function TutorDashboard() {
   }));
 
   const awaiting = all.filter((a) => a.review_status === "submitted").length;
+  const active = all.filter((a) => a.review_status !== "approved").length;
   // Overdue = the student is late and it's on them to act (not yet submitted,
-  // not approved). Submitted-but-late work lives under "Awaiting your review".
-  // This definition matches the Overdue section in TutorAssignmentBrowser so
-  // the headline number and the list always agree.
+  // not approved). This definition matches the Overdue section in
+  // TutorAssignmentBrowser so the headline number and the list always agree.
   // eslint-disable-next-line react-hooks/purity
   const nowMs = Date.now();
   const overdue = all.filter(
@@ -53,66 +59,67 @@ export default async function TutorDashboard() {
       new Date(a.due_at).getTime() < nowMs,
   ).length;
 
-  const hasStudents = (students?.length ?? 0) > 0;
+  const studentOptions = students ?? [];
+  const hasStudents = studentOptions.length > 0;
 
   return (
-    <div className="flex flex-col gap-10">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-          <p className="mt-1.5 text-[0.95rem] text-muted-foreground">
-            {!hasStudents ? (
-              "Let's get you set up."
-            ) : awaiting === 0 && overdue === 0 ? (
-              "You're all caught up."
-            ) : (
-              <>
-                {awaiting > 0 && (
-                  <>
-                    {awaiting} to review
-                    {overdue > 0 && " · "}
-                  </>
-                )}
-                {overdue > 0 && (
-                  <span className="text-destructive">{overdue} overdue</span>
-                )}
-              </>
-            )}
-          </p>
-        </div>
-        {hasStudents && (
-          <Link
-            href="/tutor/assignments/new"
-            className={cn(buttonVariants(), "shrink-0 gap-2")}
-          >
-            <Plus className="size-4" />
-            New assignment
-          </Link>
-        )}
-      </header>
+    <div className="animate-rise">
+      <PageHeader
+        eyebrow="Tutor workspace"
+        title="Dashboard"
+        description={
+          !hasStudents
+            ? "Let's get you set up."
+            : awaiting === 0 && overdue === 0
+              ? "You're all caught up — nice work."
+              : "Here's how your students are tracking against their homework."
+        }
+        actions={
+          hasStudents ? (
+            <>
+              <AddStudentButton variant="outline" />
+              <AssignTaskButton students={studentOptions} />
+            </>
+          ) : undefined
+        }
+      />
 
       {hasStudents ? (
         <>
-          <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <Stat
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <StatCard
+              icon={Users}
               label="Students"
-              value={students?.length ?? 0}
+              value={studentOptions.length}
+              tint="var(--tutor)"
               href="/tutor/students"
             />
-            <Stat
+            <StatCard
+              icon={FileClock}
+              label="Active"
+              value={active}
+              tint="var(--primary)"
+            />
+            <StatCard
+              icon={ClipboardCheck}
               label="Awaiting review"
               value={awaiting}
+              tint="oklch(0.66 0.14 70)"
               href={awaiting > 0 ? "#awaiting" : undefined}
             />
-            <Stat
+            <StatCard
+              icon={TriangleAlert}
               label="Overdue"
               value={overdue}
+              tint="var(--destructive)"
               href={overdue > 0 ? "#overdue" : undefined}
-              tone="destructive"
+              alert
             />
-          </dl>
+          </div>
 
-          <TutorAssignmentBrowser items={items} nowMs={nowMs} />
+          <div className="mt-9">
+            <TutorAssignmentBrowser items={items} nowMs={nowMs} />
+          </div>
         </>
       ) : (
         <Onboarding />
@@ -121,65 +128,71 @@ export default async function TutorDashboard() {
   );
 }
 
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  tint,
+  href,
+  alert,
+}: {
+  icon: typeof Users;
+  label: string;
+  value: number;
+  tint: string;
+  href?: string;
+  alert?: boolean;
+}) {
+  const inner = (
+    <div className="surface-card flex items-center gap-3.5 p-4 transition-[border-color,box-shadow] hover:border-line-strong">
+      <span
+        className="grid size-11 shrink-0 place-items-center rounded-xl"
+        style={{
+          backgroundColor: `color-mix(in oklch, ${tint} 14%, var(--card))`,
+          color: tint,
+        }}
+      >
+        <Icon className="size-5" />
+      </span>
+      <div>
+        <p
+          className="tabular text-2xl leading-none"
+          style={alert && value > 0 ? { color: "var(--destructive)" } : undefined}
+        >
+          {value}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">{label}</p>
+      </div>
+    </div>
+  );
+  if (!href) return inner;
+  return href.startsWith("#") ? (
+    <a href={href} className="block">
+      {inner}
+    </a>
+  ) : (
+    <Link href={href} className="block">
+      {inner}
+    </Link>
+  );
+}
+
 /** First-run guidance: a tutor with no students yet can't do anything else. */
 function Onboarding() {
   return (
-    <div className="mx-auto flex max-w-xl flex-col items-center gap-6 rounded-xl border border-border bg-card px-6 py-16 text-center">
+    <div className="surface-card mx-auto flex max-w-xl flex-col items-center gap-5 px-6 py-16 text-center">
+      <span className="grid size-14 place-items-center rounded-full bg-[var(--accent-cobalt-soft)] text-primary">
+        <Users className="size-6" />
+      </span>
       <div className="flex flex-col gap-2">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Welcome to Maths Tasks
-        </h2>
+        <h2 className="text-2xl">Welcome to Maths Tasks</h2>
         <p className="mx-auto max-w-md text-sm text-muted-foreground">
           Get set up in two steps: invite a student, then send them their first
           assignment. You&rsquo;ll review their work and track progress right
           here.
         </p>
       </div>
-      <Link href="/tutor/students" className={cn(buttonVariants())}>
-        Invite your first student
-      </Link>
+      <AddStudentButton label="Invite your first student" />
     </div>
-  );
-}
-
-function Stat({
-  label,
-  value,
-  href,
-  tone,
-}: {
-  label: string;
-  value: number;
-  href?: string;
-  tone?: "destructive";
-}) {
-  // A calm stat card: a figure and label. The figure
-  // takes its tone only when it represents something that needs attention.
-  const inner = (
-    <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-4 transition-all duration-200 hover:border-foreground/20 hover:bg-accent group-hover/stat:border-foreground/20 group-hover/stat:bg-accent">
-      <div>
-        <div
-          className={cn(
-            "text-2xl font-semibold tracking-tight tabular-nums",
-            tone === "destructive" && value > 0 && "text-destructive",
-          )}
-        >
-          {value}
-        </div>
-        <div className="text-sm text-muted-foreground">{label}</div>
-      </div>
-    </div>
-  );
-  if (!href) return <div>{inner}</div>;
-  // In-page anchors (#awaiting / #overdue) scroll within the dashboard; route
-  // links (e.g. /tutor/students) navigate.
-  return href.startsWith("#") ? (
-    <a href={href} className="group/stat block">
-      {inner}
-    </a>
-  ) : (
-    <Link href={href} className="group/stat block">
-      {inner}
-    </Link>
   );
 }

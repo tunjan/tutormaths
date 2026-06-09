@@ -1,6 +1,8 @@
+import { CheckCircle2 } from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { unreadAssignmentIds } from "@/lib/queries";
+import { PageHeader } from "@/components/ui/page-header";
 import { RequestHomeworkButton } from "@/components/request-homework-button";
 import { AssignmentRow } from "@/components/assignment-row";
 
@@ -22,53 +24,54 @@ export default async function StudentDashboard() {
   const completed = all.filter((a) => a.review_status === "approved");
 
   return (
-    <div className="flex flex-col gap-8">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">My practice</h1>
-          <p className="mt-1.5 text-[0.95rem] text-muted-foreground">
-            {active.length === 0
-              ? completed.length > 0
-                ? "All caught up — nice work."
-                : "Nothing to do right now."
-              : `${active.length} ${active.length === 1 ? "task" : "tasks"} to do`}
+    <div className="animate-rise">
+      <PageHeader
+        eyebrow="My homework"
+        title="My practice"
+        description="Your assignments, with progress you control."
+        actions={<RequestHomeworkButton />}
+      />
+
+      <div className="mb-4 flex items-baseline justify-between">
+        <h2 className="text-xl">Active</h2>
+        <span className="tabular text-sm text-ink-faint">
+          {active.length} task{active.length === 1 ? "" : "s"}
+        </span>
+      </div>
+
+      {active.length === 0 ? (
+        <div className="surface-card flex flex-col items-center gap-3 px-6 py-14 text-center">
+          <span className="grid size-14 place-items-center rounded-full bg-success-muted text-success">
+            <CheckCircle2 className="size-6" />
+          </span>
+          <h3 className="text-xl">Nothing due right now</h3>
+          <p className="max-w-sm text-sm text-muted-foreground">
+            {completed.length > 0
+              ? "You're all caught up. Want a head start? Ask for more."
+              : "Use “Request more practice” above when you’re ready for work."}
           </p>
         </div>
-        <RequestHomeworkButton />
-      </header>
-
-      <section>
-        <h2 className="mb-3 px-1 text-sm font-semibold tracking-tight text-foreground">Active</h2>
-        {active.length === 0 ? (
-          <p className="rounded-xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground">
-            {completed.length > 0
-              ? "All caught up — nothing to work on right now."
-              : "Nothing to work on right now. Use “Request more practice” above when you’re ready."}
-          </p>
-        ) : (
-          <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
-            {active.map((a) => (
-              <AssignmentRow
-                key={a.id}
-                href={`/student/assignments/${a.id}`}
-                title={a.title}
-                type={a.type}
-                dueAt={a.due_at}
-                pct={a.completion_pct}
-                reviewStatus={a.review_status}
-                unread={unread.has(a.id)}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+      ) : (
+        <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-calm">
+          {active.map((a) => (
+            <AssignmentRow
+              key={a.id}
+              href={`/student/assignments/${a.id}`}
+              title={a.title}
+              type={a.type}
+              dueAt={a.due_at}
+              pct={a.completion_pct}
+              reviewStatus={a.review_status}
+              unread={unread.has(a.id)}
+            />
+          ))}
+        </div>
+      )}
 
       {completed.length > 0 && (
-        <section>
-          <h2 className="mb-3 px-1 text-sm font-semibold tracking-tight text-muted-foreground">
-            Completed
-          </h2>
-          <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
+        <>
+          <h2 className="mb-4 mt-9 text-xl">Completed</h2>
+          <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-calm">
             {completed.map((a) => (
               <AssignmentRow
                 key={a.id}
@@ -82,7 +85,7 @@ export default async function StudentDashboard() {
               />
             ))}
           </div>
-        </section>
+        </>
       )}
     </div>
   );

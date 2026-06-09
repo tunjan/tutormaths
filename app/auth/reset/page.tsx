@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/logo";
 import { ResetForm } from "./reset-form";
 import {
   Card,
@@ -10,11 +11,9 @@ import {
 
 export default function ResetPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-10 bg-surface px-4 py-16">
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          Maths Tasks
-        </h1>
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-8 px-4 py-16">
+      <div className="flex flex-col items-center gap-3 text-center">
+        <Logo />
         <p className="text-sm text-muted-foreground">Reset your password</p>
       </div>
 

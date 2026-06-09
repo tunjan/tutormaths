@@ -1,36 +1,41 @@
 import { notFound } from "next/navigation";
-import { CheckCircle2, RotateCcw, Clock } from "lucide-react";
+import { CalendarClock, Download, FileText, MessageSquare, Sparkles } from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { signedUrl } from "@/lib/storage";
 import { loadComments } from "@/lib/queries";
 import { addComment } from "@/lib/actions/comments";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
-import { FilePreview } from "@/components/ui/file-preview";
 import { CompletionControl } from "@/components/completion-control";
-import { AssignmentSteps } from "@/components/assignment-steps";
-import { SubmissionUploader } from "@/components/submission-uploader";
-import { SubmissionList } from "@/components/submission-list";
+import { StudentSubmitPanel } from "@/components/student-submit-panel";
 import { LiveCommentThread, type Participant } from "@/components/live-comment-thread";
-import { CommentForm } from "@/components/comment-form";
+import { CommentComposer } from "@/components/comment-composer";
 import { MarkAssignmentRead } from "@/components/mark-assignment-read";
 import { MarkAssignmentOpened } from "@/components/mark-assignment-opened";
-import { SectionHeading } from "@/components/ui/section-heading";
+import { RequestHomeworkButton } from "@/components/request-homework-button";
 import { BackLink } from "@/components/ui/back-link";
+import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { BUCKET_ASSIGNMENTS, BUCKET_SUBMISSIONS } from "@/lib/constants";
 import {
-  type ReviewStatus,
   formatDateTime,
+  relativeTime,
+  timeDueState,
   typeLabel,
 } from "@/lib/format";
+
+/** Basename of a storage key, with the upload timestamp prefix stripped. */
+function fileLabel(path: string): string {
+  return (path.split("/").pop() ?? "file").replace(/^\d+-/, "");
+}
 
 export default async function StudentAssignmentPage({
   params,
@@ -59,8 +64,7 @@ export default async function StudentAssignmentPage({
   const submissions = await Promise.all(
     (subs ?? []).map(async (s) => ({
       id: s.id,
-      created_at: s.created_at,
-      mime_type: s.mime_type,
+      name: fileLabel(s.file_path),
       size_bytes: s.size_bytes,
       url: await signedUrl(BUCKET_SUBMISSIONS, s.file_path),
     })),
@@ -75,76 +79,84 @@ export default async function StudentAssignmentPage({
     [a.tutor_id]: { name: "Your tutor", role: "tutor" },
   };
 
+  const due = timeDueState(a.due_at);
+  const dueColor =
+    a.review_status === "assigned"
+      ? due === "overdue"
+        ? "text-destructive"
+        : due === "due-soon"
+          ? "text-warning"
+          : "text-muted-foreground"
+      : "text-muted-foreground";
+
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-8">
       <MarkAssignmentRead assignmentId={id} />
       <MarkAssignmentOpened assignmentId={id} />
-      <header className="flex flex-col gap-3">
-        <BackLink href="/student">My practice</BackLink>
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="text-2xl font-semibold tracking-tight">{a.title}</h1>
+
+      <header className="flex flex-col gap-4">
+        <BackLink href="/student">Back to dashboard</BackLink>
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge variant="outline" className="font-normal">
+            {typeLabel(a.type)}
+          </Badge>
           <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
         </div>
-        <p className="text-sm text-muted-foreground">
-          {typeLabel(a.type)} · due {formatDateTime(a.due_at)}
+        <h1 className="text-display">{a.title}</h1>
+        <p className={cn("flex items-center gap-1.5 text-sm", dueColor)}>
+          <CalendarClock className="size-4 shrink-0" />
+          <span>
+            {relativeTime(a.due_at)} · {formatDateTime(a.due_at)}
+          </span>
         </p>
-        {a.description && (
-          <p className="whitespace-pre-wrap text-sm">{a.description}</p>
-        )}
       </header>
 
-      <div className="rounded-xl border border-border bg-card px-4 py-4 shadow-sm">
-        <AssignmentSteps status={a.review_status} />
-      </div>
-
-      <ReviewBanner status={a.review_status} />
-
-      {/* On laptops the assignment PDF gets its own tall, sticky column on the
-          left so it stays in view while you submit work and read comments in
-          the right column. On mobile everything stacks: read the assignment,
-          submit your work, track progress, then talk to your tutor. */}
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-8">
-        <section className="flex flex-col gap-4 lg:sticky lg:top-24">
-          <div className="flex items-center justify-between gap-3">
-            <SectionHeading>Assignment</SectionHeading>
-            {pdfUrl && (
-              <a
-                href={pdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-              >
-                Open PDF
-              </a>
-            )}
-          </div>
-          {pdfUrl ? (
-            <FilePreview url={pdfUrl} mimeType="application/pdf" title={a.title} />
-          ) : (
-            <Card className="py-10">
-              <CardContent className="text-center text-sm text-muted-foreground">
-                The assignment file could not be loaded.
-              </CardContent>
-            </Card>
-          )}
-        </section>
-
-        <div className="flex flex-col gap-10">
-          {/* Submitting is the step that actually reaches the tutor, so it leads —
-              progress tracking is secondary and lives below it. */}
-          <section className="flex flex-col gap-4">
-            <SectionHeading>Submit your work</SectionHeading>
-            <SubmissionUploader assignmentId={id} studentId={ctx.userId} />
-            {submissions.length > 0 && (
-              <SubmissionList submissions={submissions} canDelete />
-            )}
-          </section>
-
+      {/* Left: the work itself — read the brief, track progress, hand it in.
+          Right: the conversation with the tutor and the "more work" escape
+          hatch. On mobile everything stacks in that same reading order. */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.6fr_1fr] lg:items-start">
+        <div className="flex flex-col gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Your progress</CardTitle>
+              <CardTitle className="text-lg">The brief</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-5">
+            <CardContent className="flex flex-col gap-4">
+              {a.description && (
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                  {a.description}
+                </p>
+              )}
+              {pdfUrl ? (
+                <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/40 px-3.5 py-3">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-destructive-muted text-destructive">
+                    <FileText className="size-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">
+                      {fileLabel(a.file_path)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">PDF</p>
+                  </div>
+                  <a
+                    href={pdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+                  >
+                    <Download />
+                    Open
+                  </a>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  The assignment file could not be loaded.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
               <CompletionControl
                 assignmentId={id}
                 initial={a.completion_pct}
@@ -153,62 +165,65 @@ export default async function StudentAssignmentPage({
             </CardContent>
           </Card>
 
-          <section className="flex flex-col gap-4">
-            <SectionHeading>Comments</SectionHeading>
-            <LiveCommentThread
-              assignmentId={id}
-              initial={comments}
-              participants={participants}
-            />
-            <CommentForm assignmentId={id} action={addComment} />
-          </section>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Submit your work</CardTitle>
+              <CardDescription>
+                Upload your completed work as a PDF or photo (JPG/PNG).
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <StudentSubmitPanel
+                assignmentId={id}
+                studentId={ctx.userId}
+                submissions={submissions}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="flex flex-col gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <MessageSquare className="size-5 text-muted-foreground" />
+                Comments
+                <span className="text-sm font-normal text-muted-foreground">
+                  {comments.length}
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-5">
+              <LiveCommentThread
+                assignmentId={id}
+                initial={comments}
+                participants={participants}
+              />
+              <CommentComposer assignmentId={id} action={addComment} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="flex flex-col gap-3 pt-6">
+              <div className="flex size-10 items-center justify-center rounded-full bg-cobalt-soft text-cobalt-ink">
+                <Sparkles className="size-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-medium">Finished early?</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Ask your tutor for an extra challenge.
+                </p>
+              </div>
+              <RequestHomeworkButton
+                variant="default"
+                className="w-full"
+                label="Request more homework"
+                icon={<Sparkles />}
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
-    </div>
-  );
-}
-
-function ReviewBanner({ status }: { status: ReviewStatus }) {
-  if (status === "assigned") return null;
-
-  // Approval is the big positive moment in the whole flow — give it a warmer,
-  // more celebratory treatment than the other states.
-  if (status === "approved") {
-    return (
-      <div className="flex items-center gap-3 rounded-xl bg-success-muted px-4 py-4 text-success ring-1 ring-success/20">
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="size-5 shrink-0" />
-          <span className="text-sm font-medium">
-            Approved — your tutor has signed off on this work. Great job!
-          </span>
-        </div>
-      </div>
-    );
-  }
-
-  const config = {
-    needs_work: {
-      icon: RotateCcw,
-      className: "bg-warning-muted text-warning",
-      text: "Your tutor asked for changes. Read their comments below, then upload a new version.",
-    },
-    submitted: {
-      icon: Clock,
-      className: "bg-info-muted text-info",
-      text: "Submitted — your tutor will review your work soon.",
-    },
-  }[status];
-
-  const Icon = config.icon;
-  return (
-    <div
-      className={cn(
-        "flex items-center gap-3 rounded-xl px-4 py-3 text-sm",
-        config.className,
-      )}
-    >
-      <Icon className="size-5 shrink-0" />
-      <span>{config.text}</span>
     </div>
   );
 }

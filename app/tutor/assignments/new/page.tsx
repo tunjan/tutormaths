@@ -51,9 +51,7 @@ export default async function NewAssignmentPage({
       <header className="flex flex-col gap-3">
         <BackLink href="/tutor">Dashboard</BackLink>
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            New assignment
-          </h1>
+          <h1 className="text-3xl">New assignment</h1>
           <p className="mt-1 max-w-prose text-sm text-muted-foreground">
             Attach a PDF, pick a student, and set a due date. They&rsquo;ll be
             notified right away.

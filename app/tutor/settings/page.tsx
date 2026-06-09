@@ -2,6 +2,7 @@ import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { updateReminderWindows } from "@/app/tutor/actions";
 import { ReminderWindowsField } from "@/components/reminder-windows-field";
+import { PageHeader } from "@/components/ui/page-header";
 import {
   Card,
   CardContent,
@@ -23,8 +24,8 @@ export default async function SettingsPage() {
   const windows = settings?.reminder_windows ?? [48, 24, 6];
 
   return (
-    <div className="flex max-w-2xl flex-col gap-8">
-      <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+    <div className="animate-rise max-w-2xl">
+      <PageHeader eyebrow="Tutor workspace" title="Settings" />
 
       <Card>
         <CardHeader>

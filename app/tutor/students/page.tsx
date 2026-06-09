@@ -1,20 +1,29 @@
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { ChevronRight } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { InviteStudentForm } from "@/components/invite-student-form";
+import { PageHeader } from "@/components/ui/page-header";
+import { AddStudentButton } from "@/components/add-student-button";
+import { AssignTaskButton } from "@/components/assign-task-button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { BackLink } from "@/components/ui/back-link";
 import { formatDate } from "@/lib/format";
+
+function initials(name: string): string {
+  return name
+    .split(" ")
+    .map((p) => p[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
+function tintFor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return `oklch(0.62 0.13 ${Math.abs(hash) % 360})`;
+}
 
 export default async function StudentsPage() {
   await requireTutor();
@@ -38,74 +47,96 @@ export default async function StudentsPage() {
     }
   }
 
+  const studentOptions = (students ?? []).map((s) => ({
+    id: s.id,
+    full_name: s.full_name ?? "",
+    email: s.email,
+  }));
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col items-start gap-3">
-        <BackLink href="/tutor">Dashboard</BackLink>
-        <h1 className="text-2xl font-semibold tracking-tight">Students</h1>
-      </div>
+    <div className="animate-rise">
+      <PageHeader
+        eyebrow="Tutor workspace"
+        title="Students"
+        description="Everyone you're currently tutoring."
+        actions={<AddStudentButton />}
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Add a student</CardTitle>
-          <CardDescription>
-            We generate a temporary password — share it with the student, and
-            they&rsquo;ll choose their own on first sign-in.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <InviteStudentForm />
-        </CardContent>
-      </Card>
-
-      <section className="flex flex-col gap-4">
-        <SectionHeading>
-          {students?.length ?? 0} student{students?.length === 1 ? "" : "s"}
-        </SectionHeading>
-        {!students || students.length === 0 ? (
-          <Card className="py-10">
-            <CardContent className="text-center text-sm text-muted-foreground">
-              No students yet — invite one above.
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="py-0">
-            <CardContent className="divide-y divide-border px-0">
-              {students.map((s) => (
+      {!students || students.length === 0 ? (
+        <div className="surface-card flex flex-col items-center gap-3 px-6 py-16 text-center">
+          <span className="grid size-14 place-items-center rounded-full bg-[var(--accent-cobalt-soft)] text-primary">
+            <ChevronRight className="size-6" />
+          </span>
+          <h3 className="text-xl">No students yet</h3>
+          <p className="max-w-sm text-sm text-muted-foreground">
+            Add your first student to start assigning homework and tracking
+            progress.
+          </p>
+          <div className="mt-1">
+            <AddStudentButton />
+          </div>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {students.map((s) => {
+            const name = s.full_name || s.email || "Student";
+            return (
+              <div key={s.id} className="surface-card flex flex-col p-5">
                 <Link
-                  key={s.id}
                   href={`/tutor/students/${s.id}`}
-                  className="flex items-center justify-between gap-4 px-6 py-4 transition-colors hover:bg-muted/50"
+                  className="group flex items-start gap-3"
                 >
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <div className="font-medium">{s.full_name || "—"}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {s.email}
-                      </div>
-                    </div>
-                    {accepted.has(s.id) ? (
-                      <Badge
-                        variant="outline"
-                        className="border-transparent bg-primary/10 text-primary"
-                      >
-                        Active
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary">Invited</Badge>
-                    )}
+                  <span
+                    className="grid size-11 shrink-0 place-items-center rounded-full text-sm font-semibold text-white ring-2 ring-card"
+                    style={{ backgroundColor: tintFor(name) }}
+                  >
+                    {initials(name)}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium text-foreground group-hover:underline">
+                      {s.full_name || "—"}
+                    </p>
+                    <p className="truncate text-sm text-muted-foreground">
+                      {s.email}
+                    </p>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    {accepted.has(s.id) ? "Joined" : "Invited"}{" "}
-                    {formatDate(s.created_at)}
-                    <ChevronRight className="size-4 text-muted-foreground/60" />
-                  </div>
+                  {accepted.has(s.id) ? (
+                    <Badge variant="success">Active</Badge>
+                  ) : (
+                    <Badge variant="outline">Invited</Badge>
+                  )}
                 </Link>
-              ))}
-            </CardContent>
-          </Card>
-        )}
-      </section>
+
+                <p className="mt-4 text-xs text-ink-faint">
+                  {accepted.has(s.id) ? "Joined" : "Invited"}{" "}
+                  {formatDate(s.created_at)}
+                </p>
+
+                <div className="mt-3 border-t border-border pt-3">
+                  <AssignTaskButton
+                    students={studentOptions}
+                    defaultStudentId={s.id}
+                    variant="soft"
+                    size="sm"
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            );
+          })}
+
+          <AddStudentTile />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** A dashed "add" affordance that mirrors the student cards' footprint. */
+function AddStudentTile() {
+  return (
+    <div className="flex min-h-[13rem] items-center justify-center rounded-2xl border-2 border-dashed border-line-strong">
+      <AddStudentButton variant="soft" />
     </div>
   );
 }

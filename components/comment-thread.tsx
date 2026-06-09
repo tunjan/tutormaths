@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge";
-import { formatDateTime } from "@/lib/format";
+import { formatDate } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 export interface CommentView {
   id: string;
@@ -10,35 +10,47 @@ export interface CommentView {
   authorRole: string;
 }
 
+/** Two-letter monogram for the avatar, e.g. "Eleanor Vance" → "EV". */
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 export function CommentThread({ comments }: { comments: CommentView[] }) {
   if (comments.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground">No comments yet.</p>
-    );
+    return <p className="text-sm text-muted-foreground">No comments yet.</p>;
   }
   return (
-    <ul className="flex flex-col gap-3">
-      {comments.map((c) => (
-        <li
-          key={c.id}
-          className="rounded-xl bg-card p-4 ring-1 ring-foreground/10"
-        >
-          <div className="flex items-center justify-between gap-2">
-            <span className="flex items-center gap-2 text-sm font-medium">
-              {c.authorName}
-              {c.authorRole === "tutor" && (
-                <Badge variant="secondary" className="font-normal">
-                  Tutor
-                </Badge>
+    <ul className="flex flex-col gap-5">
+      {comments.map((c) => {
+        const isTutor = c.authorRole === "tutor";
+        return (
+          <li key={c.id} className="flex gap-3">
+            <span
+              className={cn(
+                "flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white",
+                isTutor ? "bg-tutor" : "bg-student",
               )}
+              aria-hidden
+            >
+              {initials(c.authorName)}
             </span>
-            <span className="text-xs text-muted-foreground">
-              {formatDateTime(c.created_at)}
-            </span>
-          </div>
-          <p className="mt-2 whitespace-pre-wrap text-sm">{c.body}</p>
-        </li>
-      ))}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-sm font-medium">{c.authorName}</span>
+                <span className="text-xs text-muted-foreground">
+                  · {formatDate(c.created_at)}
+                </span>
+              </div>
+              <div className="mt-1.5 rounded-2xl rounded-tl-sm bg-muted px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap">
+                {c.body}
+              </div>
+            </div>
+          </li>
+        );
+      })}
     </ul>
   );
 }

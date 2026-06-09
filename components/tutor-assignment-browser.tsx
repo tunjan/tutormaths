@@ -96,7 +96,7 @@ export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[];
           query ? (
             <Empty>No active assignments match your search.</Empty>
           ) : (
-            <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card px-6 py-12 text-center text-muted-foreground">
+            <div className="surface-card flex flex-col items-center gap-4 px-6 py-12 text-center text-muted-foreground">
               <p>No active assignments yet.</p>
               <Link
                 href="/tutor/assignments/new"
@@ -164,7 +164,7 @@ function SectionHead({
       )}
       <h2
         className={cn(
-          "text-sm font-semibold tracking-tight",
+          "text-base font-semibold",
           muted && "text-muted-foreground",
         )}
       >
@@ -186,7 +186,7 @@ function SectionHead({
 
 function List({ items }: { items: BrowserItem[] }) {
   return (
-    <div className="stagger-children divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
+    <div className="stagger-children divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-calm">
       {items.map((a) => (
         <AssignmentRow
           key={a.id}
@@ -206,7 +206,7 @@ function List({ items }: { items: BrowserItem[] }) {
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-xl border border-border bg-card px-6 py-12 text-center text-sm text-muted-foreground">
+    <p className="surface-card px-6 py-12 text-center text-sm text-muted-foreground">
       {children}
     </p>
   );

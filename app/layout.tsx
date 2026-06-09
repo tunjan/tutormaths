@@ -1,15 +1,29 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ViewTransitions } from "next-view-transitions";
 
-// Swiss Minimalist: Inter serves as our robust Grotesque sans equivalent
-// (`--font-heading` resolves to the sans stack in globals.css).
-const inter = Inter({
+/* Display: a characterful "opsz" serif for headings and the wordmark. */
+const fraunces = Fraunces({
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-fraunces",
+  axes: ["opsz"],
+  display: "swap",
+});
+
+/* Body: a clean modern grotesque. */
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+  display: "swap",
+});
+
+/* Mono: numerals, progress %, dates, file sizes. */
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
   display: "swap",
 });
 
@@ -24,7 +38,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} font-sans`}
+      className={`${fraunces.variable} ${geist.variable} ${geistMono.variable} font-sans`}
       suppressHydrationWarning
     >
       <body className="bg-background text-foreground antialiased">

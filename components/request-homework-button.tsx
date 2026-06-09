@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { type ReactNode, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { requestMoreHomework } from "@/app/student/actions";
-import { Button } from "@/components/ui/button";
+import { Button, type buttonVariants } from "@/components/ui/button";
+import { type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +18,17 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export function RequestHomeworkButton() {
+export function RequestHomeworkButton({
+  label = "Request more practice",
+  icon,
+  variant = "outline",
+  className = "border-primary/30 bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary",
+}: {
+  label?: string;
+  icon?: ReactNode;
+  variant?: VariantProps<typeof buttonVariants>["variant"];
+  className?: string;
+} = {}) {
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState(false);
 
@@ -25,11 +37,20 @@ export function RequestHomeworkButton() {
       <AlertDialogTrigger
         render={
           <Button
-            variant="outline"
-            className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary"
+            variant={variant}
+            className={cn(className)}
             disabled={pending || done}
           >
-            {done ? "Request sent" : pending ? "Sending…" : "Request more practice"}
+            {done ? (
+              "Request sent"
+            ) : pending ? (
+              "Sending…"
+            ) : (
+              <>
+                {icon}
+                {label}
+              </>
+            )}
           </Button>
         }
       />

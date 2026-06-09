@@ -78,7 +78,7 @@ export default async function TutorAssignmentPage({
       <header className="flex flex-col gap-3">
         <BackLink href="/tutor">Dashboard</BackLink>
         <div className="flex items-start justify-between gap-4">
-          <h1 className="text-2xl font-semibold tracking-tight">{a.title}</h1>
+          <h1 className="text-3xl">{a.title}</h1>
           <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
         </div>
         <p className="text-sm text-muted-foreground">

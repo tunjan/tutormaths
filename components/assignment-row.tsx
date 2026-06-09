@@ -31,6 +31,24 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
+/** A stable, pleasant avatar tint derived from the name — gives each student a
+ *  recognisable colour, in the spirit of the reference's coloured avatars. */
+function tintFor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  const hue = Math.abs(hash) % 360;
+  return `oklch(0.62 0.13 ${hue})`;
+}
+
+/** Progress fill colour by completion — amber getting going, cobalt underway,
+ *  green when done. */
+function barTone(pct: number): string {
+  if (pct >= 100) return "var(--success)";
+  if (pct >= 50) return "var(--primary)";
+  if (pct > 0) return "oklch(0.7 0.14 75)";
+  return "var(--line-strong)";
+}
+
 export function AssignmentRow({
   href,
   title,
@@ -47,21 +65,21 @@ export function AssignmentRow({
   const showBar = pct > 0 && pct < 100 && reviewStatus !== "approved";
   const TypeIcon = type === "reading_notes" ? BookOpen : FileText;
 
-  // A calm card-row: a leading identity tile (the student's initials on the
-  // tutor's lists, otherwise a quiet type glyph), the title and metadata, then
-  // an optional progress track and the single dominant status chip.
   return (
     <Link
       href={href}
       className="group flex items-center gap-4 px-5 py-4 transition-colors duration-200 hover:bg-accent active:bg-accent/70"
     >
       {student ? (
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-muted-foreground">
+        <span
+          className="grid size-10 shrink-0 place-items-center rounded-full text-xs font-semibold text-white ring-2 ring-card"
+          style={{ backgroundColor: tintFor(student) }}
+        >
           {initials(student)}
         </span>
       ) : (
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
-          <TypeIcon className="size-4" />
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-muted text-muted-foreground">
+          <TypeIcon className="size-[1.05rem]" />
         </span>
       )}
 
@@ -78,7 +96,7 @@ export function AssignmentRow({
           </span>
         </div>
         <p
-          className="mt-0.5 truncate text-sm text-muted-foreground"
+          className="mt-0.5 truncate text-sm text-ink-faint"
           title={formatDateTime(dueAt)}
         >
           {meta}
@@ -87,20 +105,20 @@ export function AssignmentRow({
 
       {showBar && (
         <div className="hidden w-28 items-center gap-2 md:flex">
-          <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+          <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted ring-1 ring-inset ring-border">
             <span
-              className="progress-gradient block h-full rounded-full"
-              style={{ width: `${pct}%` }}
+              className="block h-full rounded-full transition-[width] duration-500"
+              style={{ width: `${pct}%`, backgroundColor: barTone(pct) }}
             />
           </span>
-          <span className="w-8 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
+          <span className="tabular w-8 shrink-0 text-right text-xs text-muted-foreground">
             {pct}%
           </span>
         </div>
       )}
 
       <AssignmentStatusBadge reviewStatus={reviewStatus} dueAt={dueAt} />
-      <ChevronRight className="size-4 shrink-0 text-muted-foreground/30 transition-transform group-hover:translate-x-0.5 group-hover:text-muted-foreground/60" />
+      <ChevronRight className="size-4 shrink-0 text-ink-faint/50 transition-transform group-hover:translate-x-0.5 group-hover:text-ink-faint" />
     </Link>
   );
 }

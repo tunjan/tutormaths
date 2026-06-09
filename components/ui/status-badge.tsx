@@ -46,8 +46,9 @@ export function AssignmentStatusBadge({
   return (
     <Badge
       variant="outline"
-      className={`px-2.5 py-1 text-xs font-medium ${className}`}
+      className={`gap-1.5 px-2.5 py-1 text-xs font-medium ${className}`}
     >
+      <span className="size-1.5 rounded-full bg-current" aria-hidden />
       {label}
     </Badge>
   );

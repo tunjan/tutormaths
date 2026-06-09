@@ -61,9 +61,13 @@ function FieldError({ message, id }: { message?: string; id?: string }) {
 export function NewAssignmentForm({
   students,
   defaultStudentId = "",
+  onCancel,
 }: {
   students: StudentOption[];
   defaultStudentId?: string;
+  /** When provided (e.g. inside a dialog), the Cancel control calls this
+   *  instead of navigating back to the dashboard. */
+  onCancel?: () => void;
 }) {
   const [supabase] = useState(() => createClient());
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -256,12 +260,18 @@ export function NewAssignmentForm({
             {globalError}
           </div>
         )}
-        <Link
-          href="/tutor"
-          className={cn(buttonVariants({ variant: "ghost" }))}
-        >
-          Cancel
-        </Link>
+        {onCancel ? (
+          <Button type="button" variant="ghost" onClick={onCancel}>
+            Cancel
+          </Button>
+        ) : (
+          <Link
+            href="/tutor"
+            className={cn(buttonVariants({ variant: "ghost" }))}
+          >
+            Cancel
+          </Link>
+        )}
         <Button type="submit" disabled={busy}>
           {busy ? "Creating…" : "Create assignment"}
         </Button>
