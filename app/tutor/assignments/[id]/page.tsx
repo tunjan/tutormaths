@@ -5,7 +5,6 @@ import { createClient } from "@/lib/supabase/server";
 import { signedUrl } from "@/lib/storage";
 import { loadComments } from "@/lib/queries";
 import { addComment } from "@/lib/actions/comments";
-import { ProgressBar } from "@/components/ui/progress-bar";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import { FilePreview } from "@/components/ui/file-preview";
 import { LiveCommentThread, type Participant } from "@/components/live-comment-thread";
@@ -14,11 +13,8 @@ import { AssignmentActions } from "@/components/assignment-actions";
 import { MarkAssignmentRead } from "@/components/mark-assignment-read";
 import { ReviewControls } from "@/components/review-controls";
 import { SubmissionList } from "@/components/submission-list";
-import { SectionHeading } from "@/components/ui/section-heading";
 import { BackLink } from "@/components/ui/back-link";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { BUCKET_ASSIGNMENTS, BUCKET_SUBMISSIONS } from "@/lib/constants";
 import { formatDateTime, typeLabel } from "@/lib/format";
@@ -74,119 +70,148 @@ export default async function TutorAssignmentPage({
   const comments = await loadComments(id);
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="w-full bg-background text-foreground flex flex-col selection:bg-primary selection:text-primary-foreground mb-12">
       <MarkAssignmentRead assignmentId={id} />
-      <header className="flex flex-col gap-4">
-        <BackLink href="/tutor">Back to dashboard</BackLink>
-        <div className="flex flex-col gap-4">
-          <h1 className="text-display tracking-tight text-foreground mb-1">{a.title}</h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
-            <span className="flex items-center gap-1.5">
-              <span>{student?.full_name || student?.email}</span>
-            </span>
-            <span className="hidden sm:inline">&middot;</span>
-            <span className="hidden sm:inline">Algebra &middot; Quadratics</span>
-            <span>&middot;</span>
-            <span className="capitalize">{typeLabel(a.type)}</span>
-            <span>&middot;</span>
-            <span>Due {formatDateTime(a.due_at)}</span>
-          </div>
-        </div>
-        {a.student_opened_at ? (
-          <p className="flex items-center gap-1.5 text-sm text-success">
-            <Eye className="size-4 shrink-0" />
-            Opened by student &middot; {formatDateTime(a.student_opened_at)}
-          </p>
-        ) : (
-          <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <EyeOff className="size-4 shrink-0" />
-            Not opened by student yet
-          </p>
-        )}
-        {a.description && (
-          <p className="whitespace-pre-wrap text-sm">{a.description}</p>
-        )}
-        <div className="max-w-sm pt-2">
-          <ProgressBar value={a.completion_pct} />
-          <p className="mt-1 text-xs text-muted-foreground">
-            Student-reported progress: {a.completion_pct}%
-          </p>
-        </div>
-        <div className="pt-2">
-          <AssignmentActions
-            id={a.id}
-            title={a.title}
-            description={a.description}
-            type={a.type}
-            dueAt={a.due_at}
-            studentId={a.student_id}
-          />
-        </div>
-      </header>
 
-      {/* On laptops the assignment PDF gets its own tall, sticky column on the
-          left while the review workflow (submission, verdict, comments) sits
-          beside it on the right. On mobile everything stacks in reading order:
-          the work first, then the verdict, then the conversation. */}
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-start lg:gap-8">
-        <section className="flex flex-col gap-4 lg:sticky lg:top-24">
-          <div className="flex items-center justify-between gap-3">
-            <SectionHeading>Assignment</SectionHeading>
-            {pdfUrl && (
-              <a
-                href={pdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-              >
-                Open PDF
-              </a>
+      <main className="w-full flex flex-col divide-y divide-border">
+        {/* HERO SECTION */}
+        <header className="flex flex-col gap-6 pt-0 pb-8 lg:pt-0 lg:pb-10 bg-secondary/10 px-4 md:px-8 lg:px-12">
+          <BackLink href="/tutor" className="text-[13px] tracking-wide text-muted-foreground hover:text-foreground transition-opacity opacity-80 hover:opacity-100 mt-2">
+            Back to dashboard
+          </BackLink>
+          
+          <div className="flex flex-col gap-4">
+            <h1 className="text-[32px] md:text-[40px] font-semibold text-foreground tracking-tight leading-tight">
+              {a.title}
+            </h1>
+            
+            <div className="flex flex-wrap items-center gap-3 text-[14px] text-muted-foreground">
+              <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
+              <span className="flex items-center gap-1.5 font-medium text-foreground">
+                <span>{student?.full_name || student?.email}</span>
+              </span>
+              <span className="opacity-30">·</span>
+              <span>Algebra · Quadratics</span>
+              <span className="opacity-30">·</span>
+              <span className="capitalize">{typeLabel(a.type)}</span>
+              <span className="opacity-30">·</span>
+              <span>Due {formatDateTime(a.due_at)}</span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-6 text-[13px] text-muted-foreground mt-2">
+              {a.student_opened_at ? (
+                <span className="flex items-center gap-1.5 text-success">
+                  <Eye className="size-4 shrink-0" />
+                  Opened by student · {formatDateTime(a.student_opened_at)}
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5">
+                  <EyeOff className="size-4 shrink-0" />
+                  Not opened by student yet
+                </span>
+              )}
+              <span className="opacity-30">·</span>
+              <span>
+                Reported progress: <span className="font-medium text-foreground">{a.completion_pct}%</span>
+              </span>
+            </div>
+            
+            <div className="pt-2">
+              <AssignmentActions
+                id={a.id}
+                title={a.title}
+                description={a.description}
+                type={a.type}
+                dueAt={a.due_at}
+                studentId={a.student_id}
+              />
+            </div>
+          </div>
+        </header>
+
+        {/* CONTENT SPLIT */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] divide-y lg:divide-y-0 lg:divide-x divide-border">
+          
+          {/* LEFT COLUMN: ASSIGNMENT DETAILS & FILE PREVIEW */}
+          <div className="flex flex-col divide-y divide-border">
+            {a.description && (
+              <section className="flex flex-col gap-6 py-8 lg:py-10 px-4 md:px-8 lg:px-12">
+                <p className="text-[16px] leading-[1.65] text-foreground">
+                  {a.description}
+                </p>
+              </section>
             )}
-          </div>
-          {pdfUrl ? (
-            <FilePreview url={pdfUrl} mimeType="application/pdf" title={a.title} />
-          ) : (
-            <Card className="py-10">
-              <CardContent className="text-center text-sm text-muted-foreground">
-                The assignment file could not be loaded.
-              </CardContent>
-            </Card>
-          )}
-        </section>
 
-        <div className="flex flex-col gap-10">
-          <section className="flex flex-col gap-4">
-            <SectionHeading>Submitted work</SectionHeading>
-            {submissions.length === 0 ? (
-              <Card className="py-10">
-                <CardContent className="text-center text-sm text-muted-foreground">
+            <section className="flex flex-col gap-6 py-8 lg:py-10 px-4 md:px-8 lg:px-12">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-[14px] font-semibold text-foreground uppercase tracking-wider">Assignment Document</h2>
+                {pdfUrl && (
+                  <a
+                    href={pdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+                  >
+                    Open PDF
+                  </a>
+                )}
+              </div>
+              {pdfUrl ? (
+                <div className="rounded-xl overflow-hidden border border-border/50">
+                  <FilePreview url={pdfUrl} mimeType="application/pdf" title={a.title} />
+                </div>
+              ) : (
+                <div className="py-10 text-center text-[15px] text-muted-foreground bg-secondary/10 rounded-xl">
+                  The assignment file could not be loaded.
+                </div>
+              )}
+            </section>
+          </div>
+
+          {/* RIGHT COLUMN: WORK, REVIEW & COMMENTS */}
+          <aside className="flex flex-col divide-y divide-border bg-secondary/5">
+            {/* SUBMITTED WORK */}
+            <section className="flex flex-col gap-6 py-8 lg:py-10 px-4 md:px-8 lg:px-12">
+              <h3 className="text-[14px] font-semibold text-foreground uppercase tracking-wider">
+                Submitted work
+              </h3>
+              {submissions.length === 0 ? (
+                <div className="py-12 text-center text-[15px] text-muted-foreground bg-secondary/20 rounded-xl">
                   No work submitted yet.
-                </CardContent>
-              </Card>
-            ) : (
-              <SubmissionList submissions={submissions} canDelete={false} />
-            )}
-          </section>
+                </div>
+              ) : (
+                <SubmissionList submissions={submissions} canDelete={false} />
+              )}
+            </section>
 
-          <Card>
-            <CardContent className="flex flex-col gap-4">
-              <SectionHeading>Your review</SectionHeading>
+            {/* REVIEW VERDICT */}
+            <section className="flex flex-col gap-6 py-8 lg:py-10 px-4 md:px-8 lg:px-12">
+              <h3 className="text-[14px] font-semibold text-foreground uppercase tracking-wider">
+                Your Review
+              </h3>
               <ReviewControls assignmentId={a.id} status={a.review_status} />
-            </CardContent>
-          </Card>
+            </section>
 
-          <section className="flex flex-col gap-4">
-            <SectionHeading>Comments</SectionHeading>
-            <LiveCommentThread
-              assignmentId={id}
-              initial={comments}
-              participants={participants}
-            />
-            <CommentForm assignmentId={id} action={addComment} />
-          </section>
+            {/* COMMENTS */}
+            <section className="flex flex-col gap-6 py-8 lg:py-10 px-4 md:px-8 lg:px-12">
+              <h3 className="text-[14px] font-semibold text-foreground flex items-center justify-between uppercase tracking-wider">
+                <span>Comments</span>
+                <span className="text-muted-foreground bg-background border border-border/40 px-2 py-0.5 rounded-full text-xs">{comments.length}</span>
+              </h3>
+              
+              <div className="flex flex-col gap-6">
+                <LiveCommentThread
+                  assignmentId={id}
+                  initial={comments}
+                  participants={participants}
+                />
+                <CommentForm assignmentId={id} action={addComment} />
+              </div>
+            </section>
+          </aside>
+
         </div>
-      </div>
+      </main>
     </div>
   );
 }

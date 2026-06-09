@@ -53,7 +53,7 @@ export function AssignmentRow({
   return (
     <Link
       href={href}
-      className="group relative flex items-center gap-5 py-4 px-3 -mx-3 rounded-lg transition-colors duration-150 hover:bg-accent/30"
+      className="group relative flex items-center gap-5 py-4 px-4 transition-colors duration-150 hover:bg-accent/30"
     >
       <div className="shrink-0 relative">
         {student ? (

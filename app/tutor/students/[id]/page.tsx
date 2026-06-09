@@ -7,7 +7,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { BackLink } from "@/components/ui/back-link";
 import { AssignmentRow } from "@/components/assignment-row";
-import { MisoAssignmentGrid, MisoAssignmentCard } from "@/components/miso-assignment-card";
 import { cn } from "@/lib/utils";
 import { formatDate, type ReviewStatus } from "@/lib/format";
 
@@ -74,31 +73,14 @@ export default async function StudentDetailPage({
         <Stat label="Avg progress" value={`${avg}%`} />
       </div>
 
-      <div className="flex flex-col gap-10 lg:gap-16 my-8">
+      <div className="flex flex-col gap-4 my-8">
         <div>
-          <h2 className="text-[56px] md:text-[72px] font-bold tracking-[-0.04em] text-[#111111] mb-2 leading-[0.95]">
-            Active assignments
-          </h2>
-          <p className="text-xl text-[#6B6B6B]">
-            Work currently in progress or awaiting your review.
-          </p>
+          <SectionHeading>Active assignments</SectionHeading>
         </div>
         {active.length === 0 ? (
           <Empty>No active assignments.</Empty>
         ) : (
-          <MisoAssignmentGrid>
-            {active.map((a) => (
-              <MisoAssignmentCard
-                key={a.id}
-                href={`/tutor/assignments/${a.id}`}
-                title={a.title}
-                type={a.type}
-                dueAt={a.due_at}
-                pct={a.completion_pct}
-                reviewStatus={a.review_status}
-              />
-            ))}
-          </MisoAssignmentGrid>
+          <AssignmentList items={active} />
         )}
       </div>
 
@@ -124,7 +106,7 @@ type AssignmentItem = {
 
 function AssignmentList({ items }: { items: AssignmentItem[] }) {
   return (
-    <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+    <div className="stagger-children divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
       {items.map((a) => (
         <AssignmentRow
           key={a.id}
@@ -136,20 +118,18 @@ function AssignmentList({ items }: { items: AssignmentItem[] }) {
           reviewStatus={a.review_status}
         />
       ))}
-    </ul>
+    </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
-    <Card className="gap-1 py-5">
-      <CardContent className="px-5">
-        <div className="text-3xl font-semibold tracking-tight tabular-nums">
-          {value}
-        </div>
-        <div className="mt-1 text-sm text-muted-foreground">{label}</div>
-      </CardContent>
-    </Card>
+    <div className="flex flex-col p-4 border border-border rounded-lg bg-card transition-colors hover:bg-accent/50">
+      <div className="tabular-nums text-2xl font-semibold leading-none text-foreground">
+        {value}
+      </div>
+      <div className="mt-1 text-xs text-muted-foreground">{label}</div>
+    </div>
   );
 }
 
@@ -170,10 +150,8 @@ function Section({
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <Card className="py-10">
-      <CardContent className="text-center text-sm text-muted-foreground">
-        {children}
-      </CardContent>
-    </Card>
+    <div className="py-10 text-center text-sm text-muted-foreground border-y border-border">
+      {children}
+    </div>
   );
 }

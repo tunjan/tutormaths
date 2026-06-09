@@ -50,9 +50,9 @@ export default async function StudentDashboard() {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-1 stagger-children mb-24">
+        <div className="flex flex-col stagger-children mb-24 border border-border rounded-xl divide-y divide-border bg-background overflow-hidden">
           {active.map((a) => (
-            <div key={a.id} className="animate-fade-in border-b border-border/30 last:border-0 pb-1 mb-1">
+            <div key={a.id} className="animate-fade-in">
               <AssignmentRow
                 href={`/student/assignments/${a.id}`}
                 title={a.title}
@@ -75,9 +75,9 @@ export default async function StudentDashboard() {
               {completed.length} task{completed.length === 1 ? "" : "s"}
             </span>
           </div>
-          <div className="flex flex-col gap-1 stagger-children opacity-80 transition-opacity hover:opacity-100">
+          <div className="flex flex-col stagger-children opacity-80 transition-opacity hover:opacity-100 border border-border rounded-xl divide-y divide-border bg-background overflow-hidden">
             {completed.map((a) => (
-              <div key={a.id} className="animate-fade-in border-b border-border/30 last:border-0 pb-1 mb-1">
+              <div key={a.id} className="animate-fade-in">
                 <AssignmentRow
                   href={`/student/assignments/${a.id}`}
                   title={a.title}

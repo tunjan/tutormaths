@@ -5,6 +5,8 @@ import { TutorNav } from "@/components/tutor-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notification-bell";
 import { SignOutButton } from "@/components/sign-out-button";
+import { createClient } from "@/lib/supabase/server";
+import { TutorSettingsDialog } from "@/components/tutor-settings-dialog";
 
 export default async function TutorLayout({
   children,
@@ -12,6 +14,15 @@ export default async function TutorLayout({
   children: React.ReactNode;
 }) {
   const ctx = await requireTutor();
+  const supabase = await createClient();
+
+  const { data: settings } = await supabase
+    .from("tutor_settings")
+    .select("reminder_windows")
+    .eq("tutor_id", ctx.userId)
+    .single();
+
+  const initialWindows = settings?.reminder_windows ?? [48, 24, 6];
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -24,6 +35,7 @@ export default async function TutorLayout({
           <TutorNav />
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
             <NotificationBell userId={ctx.userId} role="tutor" />
+            <TutorSettingsDialog initialWindows={initialWindows} />
             <ThemeToggle />
             <SignOutButton />
           </div>

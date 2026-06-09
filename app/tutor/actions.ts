@@ -73,7 +73,7 @@ export async function updateReminderWindows(formData: FormData): Promise<void> {
   });
   if (error) throw new Error(error.message);
 
-  revalidatePath("/tutor/settings");
+  revalidatePath("/tutor", "layout");
 }
 
 /**

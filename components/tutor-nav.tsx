@@ -14,7 +14,6 @@ import {
 const links = [
   { href: "/tutor", label: "Dashboard", exact: true },
   { href: "/tutor/students", label: "Students" },
-  { href: "/tutor/settings", label: "Settings" },
 ];
 
 function isActive(pathname: string, href: string, exact?: boolean) {

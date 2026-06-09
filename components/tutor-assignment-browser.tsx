@@ -6,7 +6,6 @@ import { Clock, Inbox, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { buttonVariants } from "@/components/ui/button";
 import { AssignmentRow } from "@/components/assignment-row";
-import { MisoAssignmentGrid, MisoAssignmentCard } from "@/components/miso-assignment-card";
 import { cn } from "@/lib/utils";
 
 import type { ReviewStatus } from "@/lib/format";
@@ -54,23 +53,22 @@ export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[];
   }, [items, query, nowMs]);
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-10">
       <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by assignment or student…"
           aria-label="Search assignments"
-          className="h-10 pl-9"
+          className="h-12 pl-11 pr-4 border border-border/30 rounded-lg bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-border text-[15px] transition-colors hover:border-border/50"
         />
       </div>
 
       {awaiting.length > 0 && (
         <section id="awaiting" className="scroll-mt-24">
           <SectionHead
-            tone="info"
             icon={<Inbox className="size-4" />}
             title="Awaiting your review"
             count={awaiting.length}
@@ -82,7 +80,6 @@ export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[];
       {overdue.length > 0 && (
         <section id="overdue" className="scroll-mt-24">
           <SectionHead
-            tone="destructive"
             icon={<Clock className="size-4" />}
             title="Overdue"
             count={overdue.length}
@@ -91,46 +88,24 @@ export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[];
         </section>
       )}
 
-      <div className="flex flex-col gap-10 lg:gap-16 my-8">
-        <div>
-          <div className="flex items-center gap-4 mb-2">
-            <h2 className="text-[40px] md:text-[56px] font-semibold tracking-[-0.04em] text-foreground leading-tight">
-              Active assignments
-            </h2>
-            <span className="flex h-8 min-w-8 items-center justify-center rounded-full bg-primary px-3 text-sm font-semibold tabular-nums text-primary-foreground">
-              {active.length}
-            </span>
-          </div>
-        </div>
+      <div className="flex flex-col gap-3">
+        <SectionHead title="Active assignments" count={active.length} />
         {active.length === 0 ? (
           query ? (
             <Empty>No active assignments match your search.</Empty>
           ) : (
-            <div className="bg-card border border-border rounded-[24px] flex flex-col items-center gap-6 px-10 py-16 md:py-24 text-center">
-              <p className="text-muted-foreground text-lg">No active assignments yet.</p>
+            <div className="flex flex-col items-center justify-center gap-6 py-24 text-center animate-fade-in mt-4">
+              <p className="text-muted-foreground text-[16px]">No active assignments yet.</p>
               <Link
                 href="/tutor/assignments/new"
-                className={cn(buttonVariants({ variant: "default", size: "lg" }))}
+                className={cn(buttonVariants({ variant: "default", size: "sm" }))}
               >
                 Create an assignment
               </Link>
             </div>
           )
         ) : (
-          <MisoAssignmentGrid>
-            {active.map((a) => (
-              <MisoAssignmentCard
-                key={a.id}
-                href={`/tutor/assignments/${a.id}`}
-                title={a.title}
-                type={a.type}
-                dueAt={a.due_at}
-                pct={a.completion_pct}
-                reviewStatus={a.review_status}
-                student={a.student}
-              />
-            ))}
-          </MisoAssignmentGrid>
+          <List items={active} />
         )}
       </div>
 
@@ -152,76 +127,53 @@ function SectionHead({
   title,
   count,
   icon,
-  tone,
   muted,
 }: {
   title: string;
   count: number;
   icon?: React.ReactNode;
-  tone?: "info" | "destructive";
   muted?: boolean;
 }) {
-  const tileCls =
-    tone === "info"
-      ? "bg-info/10 text-info"
-      : tone === "destructive"
-        ? "bg-destructive/10 text-destructive"
-        : "bg-secondary text-muted-foreground";
-  const countCls =
-    tone === "info"
-      ? "bg-info text-white dark:text-background"
-      : tone === "destructive"
-        ? "bg-destructive/10 text-destructive"
-        : "bg-secondary text-muted-foreground";
   return (
-    <div className="mb-3 flex items-center gap-2.5 px-1">
-      {icon && (
-        <span
-          className={cn(
-            "flex size-7 items-center justify-center rounded-lg",
-            tileCls,
-          )}
-        >
-          {icon}
-        </span>
-      )}
-      <h2
-        className={cn(
-          "text-base font-semibold",
-          muted && "text-muted-foreground",
+    <div className="mb-3 flex items-baseline justify-between pb-2">
+      <div className="flex items-center gap-3">
+        {icon && (
+          <span className="flex size-5 items-center justify-center text-muted-foreground">
+            {icon}
+          </span>
         )}
-      >
-        {title}
-      </h2>
-      {count > 0 && (
-        <span
+        <h2
           className={cn(
-            "flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-semibold tabular-nums",
-            countCls,
+            "text-[20px] font-medium tracking-tight",
+            muted ? "text-muted-foreground" : "text-foreground"
           )}
         >
-          {count}
-        </span>
-      )}
+          {title}
+        </h2>
+      </div>
+      <span className="font-mono text-[12px] uppercase tracking-[0.05em] text-muted-foreground">
+        {count} assignment{count === 1 ? "" : "s"}
+      </span>
     </div>
   );
 }
 
 function List({ items }: { items: BrowserItem[] }) {
   return (
-    <div className="stagger-children divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-calm">
+    <div className="flex flex-col stagger-children border border-border rounded-xl divide-y divide-border bg-background overflow-hidden">
       {items.map((a) => (
-        <AssignmentRow
-          key={a.id}
-          href={`/tutor/assignments/${a.id}`}
-          title={a.title}
-          type={a.type}
-          dueAt={a.due_at}
-          pct={a.completion_pct}
-          reviewStatus={a.review_status}
-          student={a.student}
-          unread={a.unread}
-        />
+        <div key={a.id} className="animate-fade-in">
+          <AssignmentRow
+            href={`/tutor/assignments/${a.id}`}
+            title={a.title}
+            type={a.type}
+            dueAt={a.due_at}
+            pct={a.completion_pct}
+            reviewStatus={a.review_status}
+            student={a.student}
+            unread={a.unread}
+          />
+        </div>
       ))}
     </div>
   );
@@ -229,7 +181,7 @@ function List({ items }: { items: BrowserItem[] }) {
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="surface-card px-6 py-12 text-center text-sm text-muted-foreground">
+    <p className="px-6 py-12 text-center text-[16px] text-muted-foreground">
       {children}
     </p>
   );

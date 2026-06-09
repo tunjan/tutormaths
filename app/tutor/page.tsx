@@ -1,10 +1,4 @@
 import { Link } from "next-view-transitions";
-import {
-  ClipboardCheck,
-  FileClock,
-  TriangleAlert,
-  Users,
-} from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { unreadAssignmentIds } from "@/lib/queries";
@@ -15,6 +9,7 @@ import {
   TutorAssignmentBrowser,
   type BrowserItem,
 } from "@/components/tutor-assignment-browser";
+import { cn } from "@/lib/utils";
 
 export default async function TutorDashboard() {
   await requireTutor();
@@ -86,38 +81,17 @@ export default async function TutorDashboard() {
 
       {hasStudents ? (
         <>
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatCard
-              icon={Users}
-              label="Students"
-              value={studentOptions.length}
-              tint="var(--tutor)"
-              href="/tutor/students"
-            />
-            <StatCard
-              icon={FileClock}
-              label="Active"
-              value={active}
-              tint="var(--primary)"
-            />
-            <StatCard
-              icon={ClipboardCheck}
-              label="Awaiting review"
-              value={awaiting}
-              tint="oklch(0.66 0.14 70)"
-              href={awaiting > 0 ? "#awaiting" : undefined}
-            />
-            <StatCard
-              icon={TriangleAlert}
-              label="Overdue"
-              value={overdue}
-              tint="var(--destructive)"
-              href={overdue > 0 ? "#overdue" : undefined}
-              alert
-            />
+          <div className="flex flex-wrap items-center gap-6 py-2 mb-4">
+            <StatItem label="Students" value={studentOptions.length} href="/tutor/students" />
+            <div className="h-8 w-px bg-border/50 hidden sm:block" />
+            <StatItem label="Active" value={active} />
+            <div className="h-8 w-px bg-border/50 hidden sm:block" />
+            <StatItem label="Awaiting review" value={awaiting} href={awaiting > 0 ? "#awaiting" : undefined} />
+            <div className="h-8 w-px bg-border/50 hidden sm:block" />
+            <StatItem label="Overdue" value={overdue} href={overdue > 0 ? "#overdue" : undefined} />
           </div>
 
-          <div className="mt-9">
+          <div className="mt-8">
             <TutorAssignmentBrowser items={items} nowMs={nowMs} />
           </div>
         </>
@@ -128,71 +102,49 @@ export default async function TutorDashboard() {
   );
 }
 
-function StatCard({
-  icon: Icon,
+function StatItem({
   label,
   value,
-  tint,
   href,
-  alert,
 }: {
-  icon: typeof Users;
   label: string;
   value: number;
-  tint: string;
   href?: string;
-  alert?: boolean;
 }) {
   const inner = (
-    <div className="surface-card flex items-center gap-3.5 p-4 transition-[border-color,box-shadow] hover:border-line-strong">
-      <span
-        className="grid size-11 shrink-0 place-items-center rounded-xl"
-        style={{
-          backgroundColor: `color-mix(in oklch, ${tint} 14%, var(--card))`,
-          color: tint,
-        }}
-      >
-        <Icon className="size-5" />
+    <div className="flex items-baseline gap-2 group-hover:opacity-70 transition-opacity">
+      <span className="tabular-nums text-[24px] font-medium tracking-tight text-foreground">
+        {value}
       </span>
-      <div>
-        <p
-          className="tabular text-2xl leading-none"
-          style={alert && value > 0 ? { color: "var(--destructive)" } : undefined}
-        >
-          {value}
-        </p>
-        <p className="mt-1 text-xs text-muted-foreground">{label}</p>
-      </div>
+      <span className="text-[13px] text-muted-foreground uppercase tracking-wider">{label}</span>
     </div>
   );
   if (!href) return inner;
   return href.startsWith("#") ? (
-    <a href={href} className="block">
+    <a href={href} className="block group">
       {inner}
     </a>
   ) : (
-    <Link href={href} className="block">
+    <Link href={href} className="block group">
       {inner}
     </Link>
   );
 }
 
-/** First-run guidance: a tutor with no students yet can't do anything else. */
 function Onboarding() {
   return (
-    <div className="surface-card mx-auto flex max-w-xl flex-col items-center gap-5 px-6 py-16 text-center">
-      <span className="grid size-14 place-items-center rounded-full bg-[var(--accent-cobalt-soft)] text-primary">
-        <Users className="size-6" />
-      </span>
-      <div className="flex flex-col gap-2">
-        <h2 className="text-2xl">Welcome to Maths Tasks</h2>
-        <p className="mx-auto max-w-md text-sm text-muted-foreground">
+    <div className="flex flex-col items-center justify-center gap-6 py-24 text-center animate-fade-in">
+      <div className="space-y-4 max-w-md mx-auto">
+        <h2 className="text-[24px] font-medium text-foreground tracking-tight">Welcome to Maths Tasks</h2>
+        <p className="text-[16px] leading-[1.6] text-muted-foreground">
           Get set up in two steps: invite a student, then send them their first
           assignment. You&rsquo;ll review their work and track progress right
           here.
         </p>
       </div>
-      <AddStudentButton label="Invite your first student" />
+      <div className="mt-2">
+        <AddStudentButton label="Invite your first student" />
+      </div>
     </div>
   );
 }
