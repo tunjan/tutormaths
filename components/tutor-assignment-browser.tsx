@@ -6,6 +6,7 @@ import { Clock, Inbox, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { buttonVariants } from "@/components/ui/button";
 import { AssignmentRow } from "@/components/assignment-row";
+import { MisoAssignmentGrid, MisoAssignmentCard } from "@/components/miso-assignment-card";
 import { cn } from "@/lib/utils";
 
 import type { ReviewStatus } from "@/lib/format";
@@ -90,26 +91,48 @@ export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[];
         </section>
       )}
 
-      <section>
-        <SectionHead title="Active assignments" count={active.length} />
+      <div className="flex flex-col gap-10 lg:gap-16 my-8">
+        <div>
+          <div className="flex items-center gap-4 mb-2">
+            <h2 className="text-[40px] md:text-[56px] font-semibold tracking-[-0.04em] text-foreground leading-tight">
+              Active assignments
+            </h2>
+            <span className="flex h-8 min-w-8 items-center justify-center rounded-full bg-primary px-3 text-sm font-semibold tabular-nums text-primary-foreground">
+              {active.length}
+            </span>
+          </div>
+        </div>
         {active.length === 0 ? (
           query ? (
             <Empty>No active assignments match your search.</Empty>
           ) : (
-            <div className="surface-card flex flex-col items-center gap-4 px-6 py-12 text-center text-muted-foreground">
-              <p>No active assignments yet.</p>
+            <div className="bg-card border border-border rounded-[24px] flex flex-col items-center gap-6 px-10 py-16 md:py-24 text-center">
+              <p className="text-muted-foreground text-lg">No active assignments yet.</p>
               <Link
                 href="/tutor/assignments/new"
-                className={cn(buttonVariants())}
+                className={cn(buttonVariants({ variant: "default", size: "lg" }))}
               >
                 Create an assignment
               </Link>
             </div>
           )
         ) : (
-          <List items={active} />
+          <MisoAssignmentGrid>
+            {active.map((a) => (
+              <MisoAssignmentCard
+                key={a.id}
+                href={`/tutor/assignments/${a.id}`}
+                title={a.title}
+                type={a.type}
+                dueAt={a.due_at}
+                pct={a.completion_pct}
+                reviewStatus={a.review_status}
+                student={a.student}
+              />
+            ))}
+          </MisoAssignmentGrid>
         )}
-      </section>
+      </div>
 
       {(completed.length > 0 || query.trim()) && (
         <section>

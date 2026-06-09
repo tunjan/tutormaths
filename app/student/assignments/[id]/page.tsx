@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { CalendarClock, Download, FileText, MessageSquare } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { signedUrl } from "@/lib/storage";
@@ -14,14 +14,9 @@ import { MarkAssignmentRead } from "@/components/mark-assignment-read";
 import { MarkAssignmentOpened } from "@/components/mark-assignment-opened";
 import { RequestHomeworkButton } from "@/components/request-homework-button";
 import { BackLink } from "@/components/ui/back-link";
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { BUCKET_ASSIGNMENTS, BUCKET_SUBMISSIONS } from "@/lib/constants";
 import {
   formatDateTime,
-  relativeTime,
-  timeDueState,
   typeLabel,
 } from "@/lib/format";
 
@@ -65,145 +60,132 @@ export default async function StudentAssignmentPage({
 
   const comments = await loadComments(id);
 
-  // RLS hides the tutor's profile from a student, so we label the two known
-  // parties directly.
   const participants: Record<string, Participant> = {
     [ctx.userId]: { name: "You", role: "student" },
     [a.tutor_id]: { name: "Your tutor", role: "tutor" },
   };
 
-  const due = timeDueState(a.due_at);
-  const dueColor =
-    a.review_status === "assigned"
-      ? due === "overdue"
-        ? "text-destructive"
-        : due === "due-soon"
-          ? "text-warning"
-          : "text-muted-foreground"
-      : "text-muted-foreground";
-
   return (
-    <div className="flex flex-col gap-8">
+    <div className="w-full bg-background text-foreground flex flex-col selection:bg-primary selection:text-primary-foreground mb-12">
       <MarkAssignmentRead assignmentId={id} />
       <MarkAssignmentOpened assignmentId={id} />
 
-      <header className="flex flex-col gap-6">
-        <BackLink href="/student">Back to dashboard</BackLink>
-        <div className="flex flex-col gap-4">
-          <h1 className="text-display tracking-tight text-foreground mb-1">{a.title}</h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
-            <span className="flex items-center gap-1.5">
-              <CalendarClock className="size-4 shrink-0" />
-              <span>
-                {relativeTime(a.due_at)} &middot; {formatDateTime(a.due_at)}
-              </span>
-            </span>
-            <span className="hidden sm:inline">&middot;</span>
-            <span className="hidden sm:inline">Algebra &middot; Quadratics</span>
-            <span>&middot;</span>
-            <span className="capitalize">{typeLabel(a.type)}</span>
+      <main className="w-full flex flex-col divide-y divide-border">
+        {/* HERO SECTION */}
+        <header className="flex flex-col gap-6 pt-0 pb-8 lg:pt-0 lg:pb-10 bg-secondary/10">
+          <BackLink href="/student" className="text-[13px] tracking-wide text-muted-foreground hover:text-foreground transition-opacity opacity-80 hover:opacity-100 mt-2">
+            Back to dashboard
+          </BackLink>
+          
+          <div className="flex flex-col gap-4">
+            <h1 className="text-[32px] md:text-[40px] font-semibold text-foreground tracking-tight leading-tight">
+              {a.title}
+            </h1>
+            
+            <div className="flex flex-wrap items-center gap-3 text-[14px] text-muted-foreground">
+              <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
+              <span>{formatDateTime(a.due_at)}</span>
+              <span className="opacity-30">·</span>
+              <span>Algebra · Quadratics</span>
+              <span className="opacity-30">·</span>
+              <span>{typeLabel(a.type)}</span>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Left: the work itself — read the brief, track progress, hand it in.
-          Right: the conversation with the tutor and the "more work" escape
-          hatch. On mobile everything stacks in that same reading order. */}
-      <div className="grid grid-cols-1 gap-20 lg:grid-cols-[1.6fr_1fr] lg:items-start pt-10 mt-6 max-w-5xl">
-        <div className="flex flex-col gap-12">
-          <section className="flex flex-col gap-6">
+        {/* CONTENT & SUBMISSION SPLIT */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] divide-y lg:divide-y-0 lg:divide-x divide-border">
+          
+          <div className="flex flex-col divide-y divide-border">
+            {/* THE BRIEF */}
+            <section className="flex flex-col gap-6 py-8 lg:py-10 lg:pr-10">
               {a.description && (
-                <p className="text-[16px] leading-relaxed whitespace-pre-wrap text-foreground">
+                <p className="text-[16px] leading-[1.65] text-foreground">
                   {a.description}
                 </p>
               )}
-              {pdfUrl ? (
+              
+              {pdfUrl && (
                 <div className="pt-2">
                   <a
                     href={pdfUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center gap-4 p-3 -ml-3 rounded-xl hover:bg-muted/40 transition-colors"
+                    className="group flex items-center justify-between transition-opacity duration-200 hover:opacity-70"
                   >
-                    <div className="flex items-center justify-center size-12 rounded-lg bg-muted text-foreground">
-                      <FileText className="size-6" />
+                    <div className="flex items-center gap-4">
+                      <FileText className="size-5 text-foreground" strokeWidth={2} />
+                      <div className="flex flex-col">
+                        <span className="text-[13px] font-mono uppercase tracking-widest text-muted-foreground mb-1">
+                          Attached Document
+                        </span>
+                        <span className="text-[16px] font-medium text-foreground tracking-tight">
+                          {fileLabel(a.file_path)}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex flex-col flex-1">
-                      <span className="text-base font-medium text-foreground group-hover:underline decoration-muted-foreground underline-offset-4">
-                        {fileLabel(a.file_path)}
-                      </span>
-                      <span className="text-sm text-muted-foreground">PDF Document</span>
-                    </div>
-                    <Download className="size-5 text-muted-foreground opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
+                    <Download className="size-5 text-muted-foreground transition-colors" strokeWidth={2} />
                   </a>
                 </div>
-              ) : (
-                <p className="text-sm text-muted-foreground py-4">
-                  The assignment file could not be loaded.
-                </p>
               )}
-          </section>
+            </section>
 
-          <section className="flex flex-col gap-4">
-            <CompletionControl
-              assignmentId={id}
-              initial={a.completion_pct}
-              hasSubmissions={submissions.length > 0}
-            />
-          </section>
+            {/* PROGRESS */}
+            <section className="flex flex-col gap-6 py-8 lg:py-10 lg:pr-10">
+              <h2 className="text-[14px] font-semibold text-foreground uppercase tracking-wider">Completion Status</h2>
+              <CompletionControl
+                assignmentId={id}
+                initial={a.completion_pct}
+                hasSubmissions={submissions.length > 0}
+              />
+            </section>
 
-          <section className="flex flex-col gap-5 mt-4">
-            <div className="mb-2">
-              <h2 className="text-lg font-semibold tracking-tight text-foreground">Submit your work</h2>
-              <p className="text-sm text-muted-foreground mt-1">
-                Upload your completed work as a PDF or photo (JPG/PNG).
-              </p>
-            </div>
-            <div>
+            {/* SUBMISSION */}
+            <section className="flex flex-col gap-6 py-8 lg:py-10 lg:pr-10">
+              <h2 className="text-[14px] font-semibold text-foreground uppercase tracking-wider">Submission</h2>
               <StudentSubmitPanel
                 assignmentId={id}
                 studentId={ctx.userId}
                 submissions={submissions}
               />
-            </div>
-          </section>
-        </div>
+            </section>
+          </div>
 
-        <div className="flex flex-col gap-12 lg:pl-4 lg:min-h-[500px]">
-          <section className="flex flex-col gap-6">
-            <h2 className="flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground border-b border-border/50 pb-3 mb-2">
-              <MessageSquare className="size-4 text-muted-foreground" />
-              Comments
-              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted/50 text-muted-foreground ml-auto">
-                {comments.length} {comments.length === 1 ? 'comment' : 'comments'}
-              </span>
-            </h2>
-            <div className="flex flex-col gap-8">
-              <LiveCommentThread
-                assignmentId={id}
-                initial={comments}
-                participants={participants}
-              />
-              <CommentComposer assignmentId={id} action={addComment} />
-            </div>
-          </section>
+          {/* EDITORIAL COLUMN: COMMENTS & ACTIONS */}
+          <aside className="flex flex-col divide-y divide-border bg-secondary/10">
+            <section className="flex flex-col gap-6 py-8 lg:py-10 lg:pl-10">
+              <h3 className="text-[14px] font-semibold text-foreground flex items-center justify-between uppercase tracking-wider">
+                <span>Comments</span>
+                <span className="text-muted-foreground bg-background border border-border/40 px-2 py-0.5 rounded-full text-xs">{comments.length}</span>
+              </h3>
+              
+              <div className="flex flex-col gap-6">
+                <LiveCommentThread
+                  assignmentId={id}
+                  initial={comments}
+                  participants={participants}
+                />
+                <CommentComposer assignmentId={id} action={addComment} />
+              </div>
+            </section>
 
-          <section className="flex flex-col gap-4 border-t border-border/50 pt-8">
-            <div>
-              <h3 className="text-base font-medium text-foreground">Keep the momentum going</h3>
-              <p className="mt-1 text-[14px] text-muted-foreground leading-relaxed">
+            <section className="flex flex-col gap-4 py-8 lg:py-10 lg:pl-10">
+              <h3 className="text-[18px] font-medium text-foreground tracking-tight">
+                Keep the momentum going
+              </h3>
+              <p className="text-[15px] leading-relaxed text-muted-foreground">
                 Ready to push your skills further? Request extra practice to keep improving.
               </p>
-            </div>
-            <RequestHomeworkButton
-              variant="outline"
-              className="w-full bg-transparent shadow-none"
-              label="Request extra practice"
-            />
-          </section>
+              <RequestHomeworkButton
+                variant="outline"
+                className="w-full mt-2 h-12 rounded-xl text-[15px] font-medium transition-colors"
+                label="Request extra practice"
+              />
+            </section>
+          </aside>
+
         </div>
-      </div>
+      </main>
     </div>
   );
 }

@@ -17,20 +17,24 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div className="mb-20 flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
       <div>
         {eyebrow && (
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-ink-faint">
+          <p className="font-mono text-[13px] uppercase tracking-[0.05em] text-muted-foreground">
             {eyebrow}
           </p>
         )}
-        <h1 className="mt-1.5 text-3xl sm:text-4xl">{title}</h1>
+        <h1 className="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">
+          {title}
+        </h1>
         {description && (
-          <p className="mt-2 max-w-2xl text-muted-foreground">{description}</p>
+          <p className="mt-4 max-w-2xl text-base sm:text-lg text-muted-foreground">
+            {description}
+          </p>
         )}
       </div>
       {actions && (
-        <div className="flex shrink-0 items-center gap-2.5">{actions}</div>
+        <div className="flex shrink-0 items-center gap-4">{actions}</div>
       )}
     </div>
   );

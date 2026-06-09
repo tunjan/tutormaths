@@ -21,7 +21,7 @@ import {
 export function RequestHomeworkButton({
   label = "Request more practice",
   icon,
-  variant = "outline",
+  variant = "default",
   className,
 }: {
   label?: string;
@@ -58,7 +58,7 @@ export function RequestHomeworkButton({
         <AlertDialogHeader>
           <AlertDialogTitle>Ready for more practice?</AlertDialogTitle>
           <AlertDialogDescription>
-            Your tutor will be notified that you'd like to keep improving with extra exercises.
+            Your tutor will be notified that you&apos;d like to keep improving with extra exercises.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -60,17 +60,16 @@ export function CommentComposer({
           }}
           rows={1}
           placeholder="Write a comment…"
-          className="min-h-11 flex-1 resize-none rounded-xl border border-line-strong bg-card px-3.5 py-2.5 text-sm leading-relaxed shadow-calm transition-colors placeholder:text-ink-faint focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-cobalt-soft)]"
+          className="min-h-[46px] flex-1 resize-none rounded-md border border-border bg-background px-3.5 py-2.5 text-[15px] leading-relaxed transition-colors placeholder:text-muted-foreground focus-visible:border-foreground focus-visible:outline-none"
         />
         <Button
           type="button"
-          size="icon"
           onClick={submit}
           disabled={pending || !value.trim()}
           aria-label="Post comment"
-          className="shrink-0 rounded-xl"
+          className="shrink-0 h-[46px] w-[46px] rounded-md"
         >
-          <Send />
+          <Send className="size-4" />
         </Button>
       </div>
     </div>

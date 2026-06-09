@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { BackLink } from "@/components/ui/back-link";
 import { AssignmentRow } from "@/components/assignment-row";
+import { MisoAssignmentGrid, MisoAssignmentCard } from "@/components/miso-assignment-card";
 import { cn } from "@/lib/utils";
 import { formatDate, type ReviewStatus } from "@/lib/format";
 
@@ -73,13 +74,33 @@ export default async function StudentDetailPage({
         <Stat label="Avg progress" value={`${avg}%`} />
       </div>
 
-      <Section title="Active assignments">
+      <div className="flex flex-col gap-10 lg:gap-16 my-8">
+        <div>
+          <h2 className="text-[56px] md:text-[72px] font-bold tracking-[-0.04em] text-[#111111] mb-2 leading-[0.95]">
+            Active assignments
+          </h2>
+          <p className="text-xl text-[#6B6B6B]">
+            Work currently in progress or awaiting your review.
+          </p>
+        </div>
         {active.length === 0 ? (
           <Empty>No active assignments.</Empty>
         ) : (
-          <AssignmentList items={active} />
+          <MisoAssignmentGrid>
+            {active.map((a) => (
+              <MisoAssignmentCard
+                key={a.id}
+                href={`/tutor/assignments/${a.id}`}
+                title={a.title}
+                type={a.type}
+                dueAt={a.due_at}
+                pct={a.completion_pct}
+                reviewStatus={a.review_status}
+              />
+            ))}
+          </MisoAssignmentGrid>
         )}
-      </Section>
+      </div>
 
       <Section title="History">
         {completed.length === 0 ? (

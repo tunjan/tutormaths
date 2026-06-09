@@ -11,13 +11,13 @@ import {
 const dueStyles: Record<Exclude<DueState, "done">, string> = {
   overdue: "border-border text-foreground",
   "due-soon": "border-border text-foreground",
-  upcoming: "border-transparent bg-secondary text-secondary-foreground",
+  upcoming: "border-transparent text-muted-foreground",
 };
 
 const reviewStyles: Record<Exclude<ReviewStatus, "assigned">, string> = {
-  submitted: "border-border text-muted-foreground",
-  approved: "border-transparent bg-secondary text-secondary-foreground",
-  needs_work: "border-border text-foreground font-medium",
+  submitted: "border-transparent text-muted-foreground",
+  approved: "border-transparent text-muted-foreground",
+  needs_work: "border-border text-foreground",
 };
 
 function content(status: AssignmentStatus): { label: string; className: string; dot?: string } {
@@ -52,7 +52,7 @@ export function AssignmentStatusBadge({
   return (
     <Badge
       variant="outline"
-      className={`gap-1.5 px-2 py-0.5 text-[11px] font-normal shadow-none rounded-md ${className}`}
+      className={`gap-1.5 shadow-none rounded-md px-2 py-0.5 text-[13px] font-normal border ${className}`}
     >
       <span className={`size-1.5 rounded-full ${dot}`} aria-hidden />
       {label}

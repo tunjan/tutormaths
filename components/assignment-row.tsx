@@ -1,3 +1,5 @@
+"use client";
+
 import { Link } from "next-view-transitions";
 import { BookOpen, ChevronRight, FileText } from "lucide-react";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
@@ -7,6 +9,7 @@ import {
   relativeTime,
   typeLabel,
 } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 export interface AssignmentRowProps {
   href: string;
@@ -50,59 +53,58 @@ export function AssignmentRow({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-4 py-3 transition-opacity duration-150 hover:opacity-70"
+      className="group relative flex items-center gap-5 py-4 px-3 -mx-3 rounded-lg transition-colors duration-150 hover:bg-accent/30"
     >
-      {student ? (
-        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-secondary text-xs font-medium text-foreground ring-1 ring-border/50">
-          {initials(student)}
-        </span>
-      ) : (
-        <span className="grid size-9 shrink-0 place-items-center rounded-md border border-border/40 bg-secondary/20 text-muted-foreground">
-          <TypeIcon className="size-4" strokeWidth={1.5} />
-        </span>
-      )}
-
-      <div className="min-w-0 flex-1 py-1">
-        <div className="flex items-center gap-2">
-          {unread && (
-            <span
-              className="size-1.5 shrink-0 rounded-full bg-foreground"
-              aria-label="Unread activity"
-            />
-          )}
-          <span className="truncate text-base font-normal text-foreground">
-            {title}
+      <div className="shrink-0 relative">
+        {student ? (
+          <span className="grid size-9 place-items-center rounded-full bg-secondary/50 text-[11px] font-semibold text-foreground">
+            {initials(student)}
           </span>
-        </div>
-        <div className="mt-1 flex items-center gap-3">
+        ) : (
+          <span className="grid size-9 place-items-center rounded-full bg-secondary/40 text-muted-foreground group-hover:text-foreground transition-colors">
+            <TypeIcon className="size-4" strokeWidth={1.5} />
+          </span>
+        )}
+
+        {unread && (
           <span
-            className="truncate text-sm text-muted-foreground"
-            title={formatDateTime(dueAt)}
-          >
+            className="absolute -top-1 -right-1 size-2 rounded-full bg-foreground"
+            aria-label="Unread activity"
+          />
+        )}
+      </div>
+
+      <div className="flex-1 min-w-0 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col gap-1 w-full max-w-sm">
+          <h3 className="text-[15px] font-medium text-foreground truncate">
+            {title}
+          </h3>
+          <span className="text-[13px] text-muted-foreground truncate">
             {meta}
           </span>
+        </div>
+
+        <div className="flex items-center gap-6 shrink-0">
           {showBar && (
-            <div className="flex items-center gap-2">
-              <span className="h-[2px] w-12 overflow-hidden rounded-full bg-border">
+            <div className="hidden sm:flex items-center gap-3">
+              <span className="h-[2px] w-16 overflow-hidden rounded-full bg-border">
                 <span
                   className="block h-full bg-foreground transition-all duration-500"
                   style={{ width: `${pct}%` }}
                 />
               </span>
-              <span className="tabular text-xs font-medium text-muted-foreground">
+              <span className="font-mono text-[11px] text-muted-foreground">
                 {pct}%
               </span>
             </div>
           )}
+          
+          <div className="hidden sm:block">
+            <AssignmentStatusBadge reviewStatus={reviewStatus} dueAt={dueAt} />
+          </div>
+          
+          <ChevronRight className="size-4 text-muted-foreground/30 transition-all group-hover:text-foreground group-hover:translate-x-0.5" strokeWidth={2} />
         </div>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-3">
-        <AssignmentStatusBadge reviewStatus={reviewStatus} dueAt={dueAt} />
-        <ChevronRight
-          className="size-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5 group-hover:text-foreground/60"
-          strokeWidth={1.5}
-        />
       </div>
     </Link>
   );
