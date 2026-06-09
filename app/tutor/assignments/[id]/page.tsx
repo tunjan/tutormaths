@@ -16,6 +16,7 @@ import { ReviewControls } from "@/components/review-controls";
 import { SubmissionList } from "@/components/submission-list";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { BackLink } from "@/components/ui/back-link";
+import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -75,20 +76,27 @@ export default async function TutorAssignmentPage({
   return (
     <div className="flex flex-col gap-10">
       <MarkAssignmentRead assignmentId={id} />
-      <header className="flex flex-col gap-3">
-        <BackLink href="/tutor">Dashboard</BackLink>
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="text-3xl">{a.title}</h1>
-          <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
+      <header className="flex flex-col gap-4">
+        <BackLink href="/tutor">Back to dashboard</BackLink>
+        <div className="flex flex-col gap-4">
+          <h1 className="text-display tracking-tight text-foreground mb-1">{a.title}</h1>
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
+            <span className="flex items-center gap-1.5">
+              <span>{student?.full_name || student?.email}</span>
+            </span>
+            <span className="hidden sm:inline">&middot;</span>
+            <span className="hidden sm:inline">Algebra &middot; Quadratics</span>
+            <span>&middot;</span>
+            <span className="capitalize">{typeLabel(a.type)}</span>
+            <span>&middot;</span>
+            <span>Due {formatDateTime(a.due_at)}</span>
+          </div>
         </div>
-        <p className="text-sm text-muted-foreground">
-          {student?.full_name || student?.email} · {typeLabel(a.type)} · due{" "}
-          {formatDateTime(a.due_at)}
-        </p>
         {a.student_opened_at ? (
           <p className="flex items-center gap-1.5 text-sm text-success">
             <Eye className="size-4 shrink-0" />
-            Opened by student · {formatDateTime(a.student_opened_at)}
+            Opened by student &middot; {formatDateTime(a.student_opened_at)}
           </p>
         ) : (
           <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -99,7 +107,7 @@ export default async function TutorAssignmentPage({
         {a.description && (
           <p className="whitespace-pre-wrap text-sm">{a.description}</p>
         )}
-        <div className="max-w-sm">
+        <div className="max-w-sm pt-2">
           <ProgressBar value={a.completion_pct} />
           <p className="mt-1 text-xs text-muted-foreground">
             Student-reported progress: {a.completion_pct}%

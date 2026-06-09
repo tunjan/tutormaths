@@ -22,6 +22,8 @@ const badgeVariants = cva(
         // Soft semantic tints — the reference's status-chip palette.
         accent:
           "bg-[var(--accent-cobalt-soft)] text-[var(--accent-cobalt-ink)]",
+        "accent-alt":
+          "bg-[var(--accent-teal-soft)] text-[var(--accent-teal-ink)]",
         success: "bg-success-muted text-success",
         warning: "bg-warning-muted text-warning",
         info: "bg-info-muted text-info",

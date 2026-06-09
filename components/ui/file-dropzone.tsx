@@ -54,11 +54,11 @@ export function FileDropzone({
       aria-disabled={!interactive}
       aria-live="polite"
       className={cn(
-        "flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed px-6 py-10 text-center text-sm transition focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+        "flex flex-col items-center justify-center gap-2 rounded-[8px] border border-dashed px-6 py-8 text-center text-sm transition-colors focus-within:outline-none focus-within:ring-1 focus-within:ring-foreground",
         interactive ? "cursor-pointer" : "cursor-default opacity-80",
         dragging
-          ? "border-primary bg-primary/5 text-primary"
-          : "border-border bg-muted/30 text-muted-foreground hover:border-primary/60",
+          ? "border-foreground bg-accent/30 text-foreground"
+          : "border-border bg-transparent text-muted-foreground hover:border-foreground/40",
       )}
     >
       {busy ? (

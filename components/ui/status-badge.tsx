@@ -9,26 +9,32 @@ import {
 } from "@/lib/format";
 
 const dueStyles: Record<Exclude<DueState, "done">, string> = {
-  overdue: "border-transparent bg-destructive-muted text-destructive",
-  "due-soon": "border-transparent bg-warning-muted text-warning",
-  upcoming: "border-border text-muted-foreground",
+  overdue: "border-border text-foreground",
+  "due-soon": "border-border text-foreground",
+  upcoming: "border-transparent bg-secondary text-secondary-foreground",
 };
 
 const reviewStyles: Record<Exclude<ReviewStatus, "assigned">, string> = {
-  // Awaiting review is the tutor's call to action — a quiet steel blue.
-  submitted: "border-transparent bg-info-muted text-info",
-  // Approved reads positively — a calm, muted green.
-  approved: "border-transparent bg-success-muted text-success",
-  // "Changes requested" is an action the student must take — soft amber, kept
-  // calm but distinct from the pale "Due soon" chip via its filled tint.
-  needs_work: "border-transparent bg-warning-muted text-warning",
+  submitted: "border-border text-muted-foreground",
+  approved: "border-transparent bg-secondary text-secondary-foreground",
+  needs_work: "border-border text-foreground font-medium",
 };
 
-function content(status: AssignmentStatus): { label: string; className: string } {
+function content(status: AssignmentStatus): { label: string; className: string; dot?: string } {
   if (status.kind === "review") {
-    return { label: reviewLabel(status.review), className: reviewStyles[status.review] };
+    const isNeedsWork = status.review === "needs_work";
+    return { 
+      label: reviewLabel(status.review), 
+      className: reviewStyles[status.review],
+      dot: isNeedsWork ? "bg-foreground" : "bg-muted-foreground"
+    };
   }
-  return { label: dueLabel(status.due), className: dueStyles[status.due] };
+  const isOverdue = status.due === "overdue";
+  return { 
+    label: dueLabel(status.due), 
+    className: dueStyles[status.due],
+    dot: isOverdue ? "bg-foreground" : "bg-muted-foreground"
+  };
 }
 
 /**
@@ -42,13 +48,13 @@ export function AssignmentStatusBadge({
   reviewStatus: ReviewStatus;
   dueAt: string;
 }) {
-  const { label, className } = content(assignmentStatus(reviewStatus, dueAt));
+  const { label, className, dot } = content(assignmentStatus(reviewStatus, dueAt));
   return (
     <Badge
       variant="outline"
-      className={`gap-1.5 px-2.5 py-1 text-xs font-medium ${className}`}
+      className={`gap-1.5 px-2 py-0.5 text-[11px] font-normal shadow-none rounded-md ${className}`}
     >
-      <span className="size-1.5 rounded-full bg-current" aria-hidden />
+      <span className={`size-1.5 rounded-full ${dot}`} aria-hidden />
       {label}
     </Badge>
   );

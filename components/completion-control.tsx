@@ -1,11 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Target, ArrowUp } from "lucide-react";
 import { toast } from "sonner";
 import { updateCompletion } from "@/app/student/actions";
 import { Slider } from "@/components/ui/slider";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -57,67 +55,52 @@ export function CompletionControl({
   const needsToSubmit = pct >= 100 && !hasSubmissions;
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Target className="size-5 text-muted-foreground" />
-          <h3 className="text-lg font-medium">Progress</h3>
-        </div>
-        <span className="text-2xl font-semibold tabular">{pct}%</span>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <h3 className="text-base font-medium">Progress</h3>
+        <p className="text-sm text-muted-foreground">
+          Track your completion. Marking as 100% does not submit your work.
+        </p>
       </div>
 
-      <Progress value={pct} aria-label="Completion" />
-
-      <div className="flex items-center gap-3">
-        <Slider
-          value={[pct]}
-          min={0}
-          max={100}
-          step={5}
-          onValueChange={(v) => setPct(Array.isArray(v) ? v[0] : v)}
-          onValueCommitted={(v) => save(Array.isArray(v) ? v[0] : v)}
-          className="flex-1"
-        />
-        <div className="relative w-20 shrink-0">
-          <input
-            type="number"
-            min={0}
-            max={100}
-            value={pct}
-            aria-label="Completion percentage"
-            onChange={(e) => setPct(clamp(Number(e.target.value)))}
-            onBlur={() => save(pct)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") e.currentTarget.blur();
-            }}
-            className="h-10 w-full rounded-xl border border-line-strong bg-card pr-7 pl-3 text-sm tabular shadow-calm transition-colors focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-cobalt-soft)] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-          />
-          <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm text-muted-foreground">
-            %
-          </span>
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center gap-5">
+          <span className="text-2xl font-semibold tracking-tight tabular-nums w-14">{pct}%</span>
+          <div className="flex-1">
+            <Slider
+              value={[pct]}
+              min={0}
+              max={100}
+              step={5}
+              onValueChange={(v) => setPct(Array.isArray(v) ? v[0] : v)}
+              onValueCommitted={(v) => save(Array.isArray(v) ? v[0] : v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <Button
-          type="button"
-          onClick={() => save(100)}
-          disabled={pending || pct >= 100}
-        >
-          Mark as done
-        </Button>
+        
+        <div>
+          <Button
+            onClick={() => save(100)}
+            disabled={pct === 100 || pending}
+            className="bg-foreground text-background hover:bg-foreground/90 rounded-[6px] shadow-none h-9 px-4 text-[14px] font-medium transition-colors"
+          >
+            Mark as done
+          </Button>
+        </div>
       </div>
 
       {needsToSubmit && (
         <div
-          className="flex items-start gap-2 rounded-lg bg-warning-muted px-3 py-2.5 text-sm text-warning"
+          className="text-sm text-muted-foreground"
           role="status"
         >
-          <ArrowUp className="mt-0.5 size-4 shrink-0" />
-          <span>
-            You&rsquo;ve marked this done — but your tutor only sees it once you
-            hand it in. Upload your work in{" "}
-            <span className="font-medium">Submit your work</span> below.
+          <span className="block border-l-2 border-border pl-3 py-0.5">
+            You&rsquo;ve marked this done. Don&rsquo;t forget to upload your work below to hand it in.
           </span>
         </div>
       )}
     </div>
   );
 }
+

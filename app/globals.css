@@ -5,145 +5,149 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================================================
-   Maths Tasks — "scholarly graph-paper" design language.
-   Warm paper surfaces, ink text, one confident cobalt accent (the marker pen),
-   a characterful serif for headings, and mono numerals for data. The reference
-   palette is mapped onto the app's existing semantic token names so every
-   component inherits the look. Light + dark are both supported.
+   OpenAI-inspired Design Language
+   Monochromatic, minimalistic, precise.
    ========================================================================== */
 :root {
   /* Paper / surfaces */
-  --background: oklch(0.985 0.006 95);      /* warm exercise-book paper   */
-  --foreground: oklch(0.23 0.02 265);       /* ink — primary text         */
+  --background: #FFFFFF;
+  --foreground: #0D0D0D;
 
-  --card: oklch(1 0 0);                      /* white sheet on the desk    */
-  --card-foreground: oklch(0.23 0.02 265);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.23 0.02 265);
+  --card: #FFFFFF;
+  --card-foreground: #0D0D0D;
+  --popover: #FFFFFF;
+  --popover-foreground: #0D0D0D;
 
-  /* Primary actions: confident cobalt. */
-  --primary: oklch(0.55 0.19 256);
-  --primary-foreground: oklch(0.99 0 0);
+  /* Primary actions: Vibrant Cobalt */
+  --primary: #2563EB;
+  --primary-foreground: #FFFFFF;
 
-  /* Secondary / muted / hover all share the warm inset tint. */
-  --secondary: oklch(0.975 0.006 95);
-  --secondary-foreground: oklch(0.23 0.02 265);
-  --muted: oklch(0.975 0.006 95);
-  --muted-foreground: oklch(0.45 0.02 265);  /* ink-soft */
-  --accent: oklch(0.96 0.006 95);            /* hover wash */
-  --accent-foreground: oklch(0.23 0.02 265);
+  /* Secondary / muted */
+  --secondary: #F9F9F9;
+  --secondary-foreground: #0D0D0D;
+  --muted: #F9F9F9;
+  --muted-foreground: #6B6B6B;
+  --accent: #ECECEC;
+  --accent-foreground: #0D0D0D;
 
-  /* Status — semantic tints. Text uses the saturated step, fills a soft wash. */
-  --destructive: oklch(0.58 0.21 27);
-  --destructive-muted: oklch(0.96 0.04 27);
-  --warning: oklch(0.66 0.14 70);
-  --warning-muted: oklch(0.96 0.06 80);
-  --info: oklch(0.6 0.12 230);
-  --info-muted: oklch(0.95 0.04 230);
-  --success: oklch(0.62 0.15 152);
-  --success-muted: oklch(0.95 0.05 152);
+  /* Status */
+  --destructive: #ef4444;
+  --destructive-muted: #fee2e2;
+  --warning: #f59e0b;
+  --warning-muted: #fef3c7;
+  --info: #3b82f6;
+  --info-muted: #dbeafe;
+  --success: #10b981;
+  --success-muted: #d1fae5;
 
-  /* App backdrop used by auth screens / inset panels. */
-  --surface: oklch(0.975 0.006 95);
+  --surface: #F9F9F9;
 
-  /* Lines & dividers. */
-  --border: oklch(0.91 0.008 265);
-  --input: oklch(0.91 0.008 265);
-  --ring: oklch(0.55 0.19 256);              /* cobalt focus ring */
+  /* Lines & dividers */
+  --border: #E5E5E5;
+  --input: #E5E5E5;
+  --ring: #2563EB; /* vibrant focus ring */
 
-  /* --- Extra tokens unique to the graph-paper language --- */
-  --ink-faint: oklch(0.62 0.015 265);        /* tertiary text / hints */
-  --line-strong: oklch(0.84 0.01 265);       /* field borders */
-  --grid: oklch(0.93 0.01 250);              /* graph-paper rule lines */
-  --accent-cobalt-soft: oklch(0.95 0.04 256);
-  --accent-cobalt-ink: oklch(0.40 0.16 256);
-  --accent-cobalt-hover: oklch(0.49 0.19 256);
-  --overlay: oklch(0.22 0.02 265 / 0.45);
-  --tutor: oklch(0.55 0.19 256);             /* cobalt */
-  --student: oklch(0.58 0.14 162);           /* teal-green */
+  /* Extra tokens mapped to grayscale for legacy compatibility */
+  --line-strong: #E5E5E5;
+  --overlay: rgba(0, 0, 0, 0.4);
 
-  --shadow-calm: 0 1px 2px oklch(0.23 0.02 265 / 0.05);
+  --shadow-calm: 0 0 10px rgba(0,0,0,0.02);
 
-  --chart-1: oklch(0.55 0.19 256);
-  --chart-2: oklch(0.58 0.14 162);
-  --chart-3: oklch(0.66 0.14 70);
-  --chart-4: oklch(0.6 0.12 230);
-  --chart-5: oklch(0.58 0.21 27);
+  --ink-faint: #B4B4B4;
+  --accent-cobalt-soft: #EFF6FF;
+  --accent-cobalt-ink: #1D4ED8;
+  --accent-cobalt-hover: #DBEAFE;
+  
+  --accent-teal-soft: #F0FDFA;
+  --accent-teal-ink: #0F766E;
+  --accent-teal-hover: #CCFBF1;
 
-  /* Sidebar (kept for completeness; mirrors surfaces). */
-  --sidebar: oklch(0.985 0.006 95);
-  --sidebar-foreground: oklch(0.23 0.02 265);
-  --sidebar-primary: oklch(0.55 0.19 256);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.96 0.006 95);
-  --sidebar-accent-foreground: oklch(0.23 0.02 265);
-  --sidebar-border: oklch(0.91 0.008 265);
-  --sidebar-ring: oklch(0.55 0.19 256);
+  --tutor: #2563EB;
+  --student: #0D9488;
+
+  --chart-1: #0D0D0D;
+  --chart-2: #6B6B6B;
+  --chart-3: #E5E5E5;
+  --chart-4: #ECECEC;
+  --chart-5: #F9F9F9;
+
+  /* Sidebar */
+  --sidebar: #F9F9F9;
+  --sidebar-foreground: #0D0D0D;
+  --sidebar-primary: #0D0D0D;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #ECECEC;
+  --sidebar-accent-foreground: #0D0D0D;
+  --sidebar-border: #E5E5E5;
+  --sidebar-ring: #0D0D0D;
 }
 
 .dark {
-  /* Dark paper: deep warm charcoal with the same cobalt marker. */
-  --background: oklch(0.2 0.012 265);
-  --foreground: oklch(0.95 0.005 95);
+  --background: #212121;
+  --foreground: #ECECEC;
 
-  --card: oklch(0.24 0.013 265);
-  --card-foreground: oklch(0.95 0.005 95);
-  --popover: oklch(0.24 0.013 265);
-  --popover-foreground: oklch(0.95 0.005 95);
+  --card: #212121;
+  --card-foreground: #ECECEC;
+  --popover: #212121;
+  --popover-foreground: #ECECEC;
 
-  --primary: oklch(0.64 0.17 256);
-  --primary-foreground: oklch(0.99 0 0);
+  --primary: #3B82F6;
+  --primary-foreground: #FFFFFF;
 
-  --secondary: oklch(0.27 0.013 265);
-  --secondary-foreground: oklch(0.95 0.005 95);
-  --muted: oklch(0.27 0.013 265);
-  --muted-foreground: oklch(0.72 0.012 265);
-  --accent: oklch(0.29 0.013 265);
-  --accent-foreground: oklch(0.95 0.005 95);
+  --secondary: #171717;
+  --secondary-foreground: #ECECEC;
+  --muted: #171717;
+  --muted-foreground: #B4B4B4;
+  --accent: #2F2F2F;
+  --accent-foreground: #ECECEC;
 
-  --destructive: oklch(0.66 0.2 27);
-  --destructive-muted: oklch(0.66 0.2 27 / 0.18);
-  --warning: oklch(0.78 0.14 75);
-  --warning-muted: oklch(0.78 0.14 75 / 0.18);
-  --info: oklch(0.68 0.12 230);
-  --info-muted: oklch(0.68 0.12 230 / 0.18);
-  --success: oklch(0.72 0.15 152);
-  --success-muted: oklch(0.72 0.15 152 / 0.18);
+  --destructive: #ef4444;
+  --destructive-muted: rgba(239, 68, 68, 0.2);
+  --warning: #f59e0b;
+  --warning-muted: rgba(245, 158, 11, 0.2);
+  --info: #3b82f6;
+  --info-muted: rgba(59, 130, 246, 0.2);
+  --success: #10b981;
+  --success-muted: rgba(16, 185, 129, 0.2);
 
-  --surface: oklch(0.2 0.012 265);
+  --surface: #212121;
 
-  --border: oklch(0.32 0.012 265);
-  --input: oklch(0.34 0.012 265);
-  --ring: oklch(0.64 0.17 256);
+  --border: #424242;
+  --input: #424242;
+  --ring: #3B82F6;
 
-  --ink-faint: oklch(0.58 0.012 265);
-  --line-strong: oklch(0.4 0.012 265);
-  --grid: oklch(1 0 0 / 0.035);
-  --accent-cobalt-soft: oklch(0.64 0.17 256 / 0.16);
-  --accent-cobalt-ink: oklch(0.78 0.12 256);
-  --accent-cobalt-hover: oklch(0.7 0.17 256);
-  --overlay: oklch(0.12 0.02 265 / 0.6);
-  --tutor: oklch(0.64 0.17 256);
-  --student: oklch(0.68 0.13 162);
+  --line-strong: #424242;
+  --overlay: rgba(0, 0, 0, 0.6);
 
-  --shadow-calm: 0 1px 2px oklch(0 0 0 / 0.4);
+  --shadow-calm: 0 0 10px rgba(0,0,0,0.2);
 
-  --sidebar: oklch(0.2 0.012 265);
-  --sidebar-foreground: oklch(0.95 0.005 95);
-  --sidebar-primary: oklch(0.64 0.17 256);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.29 0.013 265);
-  --sidebar-accent-foreground: oklch(0.95 0.005 95);
-  --sidebar-border: oklch(0.32 0.012 265);
-  --sidebar-ring: oklch(0.64 0.17 256);
+  --ink-faint: #6B6B6B;
+  --accent-cobalt-soft: rgba(59, 130, 246, 0.15);
+  --accent-cobalt-ink: #93C5FD;
+  --accent-cobalt-hover: rgba(59, 130, 246, 0.25);
+
+  --accent-teal-soft: rgba(20, 184, 166, 0.15);
+  --accent-teal-ink: #5EEAD4;
+  --accent-teal-hover: rgba(20, 184, 166, 0.25);
+
+  --tutor: #3B82F6;
+  --student: #14B8A6;
+
+  --sidebar: #171717;
+  --sidebar-foreground: #ECECEC;
+  --sidebar-primary: #ECECEC;
+  --sidebar-primary-foreground: #212121;
+  --sidebar-accent: #2F2F2F;
+  --sidebar-accent-foreground: #ECECEC;
+  --sidebar-border: #424242;
+  --sidebar-ring: #ECECEC;
 }
 
 @theme inline {
-  /* Fonts — wired up in layout.tsx via next/font. */
-  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
-  --font-heading: var(--font-fraunces), Georgia, "Times New Roman", serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -172,11 +176,13 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Graph-paper extras, exposed as utilities (text-ink-faint, border-line-strong, …). */
-  --color-ink-faint: var(--ink-faint);
   --color-line-strong: var(--line-strong);
+  
+  --color-ink-faint: var(--ink-faint);
   --color-cobalt-soft: var(--accent-cobalt-soft);
   --color-cobalt-ink: var(--accent-cobalt-ink);
+  --color-teal-soft: var(--accent-teal-soft);
+  --color-teal-ink: var(--accent-teal-ink);
   --color-tutor: var(--tutor);
   --color-student: var(--student);
 
@@ -199,30 +205,31 @@
   --color-text-primary: var(--foreground);
   --color-text-secondary: var(--muted-foreground);
   --color-brand: var(--primary);
-  --color-brand-hover: var(--accent-cobalt-hover);
+  --color-brand-hover: var(--accent);
 
-  /* Radii — a touch rounder than stock, to read as soft paper cards. */
-  --radius-lg: 0.875rem;
-  --radius-xl: 1.125rem;
-  --radius-2xl: 1.375rem;
+  /* Minimal Radii */
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.5rem;
 
-  /* Display type carries tight tracking — the typographic signature. */
+  /* Typography */
   --text-display: 2.5rem;
-  --text-display--line-height: 1.1;
+  --text-display--line-height: 1.2;
   --text-display--letter-spacing: -0.02em;
   --text-h1: 2rem;
-  --text-h1--line-height: 1.15;
-  --text-h1--letter-spacing: -0.018em;
+  --text-h1--line-height: 1.2;
+  --text-h1--letter-spacing: -0.02em;
   --text-h2: 1.5rem;
-  --text-h2--line-height: 1.25;
+  --text-h2--line-height: 1.3;
   --text-h2--letter-spacing: -0.015em;
 
-  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Fast, instant transitions */
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
 
-  --duration-micro: 150ms;
-  --duration-panel: 250ms;
-  --duration-page: 300ms;
+  --duration-micro: 100ms;
+  --duration-panel: 150ms;
+  --duration-page: 150ms;
 }
 
 @layer base {
@@ -238,39 +245,41 @@
   body {
     @apply bg-background text-foreground;
     min-height: 100dvh;
+    line-height: 1.5;
   }
   html {
     @apply font-sans antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  /* Headings take the characterful serif. */
+  /* Headings */
   h1, h2, h3, h4 {
-    font-family: var(--font-display);
+    font-family: var(--font-heading);
     letter-spacing: -0.015em;
+    font-weight: 500;
   }
 
   ::selection {
-    background: var(--accent-cobalt-soft);
-    color: var(--accent-cobalt-ink);
+    background: var(--accent);
+    color: var(--foreground);
   }
 
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-thumb {
-    background: var(--line-strong);
-    border-radius: 999px;
-    border: 2px solid var(--background);
+    background: var(--border);
+    border-radius: 4px;
+    border: 1px solid var(--background);
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--ink-faint);
+    background: var(--muted-foreground);
   }
 
   [data-slot="alert-dialog-content"],
   [data-slot="popover-content"] {
-    transition: display 0.15s allow-discrete, overlay 0.15s allow-discrete, opacity 0.15s ease-out, transform 0.15s ease-out;
+    transition: display 0.1s allow-discrete, overlay 0.1s allow-discrete, opacity 0.1s ease-out, transform 0.1s ease-out;
   }
 
   @starting-style {
@@ -279,7 +288,7 @@
     [data-slot="popover-content"][data-state="open"],
     [data-slot="popover-content"][data-open] {
       opacity: 0;
-      transform: scale(0.95);
+      transform: scale(0.98);
     }
   }
 
@@ -297,21 +306,9 @@
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-@keyframes rise {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes pop {
-  0% { opacity: 0; transform: scale(0.96); }
-  100% { opacity: 1; transform: scale(1); }
-}
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
-}
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 var(--accent-cobalt-soft); }
-  50% { box-shadow: 0 0 0 4px transparent; }
 }
 
 @layer utilities {
@@ -319,45 +316,37 @@
     font-family: var(--font-display);
   }
 
-  /* Mono numerals read as "data" wherever they appear. */
   .tabular {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.01em;
   }
 
-  /* A white sheet sitting on the desk over the grid. */
   .surface-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-calm);
+    border-radius: var(--radius-lg);
   }
 
+  .animate-fade-in {
+    animation: fade-in 0.15s var(--ease-out-soft) both;
+  }
   .animate-rise {
-    animation: rise 0.5s var(--ease-out-soft) both;
+    animation: fade-in 0.15s var(--ease-out-soft) both;
   }
   .animate-pop {
-    animation: pop 0.35s var(--ease-spring) both;
-  }
-  .animate-fade-in {
-    animation: fade-in 0.4s var(--ease-out-soft) both;
+    animation: fade-in 0.15s var(--ease-out-soft) both;
   }
 
-  .pulse-glow {
-    animation: pulse-glow 2s var(--ease-out-soft) infinite;
-  }
-
-  /* Gentle staggered entrance for list rows. */
   .stagger-children > * {
-    animation: rise 0.5s var(--ease-out-soft) both;
+    animation: fade-in 0.2s var(--ease-out-soft) both;
   }
   .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
-  .stagger-children > *:nth-child(2) { animation-delay: 40ms; }
-  .stagger-children > *:nth-child(3) { animation-delay: 80ms; }
-  .stagger-children > *:nth-child(4) { animation-delay: 120ms; }
-  .stagger-children > *:nth-child(5) { animation-delay: 160ms; }
-  .stagger-children > *:nth-child(6) { animation-delay: 200ms; }
+  .stagger-children > *:nth-child(2) { animation-delay: 20ms; }
+  .stagger-children > *:nth-child(3) { animation-delay: 40ms; }
+  .stagger-children > *:nth-child(4) { animation-delay: 60ms; }
+  .stagger-children > *:nth-child(5) { animation-delay: 80ms; }
+  .stagger-children > *:nth-child(6) { animation-delay: 100ms; }
 }
 
 .shimmer {
@@ -373,9 +362,5 @@
 }
 
 .progress-gradient {
-  background-image: linear-gradient(
-    90deg,
-    var(--color-primary),
-    color-mix(in srgb, var(--color-primary) 65%, transparent)
-  );
+  background: var(--primary);
 }

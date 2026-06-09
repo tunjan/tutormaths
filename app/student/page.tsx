@@ -24,57 +24,36 @@ export default async function StudentDashboard() {
   const completed = all.filter((a) => a.review_status === "approved");
 
   return (
-    <div className="animate-rise">
+    <div className="mx-auto max-w-3xl animate-rise">
       <PageHeader
-        eyebrow="My homework"
         title="My practice"
         description="Your assignments, with progress you control."
         actions={<RequestHomeworkButton />}
       />
 
-      <div className="mb-4 flex items-baseline justify-between">
-        <h2 className="text-xl">Active</h2>
-        <span className="tabular text-sm text-ink-faint">
+      <div className="mb-4 mt-12 flex items-baseline justify-between border-b border-border/40 pb-2">
+        <h2 className="text-sm font-medium tracking-tight text-foreground">Active Tasks</h2>
+        <span className="tabular text-xs text-muted-foreground">
           {active.length} task{active.length === 1 ? "" : "s"}
         </span>
       </div>
 
       {active.length === 0 ? (
-        <div className="surface-card flex flex-col items-center gap-3 px-6 py-14 text-center">
-          <span className="grid size-14 place-items-center rounded-full bg-success-muted text-success">
-            <CheckCircle2 className="size-6" />
-          </span>
-          <h3 className="text-xl">Nothing due right now</h3>
-          <p className="max-w-sm text-sm text-muted-foreground">
-            {completed.length > 0
-              ? "You're all caught up. Want a head start? Ask for more."
-              : "Use “Request more practice” above when you’re ready for work."}
-          </p>
+        <div className="flex flex-col items-center gap-4 py-24 text-center animate-fade-in">
+          <div className="space-y-2">
+            <h3 className="text-base font-normal text-foreground">Nothing due right now</h3>
+            <p className="max-w-sm text-sm text-muted-foreground">
+              {completed.length > 0
+                ? "You're all caught up. Want a head start? Ask for more."
+                : "Use “Request more practice” above when you’re ready for work."}
+            </p>
+          </div>
         </div>
       ) : (
-        <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-calm">
+        <div className="divide-y divide-border/40 stagger-children mb-12">
           {active.map((a) => (
-            <AssignmentRow
-              key={a.id}
-              href={`/student/assignments/${a.id}`}
-              title={a.title}
-              type={a.type}
-              dueAt={a.due_at}
-              pct={a.completion_pct}
-              reviewStatus={a.review_status}
-              unread={unread.has(a.id)}
-            />
-          ))}
-        </div>
-      )}
-
-      {completed.length > 0 && (
-        <>
-          <h2 className="mb-4 mt-9 text-xl">Completed</h2>
-          <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-calm">
-            {completed.map((a) => (
+            <div key={a.id} className="group/row animate-fade-in">
               <AssignmentRow
-                key={a.id}
                 href={`/student/assignments/${a.id}`}
                 title={a.title}
                 type={a.type}
@@ -83,9 +62,35 @@ export default async function StudentDashboard() {
                 reviewStatus={a.review_status}
                 unread={unread.has(a.id)}
               />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {completed.length > 0 && (
+        <div className="animate-fade-in mt-12" style={{ animationDelay: '200ms' }}>
+          <div className="mb-4 flex items-baseline justify-between border-b border-border/40 pb-2">
+            <h2 className="text-sm font-medium tracking-tight text-foreground">Completed</h2>
+            <span className="tabular text-xs text-muted-foreground">
+              {completed.length} task{completed.length === 1 ? "" : "s"}
+            </span>
+          </div>
+          <div className="divide-y divide-border/40 stagger-children opacity-80 transition-opacity hover:opacity-100">
+            {completed.map((a) => (
+              <div key={a.id} className="group/row animate-fade-in">
+                <AssignmentRow
+                  href={`/student/assignments/${a.id}`}
+                  title={a.title}
+                  type={a.type}
+                  dueAt={a.due_at}
+                  pct={a.completion_pct}
+                  reviewStatus={a.review_status}
+                  unread={unread.has(a.id)}
+                />
+              </div>
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   );

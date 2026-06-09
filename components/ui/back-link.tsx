@@ -1,5 +1,5 @@
 import { Link } from "next-view-transitions";
-import { ChevronLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -23,11 +23,11 @@ export function BackLink({
     <Link
       href={href}
       className={cn(
-        "group inline-flex w-fit items-center gap-1 rounded-full py-1 pr-3.5 pl-2 text-sm text-muted-foreground ring-1 ring-border ring-inset transition-colors hover:bg-accent hover:text-foreground",
+        "group inline-flex w-fit items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
         className,
       )}
     >
-      <ChevronLeft className="size-4 transition-transform duration-200 ease-out group-hover:-translate-x-0.5" />
+      <ArrowLeft className="size-4 transition-transform duration-200 ease-out group-hover:-translate-x-0.5" />
       {children}
     </Link>
   );

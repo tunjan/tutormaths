@@ -29,6 +29,7 @@ export function Modal({
 }) {
   // Only render the portal after mount so SSR and the first client render match.
   const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {

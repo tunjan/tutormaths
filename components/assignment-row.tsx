@@ -31,24 +31,6 @@ function initials(name: string): string {
     .toUpperCase();
 }
 
-/** A stable, pleasant avatar tint derived from the name — gives each student a
- *  recognisable colour, in the spirit of the reference's coloured avatars. */
-function tintFor(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const hue = Math.abs(hash) % 360;
-  return `oklch(0.62 0.13 ${hue})`;
-}
-
-/** Progress fill colour by completion — amber getting going, cobalt underway,
- *  green when done. */
-function barTone(pct: number): string {
-  if (pct >= 100) return "var(--success)";
-  if (pct >= 50) return "var(--primary)";
-  if (pct > 0) return "oklch(0.7 0.14 75)";
-  return "var(--line-strong)";
-}
-
 export function AssignmentRow({
   href,
   title,
@@ -68,57 +50,60 @@ export function AssignmentRow({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-4 px-5 py-4 transition-colors duration-200 hover:bg-accent active:bg-accent/70"
+      className="group flex items-center gap-4 py-3 transition-opacity duration-150 hover:opacity-70"
     >
       {student ? (
-        <span
-          className="grid size-10 shrink-0 place-items-center rounded-full text-xs font-semibold text-white ring-2 ring-card"
-          style={{ backgroundColor: tintFor(student) }}
-        >
+        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-secondary text-xs font-medium text-foreground ring-1 ring-border/50">
           {initials(student)}
         </span>
       ) : (
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-muted text-muted-foreground">
-          <TypeIcon className="size-[1.05rem]" />
+        <span className="grid size-9 shrink-0 place-items-center rounded-md border border-border/40 bg-secondary/20 text-muted-foreground">
+          <TypeIcon className="size-4" strokeWidth={1.5} />
         </span>
       )}
 
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 py-1">
         <div className="flex items-center gap-2">
           {unread && (
             <span
-              className="pulse-glow size-2 shrink-0 rounded-full bg-primary"
+              className="size-1.5 shrink-0 rounded-full bg-foreground"
               aria-label="Unread activity"
             />
           )}
-          <span className="truncate text-[0.95rem] font-medium text-foreground">
+          <span className="truncate text-base font-normal text-foreground">
             {title}
           </span>
         </div>
-        <p
-          className="mt-0.5 truncate text-sm text-ink-faint"
-          title={formatDateTime(dueAt)}
-        >
-          {meta}
-        </p>
+        <div className="mt-1 flex items-center gap-3">
+          <span
+            className="truncate text-sm text-muted-foreground"
+            title={formatDateTime(dueAt)}
+          >
+            {meta}
+          </span>
+          {showBar && (
+            <div className="flex items-center gap-2">
+              <span className="h-[2px] w-12 overflow-hidden rounded-full bg-border">
+                <span
+                  className="block h-full bg-foreground transition-all duration-500"
+                  style={{ width: `${pct}%` }}
+                />
+              </span>
+              <span className="tabular text-xs font-medium text-muted-foreground">
+                {pct}%
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
-      {showBar && (
-        <div className="hidden w-28 items-center gap-2 md:flex">
-          <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted ring-1 ring-inset ring-border">
-            <span
-              className="block h-full rounded-full transition-[width] duration-500"
-              style={{ width: `${pct}%`, backgroundColor: barTone(pct) }}
-            />
-          </span>
-          <span className="tabular w-8 shrink-0 text-right text-xs text-muted-foreground">
-            {pct}%
-          </span>
-        </div>
-      )}
-
-      <AssignmentStatusBadge reviewStatus={reviewStatus} dueAt={dueAt} />
-      <ChevronRight className="size-4 shrink-0 text-ink-faint/50 transition-transform group-hover:translate-x-0.5 group-hover:text-ink-faint" />
+      <div className="flex shrink-0 items-center gap-3">
+        <AssignmentStatusBadge reviewStatus={reviewStatus} dueAt={dueAt} />
+        <ChevronRight
+          className="size-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5 group-hover:text-foreground/60"
+          strokeWidth={1.5}
+        />
+      </div>
     </Link>
   );
 }

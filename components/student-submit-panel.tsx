@@ -63,8 +63,8 @@ export function StudentSubmitPanel({
 
       {hasWork && (
         <div className="flex items-center justify-between gap-3">
-          <p className="flex items-center gap-1.5 text-sm text-success">
-            <CheckCircle2 className="size-4 shrink-0" />
+          <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <CheckCircle2 className="size-4 shrink-0 text-foreground" />
             Submitted — your tutor will review it.
           </p>
           {!adding && (
@@ -99,13 +99,11 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
           {error}
         </div>
       )}
-      <div className="flex items-center gap-3 rounded-xl border border-success/30 bg-success-muted px-3.5 py-3">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-success/15 text-success">
-          <FileText className="size-5" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium">{s.name}</p>
-          <p className="text-xs text-muted-foreground">
+      <div className="group flex items-center gap-3 py-2 transition-colors">
+        <FileText className="size-5 shrink-0 text-muted-foreground" />
+        <div className="min-w-0 flex-1 flex flex-col justify-center">
+          <p className="truncate text-sm font-medium text-foreground">{s.name}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">
             {s.size_bytes ? `${humanFileSize(s.size_bytes)} · ` : ""}uploaded
           </p>
         </div>
@@ -116,7 +114,7 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
             rel="noopener noreferrer"
             className={cn(
               buttonVariants({ variant: "ghost", size: "icon-sm" }),
-              "text-success hover:text-success",
+              "text-muted-foreground hover:text-foreground",
             )}
             aria-label="Open submission in a new tab"
           >

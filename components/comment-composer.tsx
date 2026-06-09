@@ -73,9 +73,6 @@ export function CommentComposer({
           <Send />
         </Button>
       </div>
-      <p className="text-xs text-muted-foreground">
-        Press ⌘/Ctrl + Enter to post.
-      </p>
     </div>
   );
 }

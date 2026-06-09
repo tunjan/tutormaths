@@ -22,7 +22,7 @@ export function RequestHomeworkButton({
   label = "Request more practice",
   icon,
   variant = "outline",
-  className = "border-primary/30 bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary",
+  className,
 }: {
   label?: string;
   icon?: ReactNode;
@@ -56,9 +56,9 @@ export function RequestHomeworkButton({
       />
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Request more practice?</AlertDialogTitle>
+          <AlertDialogTitle>Ready for more practice?</AlertDialogTitle>
           <AlertDialogDescription>
-            Your tutor will be notified that you&rsquo;re ready for more work.
+            Your tutor will be notified that you'd like to keep improving with extra exercises.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
