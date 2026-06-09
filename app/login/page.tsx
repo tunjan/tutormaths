@@ -9,11 +9,8 @@ export default function LoginPage() {
           <Logo />
           <div className="flex flex-col gap-2">
             <h1 className="text-[32px] font-medium leading-tight tracking-tight text-foreground">
-              Sign in to your instance
+              Sign in
             </h1>
-            <p className="text-[15px] text-secondary-foreground">
-              Enter your credentials to access the engine.
-            </p>
           </div>
         </div>
         <div className="border border-border bg-card p-8">
