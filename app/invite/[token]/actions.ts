@@ -18,7 +18,10 @@ export interface AcceptInviteState {
  *
  * Reads/writes invites with the service-role admin client (bypasses RLS), since
  * the visitor is unauthenticated. The token is the only authorisation here, so
- * it must stay single-use: we flip accepted_at the moment the account is made.
+ * it must stay single-use: we CLAIM the invite atomically (UPDATE ... WHERE
+ * accepted_at IS NULL) BEFORE creating the account, so two concurrent
+ * redemptions can't both mint an account. If account creation then fails, we
+ * release the claim so the link works again.
  */
 export async function acceptInvite(
   _prev: AcceptInviteState,
@@ -48,12 +51,15 @@ export async function acceptInvite(
 
   const admin = createAdminClient();
 
-  // Single-use: only an unredeemed invite is valid.
+  // Claim the invite atomically: only an unredeemed row matches, and the first
+  // writer flips accepted_at, so a concurrent redemption finds nothing to claim.
+  // The DB — not request ordering — is what guarantees single use.
   const { data: invite } = await admin
     .from("student_invites")
-    .select("id, full_name, accepted_at")
+    .update({ accepted_at: new Date().toISOString() })
     .eq("token", token)
     .is("accepted_at", null)
+    .select("id, full_name")
     .maybeSingle();
 
   if (!invite) {
@@ -71,6 +77,12 @@ export async function acceptInvite(
   });
 
   if (createErr || !created.user) {
+    // Account creation failed — release the claim so the link works again.
+    await admin
+      .from("student_invites")
+      .update({ accepted_at: null })
+      .eq("id", invite.id);
+
     const msg = createErr?.message ?? "";
     return {
       error: /already|registered|exists/i.test(msg)
@@ -79,10 +91,10 @@ export async function acceptInvite(
     };
   }
 
-  // Burn the invite so the link can't be reused.
+  // Link the redeeming account to the (already-burned) invite for the record.
   await admin
     .from("student_invites")
-    .update({ accepted_at: new Date().toISOString(), accepted_user_id: created.user.id })
+    .update({ accepted_user_id: created.user.id })
     .eq("id", invite.id);
 
   // Sign them in within the action so the session cookies are set, then go home.
