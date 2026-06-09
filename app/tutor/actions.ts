@@ -50,6 +50,25 @@ export async function createAssignment(
   redirect(`/tutor/assignments/${input.id}`);
 }
 
+/**
+ * Cancels a pending student invite (before the student has redeemed it).
+ * RLS restricts this to the tutor; deleting an already-accepted invite is a
+ * no-op since those rows are kept only as a redemption record.
+ */
+export async function revokeInvite(id: string): Promise<void> {
+  await requireTutor();
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("student_invites")
+    .delete()
+    .eq("id", id)
+    .is("accepted_at", null);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/tutor/students");
+}
+
 /** Updates the tutor's reminder windows (hours before due), e.g. "48,24,6". */
 export async function updateReminderWindows(formData: FormData): Promise<void> {
   const ctx = await requireTutor();

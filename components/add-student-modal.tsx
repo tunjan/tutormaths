@@ -10,14 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface Created {
-  email: string;
-  tempPassword: string;
+  fullName: string;
+  link: string;
 }
 
 /**
- * Dialog for inviting a student. Creates the account via the privileged
- * /api/students route, then reveals a one-time temporary password for the tutor
- * to share. The student sets their own password on first sign-in.
+ * Dialog for adding a student. The tutor enters only a NAME; we create a
+ * pending invite via /api/invites and reveal a shareable link. The student
+ * opens the link to set their own email and password (see app/invite/[token]).
  */
 export function AddStudentModal({
   open,
@@ -44,25 +44,25 @@ export function AddStudentModal({
     setBusy(true);
     setError("");
 
-    const res = await fetch("/api/students", {
+    const res = await fetch("/api/invites", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: data.get("email"),
-        full_name: data.get("full_name"),
-      }),
+      body: JSON.stringify({ full_name: data.get("full_name") }),
     });
 
     setBusy(false);
     if (res.ok) {
-      const { email, tempPassword } = await res.json();
+      const { token, full_name } = await res.json();
       form.reset();
-      setCreated({ email, tempPassword });
-      toast.success("Student created.");
+      setCreated({
+        fullName: full_name,
+        link: `${window.location.origin}/invite/${token}`,
+      });
+      toast.success("Invite link ready.");
       router.refresh();
     } else {
       const { error } = await res.json().catch(() => ({ error: "Failed." }));
-      setError(error ?? "Failed to invite student.");
+      setError(error ?? "Failed to create the invite.");
     }
   }
 
@@ -71,27 +71,27 @@ export function AddStudentModal({
       open={open}
       onClose={close}
       title="Add a student"
-      description="We generate a temporary password — share it with the student, who chooses their own on first sign-in."
+      description="Enter their name and we'll generate a link to share — they set their own email and password."
     >
       {created ? (
         <div className="flex flex-col gap-3">
           <p className="text-sm font-medium text-foreground">
-            Share this temporary password with {created.email}
+            Share this link with {created.fullName}
           </p>
           <p className="text-sm text-muted-foreground">
-            They sign in with their email and this password, then choose a new
-            one. It won&rsquo;t be shown again.
+            When they open it, they&rsquo;ll choose their email and a password.
+            You can copy it again later from the students list.
           </p>
           <div className="flex items-center gap-2">
-            <code className="tabular flex-1 rounded-xl bg-muted px-3 py-2.5 text-base text-foreground">
-              {created.tempPassword}
+            <code className="flex-1 truncate rounded-xl bg-muted px-3 py-2.5 text-sm text-foreground">
+              {created.link}
             </code>
             <Button
               type="button"
               variant="outline"
               onClick={async () => {
-                await navigator.clipboard.writeText(created.tempPassword);
-                toast.success("Password copied.");
+                await navigator.clipboard.writeText(created.link);
+                toast.success("Link copied.");
               }}
             >
               <Copy /> Copy
@@ -111,18 +111,9 @@ export function AddStudentModal({
               id="full_name"
               name="full_name"
               type="text"
+              required
               placeholder="e.g. Ada Lovelace"
               autoFocus
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="email">Email address</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              required
-              placeholder="student@example.com"
             />
           </div>
 
@@ -140,7 +131,7 @@ export function AddStudentModal({
               Cancel
             </Button>
             <Button type="submit" disabled={busy}>
-              <UserPlus /> {busy ? "Adding…" : "Add student"}
+              <UserPlus /> {busy ? "Creating…" : "Create invite link"}
             </Button>
           </div>
         </form>

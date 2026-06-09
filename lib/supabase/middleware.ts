@@ -39,10 +39,15 @@ export async function updateSession(request: NextRequest) {
   const claims = data?.claims;
 
   const path = request.nextUrl.pathname;
-  const isAuthRoute = path === "/login" || path.startsWith("/auth");
+  // Public routes reachable without a session: login, the auth flows, and the
+  // invite-acceptance page (where a student creates their account).
+  const isPublicRoute =
+    path === "/login" ||
+    path.startsWith("/auth") ||
+    path.startsWith("/invite");
 
-  // Unauthenticated → bounce to /login (except on auth routes themselves).
-  if (!claims && !isAuthRoute) {
+  // Unauthenticated → bounce to /login (except on public routes themselves).
+  if (!claims && !isPublicRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

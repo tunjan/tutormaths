@@ -1,11 +1,11 @@
 import { Link } from "next-view-transitions";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Clock } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { PageHeader } from "@/components/ui/page-header";
 import { AddStudentButton } from "@/components/add-student-button";
 import { AssignTaskButton } from "@/components/assign-task-button";
+import { PendingInviteActions } from "@/components/pending-invite-actions";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/format";
 
@@ -29,29 +29,28 @@ export default async function StudentsPage() {
   await requireTutor();
   const supabase = await createClient();
 
+  // A profile only exists once a student has redeemed their invite (set email +
+  // password), so every student row here is an active account.
   const { data: students } = await supabase
     .from("profiles")
     .select("id, full_name, email, created_at")
     .eq("role", "student")
     .order("full_name", { ascending: true });
 
-  // Acceptance status: a student who hasn't signed in yet still has a pending
-  // invite. last_sign_in_at lives in auth.users, so we read it with the admin
-  // client (tutor-only page, server-side).
-  const accepted = new Set<string>();
-  if (students && students.length > 0) {
-    const admin = createAdminClient();
-    const { data: authData } = await admin.auth.admin.listUsers({ perPage: 1000 });
-    for (const u of authData?.users ?? []) {
-      if (u.last_sign_in_at) accepted.add(u.id);
-    }
-  }
+  // Pending invites: created (name only) but not yet redeemed.
+  const { data: invites } = await supabase
+    .from("student_invites")
+    .select("id, full_name, token, created_at")
+    .is("accepted_at", null)
+    .order("created_at", { ascending: false });
 
   const studentOptions = (students ?? []).map((s) => ({
     id: s.id,
     full_name: s.full_name ?? "",
     email: s.email,
   }));
+
+  const hasAnyone = (students?.length ?? 0) + (invites?.length ?? 0) > 0;
 
   return (
     <div className="animate-rise">
@@ -62,7 +61,7 @@ export default async function StudentsPage() {
         actions={<AddStudentButton />}
       />
 
-      {!students || students.length === 0 ? (
+      {!hasAnyone ? (
         <div className="surface-card flex flex-col items-center gap-3 px-6 py-16 text-center">
           <span className="grid size-14 place-items-center rounded-full bg-[var(--accent-cobalt-soft)] text-primary">
             <ChevronRight className="size-6" />
@@ -78,7 +77,7 @@ export default async function StudentsPage() {
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {students.map((s) => {
+          {(students ?? []).map((s) => {
             const name = s.full_name || s.email || "Student";
             return (
               <div key={s.id} className="surface-card flex flex-col p-5">
@@ -100,16 +99,11 @@ export default async function StudentsPage() {
                       {s.email}
                     </p>
                   </div>
-                  {accepted.has(s.id) ? (
-                    <Badge variant="success">Active</Badge>
-                  ) : (
-                    <Badge variant="outline">Invited</Badge>
-                  )}
+                  <Badge variant="success">Active</Badge>
                 </Link>
 
                 <p className="mt-4 text-xs text-ink-faint">
-                  {accepted.has(s.id) ? "Joined" : "Invited"}{" "}
-                  {formatDate(s.created_at)}
+                  Joined {formatDate(s.created_at)}
                 </p>
 
                 <div className="mt-3 border-t border-border pt-3">
@@ -120,6 +114,39 @@ export default async function StudentsPage() {
                     size="sm"
                     className="w-full"
                   />
+                </div>
+              </div>
+            );
+          })}
+
+          {(invites ?? []).map((inv) => {
+            const name = inv.full_name || "Student";
+            return (
+              <div
+                key={inv.id}
+                className="surface-card flex flex-col p-5"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-muted text-sm font-semibold text-muted-foreground ring-2 ring-card">
+                    {initials(name)}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium text-foreground">
+                      {inv.full_name || "—"}
+                    </p>
+                    <p className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <Clock className="size-3.5" /> Awaiting sign-up
+                    </p>
+                  </div>
+                  <Badge variant="outline">Invited</Badge>
+                </div>
+
+                <p className="mt-4 text-xs text-ink-faint">
+                  Invited {formatDate(inv.created_at)}
+                </p>
+
+                <div className="mt-3 border-t border-border pt-3">
+                  <PendingInviteActions inviteId={inv.id} token={inv.token} />
                 </div>
               </div>
             );
