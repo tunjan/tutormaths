@@ -1,6 +1,7 @@
 import { Link } from "next-view-transitions";
 import { requireTutor } from "@/lib/auth";
 import { Logo } from "@/components/logo";
+import { Mascot } from "@/components/mascot";
 import { TutorNav } from "@/components/tutor-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notification-bell";
@@ -28,7 +29,12 @@ export default async function TutorLayout({
     <div className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-6">
-          <Link href="/tutor" aria-label="Maths Tasks — dashboard">
+          <Link
+            href="/tutor"
+            aria-label="Maths Tasks — dashboard"
+            className="flex items-center gap-2.5 transition-opacity hover:opacity-80"
+          >
+            <Mascot pose="glide" className="size-7" />
             <Logo />
           </Link>
           <span className="mx-1 hidden h-6 w-px bg-border md:block" />

@@ -1,11 +1,13 @@
 import { Logo } from "@/components/logo";
+import { Mascot } from "@/components/mascot";
 import { LoginForm } from "./login-form";
 
 export default function LoginPage() {
   return (
     <main className="flex min-h-dvh items-center justify-center bg-background px-6 py-12 selection:bg-muted selection:text-foreground">
       <div className="w-full max-w-[380px]">
-        <div className="mb-8 flex flex-col items-center gap-6 text-center">
+        <div className="mb-8 flex flex-col items-center gap-5 text-center">
+          <Mascot pose="wave" className="size-20 animate-fade-in" />
           <Logo />
           <div className="flex flex-col gap-2">
             <h1 className="text-[32px] font-medium leading-tight tracking-tight text-foreground">

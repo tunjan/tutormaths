@@ -11,6 +11,7 @@
 // Runs with the service-role key (injected by Supabase), so it bypasses RLS.
 // ============================================================================
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { renderEmail } from "../_shared/email.ts";
 
 interface Assignment {
   id: string;
@@ -47,6 +48,8 @@ Deno.serve(async () => {
   const resendKey = Deno.env.get("RESEND_API_KEY");
   const fromEmail =
     Deno.env.get("RESEND_FROM_EMAIL") ?? "Maths Tasks <onboarding@resend.dev>";
+  // Absolute origin for the CTA link + mascot asset (no trailing slash).
+  const siteUrl = (Deno.env.get("SITE_URL") ?? "").replace(/\/$/, "");
 
   const supabase = createClient(supabaseUrl, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
@@ -109,6 +112,7 @@ Deno.serve(async () => {
 
       const hoursLeft = Math.max(0, Math.round((due - now) / HOUR_MS));
       const body = `Reminder: "${a.title}" is due ${formatDue(a.due_at)} (~${hoursLeft}h left).`;
+      const link = siteUrl ? `${siteUrl}/student/assignments/${a.id}` : "";
 
       // In-app notification (an absent student still gets the email below).
       await supabase.from("notifications").insert({
@@ -131,7 +135,17 @@ Deno.serve(async () => {
               from: fromEmail,
               to: student.email,
               subject: `Practice due soon: ${a.title}`,
-              html: `<p>Hi ${student.full_name || "there"},</p><p>${body}</p>`,
+              html: renderEmail({
+                recipientName: student.full_name,
+                heading: hoursLeft <= 6 ? "Due very soon" : "Practice due soon",
+                body,
+                badge: { label: "Reminder", tone: "warning" },
+                pose: "dive",
+                preheader: body,
+                ctaLabel: link ? "Open assignment" : undefined,
+                ctaUrl: link || undefined,
+                siteUrl,
+              }),
             }),
           });
           if (!res.ok) {

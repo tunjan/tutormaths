@@ -5,6 +5,7 @@ import { unreadAssignmentIds } from "@/lib/queries";
 import { PageHeader } from "@/components/ui/page-header";
 import { RequestHomeworkButton } from "@/components/request-homework-button";
 import { AssignmentRow } from "@/components/assignment-row";
+import { Mascot } from "@/components/mascot";
 
 export default async function StudentDashboard() {
   await requireStudent();
@@ -40,6 +41,10 @@ export default async function StudentDashboard() {
 
       {active.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-6 py-24 text-center animate-fade-in rounded-2xl bg-secondary/20">
+          <Mascot
+            pose={completed.length > 0 ? "cheer" : "sleep"}
+            className="size-28"
+          />
           <div className="space-y-4">
             <h3 className="text-xl font-medium text-foreground">Nothing due right now</h3>
             <p className="max-w-md text-[16px] leading-[1.6] text-muted-foreground">

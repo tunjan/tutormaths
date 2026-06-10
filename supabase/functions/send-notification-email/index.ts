@@ -10,6 +10,11 @@
 // Runs with the service-role key (injected by Supabase), so it bypasses RLS.
 // ============================================================================
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import {
+  renderEmail,
+  type BadgeTone,
+  type MascotPose,
+} from "../_shared/email.ts";
 
 interface NotificationPayload {
   recipient_id?: string;
@@ -20,16 +25,66 @@ interface NotificationPayload {
   record?: NotificationPayload;
 }
 
-// Subject line per notification type. The notification's own `body` is the
-// email content; this is just the inbox-facing headline.
-const SUBJECTS: Record<string, string> = {
-  assignment_created: "New assignment from your tutor",
-  tutor_comment: "Your tutor left a comment",
-  student_comment: "New comment from your student",
-  submission_updated: "A student updated their work",
-  homework_requested: "A student requested more practice",
-  work_approved: "Your work was approved",
-  work_returned: "Your tutor asked for changes",
+// Presentation per notification type: the inbox subject, the in-card headline,
+// the mascot mood, and a category pill. The notification's own `body` is the
+// message itself.
+interface TypeMeta {
+  subject: string;
+  heading: string;
+  pose: MascotPose;
+  badge: { label: string; tone: BadgeTone };
+}
+
+const META: Record<string, TypeMeta> = {
+  assignment_created: {
+    subject: "New assignment from your tutor",
+    heading: "You have a new assignment",
+    pose: "wave",
+    badge: { label: "Assignment", tone: "info" },
+  },
+  tutor_comment: {
+    subject: "Your tutor left a comment",
+    heading: "Your tutor left a comment",
+    pose: "glide",
+    badge: { label: "Comment", tone: "info" },
+  },
+  student_comment: {
+    subject: "New comment from your student",
+    heading: "New comment from your student",
+    pose: "glide",
+    badge: { label: "Comment", tone: "info" },
+  },
+  submission_updated: {
+    subject: "A student updated their work",
+    heading: "A student updated their work",
+    pose: "glide",
+    badge: { label: "Update", tone: "info" },
+  },
+  homework_requested: {
+    subject: "A student requested more practice",
+    heading: "A student wants more practice",
+    pose: "wave",
+    badge: { label: "Request", tone: "info" },
+  },
+  work_approved: {
+    subject: "Your work was approved",
+    heading: "Nice work — approved! ",
+    pose: "cheer",
+    badge: { label: "Approved", tone: "success" },
+  },
+  work_returned: {
+    subject: "Your tutor asked for changes",
+    heading: "Your tutor asked for changes",
+    pose: "glide",
+    badge: { label: "Needs changes", tone: "warning" },
+  },
+};
+
+const FALLBACK_META: TypeMeta = {
+  subject: "New notification",
+  heading: "You have a new notification",
+  pose: "glide",
+  badge: { label: "Update", tone: "info" },
 };
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -37,14 +92,6 @@ function jsonResponse(body: unknown, status = 200): Response {
     status,
     headers: { "Content-Type": "application/json" },
   });
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
 
 Deno.serve(async (req) => {
@@ -101,11 +148,18 @@ Deno.serve(async (req) => {
         : `${siteUrl}${base}`;
   }
 
-  const subject = SUBJECTS[type] ?? "New notification";
-  const html =
-    `<p>Hi ${escapeHtml(profile.full_name || "there")},</p>` +
-    `<p>${escapeHtml(text)}</p>` +
-    (link ? `<p><a href="${link}">Open Maths Tasks</a></p>` : "");
+  const meta = META[type] ?? FALLBACK_META;
+  const html = renderEmail({
+    recipientName: profile.full_name,
+    heading: meta.heading,
+    body: text,
+    badge: meta.badge,
+    pose: meta.pose,
+    preheader: text,
+    ctaLabel: link ? "Open Maths Tasks" : undefined,
+    ctaUrl: link || undefined,
+    siteUrl,
+  });
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -117,7 +171,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         from: fromEmail,
         to: profile.email,
-        subject,
+        subject: meta.subject,
         html,
       }),
     });
