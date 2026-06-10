@@ -8,7 +8,14 @@
 //
 //   node scripts/generate-mascot.mjs
 //
-// Re-run whenever the bitmap or palette changes; commit the generated SVGs.
+// The in-app UI uses the SVGs. Transactional emails use PNG renders of the
+// same files (Gmail/Outlook don't render SVG <img>). Regenerate the PNGs on
+// macOS after changing the art:
+//
+//   qlmanage -t -s 512 public/mascot/manta-*.svg -o /tmp/mp
+//   for f in /tmp/mp/manta-*.svg.png; do cp "$f" "public/mascot/$(basename "$f" .svg.png).png"; done
+//
+// Re-run whenever the bitmap or palette changes; commit the generated assets.
 // ============================================================================
 import { writeFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
