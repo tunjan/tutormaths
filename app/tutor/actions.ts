@@ -15,6 +15,7 @@ export interface CreateAssignmentInput {
   description: string | null;
   dueAt: string; // ISO timestamp
   filePath: string; // object key already uploaded to assignment-files
+  categoryId?: string | null; // optional topic tag
 }
 
 /**
@@ -43,6 +44,7 @@ export async function createAssignment(
     description: input.description?.trim() || null,
     due_at: input.dueAt,
     file_path: input.filePath,
+    category_id: input.categoryId || null,
   });
   if (error) throw new Error(error.message);
 
@@ -110,6 +112,9 @@ export async function updateAssignment(formData: FormData): Promise<void> {
     | "reading_notes";
   const dueLocal = String(formData.get("due_at") ?? "");
   const newFilePath = String(formData.get("file_path") ?? "").trim();
+  // category_id is sent as "" to clear the tag, or omitted to leave unchanged.
+  const hasCategory = formData.has("category_id");
+  const categoryId = String(formData.get("category_id") ?? "").trim();
   if (!id || !title || !dueLocal) return;
 
   if (new Date(dueLocal).getTime() <= Date.now()) {
@@ -136,6 +141,7 @@ export async function updateAssignment(formData: FormData): Promise<void> {
       type,
       due_at: new Date(dueLocal).toISOString(),
       ...(newFilePath ? { file_path: newFilePath } : {}),
+      ...(hasCategory ? { category_id: categoryId || null } : {}),
     })
     .eq("id", id);
   if (error) throw new Error(error.message);

@@ -51,6 +51,13 @@ export default async function TutorAssignmentPage({
 
   const pdfUrl = await signedUrl(BUCKET_ASSIGNMENTS, a.file_path);
 
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("id, name")
+    .order("name");
+  const categoryName =
+    categories?.find((c) => c.id === a.category_id)?.name ?? null;
+
   const { data: subs } = await supabase
     .from("submissions")
     .select("id, file_path, mime_type, size_bytes, created_at")
@@ -90,8 +97,12 @@ export default async function TutorAssignmentPage({
               <span className="flex items-center gap-1.5 font-medium text-foreground">
                 <span>{student?.full_name || student?.email}</span>
               </span>
-              <span className="opacity-30">·</span>
-              <span>Algebra · Quadratics</span>
+              {categoryName && (
+                <>
+                  <span className="opacity-30">·</span>
+                  <span>{categoryName}</span>
+                </>
+              )}
               <span className="opacity-30">·</span>
               <span className="capitalize">{typeLabel(a.type)}</span>
               <span className="opacity-30">·</span>
@@ -124,6 +135,8 @@ export default async function TutorAssignmentPage({
                 type={a.type}
                 dueAt={a.due_at}
                 studentId={a.student_id}
+                categoryId={a.category_id}
+                categories={categories ?? []}
               />
             </div>
           </div>

@@ -1,9 +1,11 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { updateAssignment, deleteAssignment } from "@/app/tutor/actions";
+import { createCategory, type CategoryRow } from "@/lib/actions/library";
 import {
   ASSIGNMENT_MIME,
   BUCKET_ASSIGNMENTS,
@@ -41,9 +43,12 @@ interface Props {
   type: "problem_set" | "reading_notes";
   dueAt: string;
   studentId: string;
+  categoryId: string | null;
+  categories: CategoryRow[];
 }
 
 const accept = ASSIGNMENT_MIME as readonly string[];
+const NEW_CATEGORY = "__new__";
 
 function toLocalInput(iso: string): string {
   const d = new Date(iso);
@@ -60,15 +65,21 @@ export function AssignmentActions({
   type,
   dueAt,
   studentId,
+  categoryId,
+  categories,
 }: Props) {
   const [supabase] = useState(() => createClient());
   const [formType, setFormType] = useState(type);
+  const [formCategory, setFormCategory] = useState(categoryId ?? "");
+  const [newCategory, setNewCategory] = useState("");
   const [deleting, startDelete] = useTransition();
   const fileRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [fileName, setFileName] = useState("");
   const [busy, setBusy] = useState(false);
   const [globalError, setGlobalError] = useState("");
+
+  const creatingNewCategory = formCategory === NEW_CATEGORY;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -88,6 +99,11 @@ export function AssignmentActions({
       }
     }
 
+    if (creatingNewCategory && !newCategory.trim()) {
+      toast.error("Name the new topic.");
+      return;
+    }
+
     setBusy(true);
     try {
       if (file) {
@@ -104,6 +120,13 @@ export function AssignmentActions({
         }
         formData.set("file_path", path);
       }
+
+      // Resolve the topic (create it if a new name was typed). Always send
+      // category_id so it can also be cleared back to "No topic".
+      const resolvedCategory = creatingNewCategory
+        ? (await createCategory(newCategory)).id
+        : formCategory;
+      formData.set("category_id", resolvedCategory);
 
       await updateAssignment(formData);
       setFileName("");
@@ -202,6 +225,43 @@ export function AssignmentActions({
               </SelectContent>
             </Select>
           </div>
+          <div className="flex flex-col gap-2">
+            <Label id="edit-category-label">Topic</Label>
+            <Select
+              value={formCategory}
+              onValueChange={(v) => setFormCategory(v ?? "")}
+            >
+              <SelectTrigger
+                aria-labelledby="edit-category-label"
+                className="w-full"
+              >
+                <SelectValue placeholder="No topic">
+                  {creatingNewCategory
+                    ? "New topic…"
+                    : categories.find((c) => c.id === formCategory)?.name}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">No topic</SelectItem>
+                {categories.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+                <SelectItem value={NEW_CATEGORY}>
+                  <Plus className="size-3.5" /> Create new topic…
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            {creatingNewCategory && (
+              <Input
+                value={newCategory}
+                placeholder="New topic name"
+                onChange={(e) => setNewCategory(e.target.value)}
+              />
+            )}
+          </div>
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="edit-due">Due</Label>
             <DateTimePicker

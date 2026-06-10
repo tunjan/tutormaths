@@ -2,6 +2,7 @@
 
 import { Modal } from "@/components/ui/modal";
 import { NewAssignmentForm } from "@/app/tutor/assignments/new/new-assignment-form";
+import type { CategoryRow } from "@/lib/actions/library";
 
 interface StudentOption {
   id: string;
@@ -15,11 +16,13 @@ export function AssignTaskModal({
   open,
   onClose,
   students,
+  categories = [],
   defaultStudentId,
 }: {
   open: boolean;
   onClose: () => void;
   students: StudentOption[];
+  categories?: CategoryRow[];
   defaultStudentId?: string;
 }) {
   return (
@@ -32,6 +35,7 @@ export function AssignTaskModal({
     >
       <NewAssignmentForm
         students={students}
+        categories={categories}
         defaultStudentId={defaultStudentId}
         onCancel={onClose}
       />

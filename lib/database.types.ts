@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       assignments: {
         Row: {
+          category_id: string | null
           completion_pct: number
           created_at: string
           description: string | null
@@ -32,6 +33,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category_id?: string | null
           completion_pct?: number
           created_at?: string
           description?: string | null
@@ -48,6 +50,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category_id?: string | null
           completion_pct?: number
           created_at?: string
           description?: string | null
@@ -65,6 +68,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "assignments_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "assignments_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
@@ -74,6 +84,83 @@ export type Database = {
           {
             foreignKeyName: "assignments_tutor_id_fkey"
             columns: ["tutor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      library_documents: {
+        Row: {
+          category_id: string
+          created_at: string
+          file_path: string
+          id: string
+          mime_type: string
+          size_bytes: number | null
+          title: string
+          uploaded_by: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          file_path: string
+          id?: string
+          mime_type: string
+          size_bytes?: number | null
+          title: string
+          uploaded_by: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          file_path?: string
+          id?: string
+          mime_type?: string
+          size_bytes?: number | null
+          title?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "library_documents_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "library_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]

@@ -43,6 +43,14 @@ export default async function StudentAssignmentPage({
 
   const pdfUrl = await signedUrl(BUCKET_ASSIGNMENTS, a.file_path);
 
+  const { data: category } = a.category_id
+    ? await supabase
+        .from("categories")
+        .select("name")
+        .eq("id", a.category_id)
+        .single()
+    : { data: null };
+
   const { data: subs } = await supabase
     .from("submissions")
     .select("id, file_path, mime_type, size_bytes, created_at")
@@ -85,8 +93,12 @@ export default async function StudentAssignmentPage({
             <div className="flex flex-wrap items-center gap-3 text-[14px] text-muted-foreground">
               <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
               <span>{formatDateTime(a.due_at)}</span>
-              <span className="opacity-30">·</span>
-              <span>Algebra · Quadratics</span>
+              {category?.name && (
+                <>
+                  <span className="opacity-30">·</span>
+                  <span>{category.name}</span>
+                </>
+              )}
               <span className="opacity-30">·</span>
               <span>{typeLabel(a.type)}</span>
             </div>

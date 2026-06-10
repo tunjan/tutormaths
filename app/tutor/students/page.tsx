@@ -44,6 +44,11 @@ export default async function StudentsPage() {
     .is("accepted_at", null)
     .order("created_at", { ascending: false });
 
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("id, name")
+    .order("name");
+
   const studentOptions = (students ?? []).map((s) => ({
     id: s.id,
     full_name: s.full_name ?? "",
@@ -109,6 +114,7 @@ export default async function StudentsPage() {
                 <div className="mt-3 border-t border-border pt-3">
                   <AssignTaskButton
                     students={studentOptions}
+                    categories={categories ?? []}
                     defaultStudentId={s.id}
                     variant="soft"
                     size="sm"

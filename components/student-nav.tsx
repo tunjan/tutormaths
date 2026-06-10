@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/popover";
 
 const links = [
-  { href: "/tutor", label: "Dashboard", exact: true },
-  { href: "/tutor/students", label: "Students" },
-  { href: "/tutor/library", label: "Library" },
+  { href: "/student", label: "Practice", exact: true },
+  { href: "/student/calendar", label: "Calendar" },
+  { href: "/student/library", label: "Library" },
 ];
 
 function isActive(pathname: string, href: string, exact?: boolean) {
@@ -22,11 +22,10 @@ function isActive(pathname: string, href: string, exact?: boolean) {
 }
 
 /**
- * Tutor navigation: a quiet row of pill tabs. The active route carries a soft
- * inset wash; the rest are ink-soft until hovered. On small screens it collapses
- * into a menu popover.
+ * Student navigation: mirrors TutorNav. A quiet row of text tabs on desktop
+ * that collapses into a menu popover on small screens.
  */
-export function TutorNav() {
+export function StudentNav() {
   const pathname = usePathname();
 
   return (

@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { unstable_rethrow } from "next/navigation";
+import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createAssignment } from "@/app/tutor/actions";
+import { createCategory, type CategoryRow } from "@/lib/actions/library";
 import {
   ASSIGNMENT_MIME,
   BUCKET_ASSIGNMENTS,
@@ -33,9 +35,10 @@ interface StudentOption {
 }
 
 const accept = ASSIGNMENT_MIME as readonly string[];
+const NEW_CATEGORY = "__new__";
 
 type FieldErrors = Partial<
-  Record<"student" | "title" | "due" | "file", string>
+  Record<"student" | "title" | "due" | "file" | "category", string>
 >;
 
 /** A sensible default due date: a week out, at 17:00 local, as a datetime-local string. */
@@ -60,10 +63,13 @@ function FieldError({ message, id }: { message?: string; id?: string }) {
 
 export function NewAssignmentForm({
   students,
+  categories = [],
   defaultStudentId = "",
   onCancel,
 }: {
   students: StudentOption[];
+  /** Existing topics the tutor can tag the assignment with. */
+  categories?: CategoryRow[];
   defaultStudentId?: string;
   /** When provided (e.g. inside a dialog), the Cancel control calls this
    *  instead of navigating back to the dashboard. */
@@ -75,9 +81,13 @@ export function NewAssignmentForm({
   const [type, setType] = useState<"problem_set" | "reading_notes">(
     "problem_set",
   );
+  const [categoryId, setCategoryId] = useState("");
+  const [newCategory, setNewCategory] = useState("");
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [globalError, setGlobalError] = useState("");
+
+  const creatingNewCategory = categoryId === NEW_CATEGORY;
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -93,6 +103,8 @@ export function NewAssignmentForm({
     if (!dueLocal) next.due = "Set a due date.";
     else if (new Date(dueLocal).getTime() <= Date.now())
       next.due = "The due date must be in the future.";
+    if (creatingNewCategory && !newCategory.trim())
+      next.category = "Name the new topic.";
     if (!file) next.file = "Attach the assignment PDF.";
     else if (!accept.includes(file.type)) next.file = "The file must be a PDF.";
     else if (file.size > MAX_FILE_BYTES) next.file = "That file is larger than 20 MB.";
@@ -102,6 +114,22 @@ export function NewAssignmentForm({
     if (Object.keys(next).length > 0) return;
 
     setBusy(true);
+
+    // Resolve the topic: create it if the tutor typed a new one, else use the
+    // chosen existing id (empty = untagged).
+    let resolvedCategoryId: string | null = null;
+    try {
+      if (creatingNewCategory) {
+        resolvedCategoryId = (await createCategory(newCategory)).id;
+      } else if (categoryId) {
+        resolvedCategoryId = categoryId;
+      }
+    } catch (err) {
+      setGlobalError((err as Error).message);
+      setBusy(false);
+      return;
+    }
+
     const id = crypto.randomUUID();
     const safeName = file!.name.replace(/[^\w.\-]+/g, "_");
     const path = `${studentId}/${id}/${safeName}`;
@@ -125,6 +153,7 @@ export function NewAssignmentForm({
         description: description || null,
         dueAt: new Date(dueLocal).toISOString(),
         filePath: path,
+        categoryId: resolvedCategoryId,
       });
       // createAssignment redirects on success.
     } catch (err) {
@@ -226,6 +255,49 @@ export function NewAssignmentForm({
               onChange={() => setErrors((e) => ({ ...e, due: undefined }))}
             />
             <FieldError id="due-error" message={errors.due} />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label id="category-label">Topic (optional)</Label>
+            <Select
+              value={categoryId}
+              onValueChange={(v) => {
+                setCategoryId(v ?? "");
+                setErrors((e) => ({ ...e, category: undefined }));
+              }}
+            >
+              <SelectTrigger aria-labelledby="category-label" className="w-full">
+                <SelectValue placeholder="No topic">
+                  {creatingNewCategory
+                    ? "New topic…"
+                    : categories.find((c) => c.id === categoryId)?.name}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">No topic</SelectItem>
+                {categories.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+                <SelectItem value={NEW_CATEGORY}>
+                  <Plus className="size-3.5" /> Create new topic…
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            {creatingNewCategory && (
+              <Input
+                type="text"
+                value={newCategory}
+                placeholder="New topic name"
+                aria-invalid={!!errors.category}
+                onChange={(e) => {
+                  setNewCategory(e.target.value);
+                  setErrors((er) => ({ ...er, category: undefined }));
+                }}
+              />
+            )}
+            <FieldError message={errors.category} />
           </div>
         </div>
 

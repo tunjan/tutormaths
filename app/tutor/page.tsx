@@ -15,16 +15,21 @@ export default async function TutorDashboard() {
   await requireTutor();
   const supabase = await createClient();
 
-  const [{ data: assignments }, { data: students }, unread] = await Promise.all([
-    supabase
-      .from("assignments")
-      .select(
-        "id, title, type, due_at, completion_pct, student_id, review_status",
-      )
-      .order("due_at", { ascending: true }),
-    supabase.from("profiles").select("id, full_name, email").eq("role", "student"),
-    unreadAssignmentIds(),
-  ]);
+  const [{ data: assignments }, { data: students }, { data: categories }, unread] =
+    await Promise.all([
+      supabase
+        .from("assignments")
+        .select(
+          "id, title, type, due_at, completion_pct, student_id, review_status",
+        )
+        .order("due_at", { ascending: true }),
+      supabase
+        .from("profiles")
+        .select("id, full_name, email")
+        .eq("role", "student"),
+      supabase.from("categories").select("id, name").order("name"),
+      unreadAssignmentIds(),
+    ]);
 
   const nameById = new Map(
     (students ?? []).map((s) => [s.id, s.full_name || s.email || "Student"]),
@@ -73,7 +78,10 @@ export default async function TutorDashboard() {
           hasStudents ? (
             <>
               <AddStudentButton variant="outline" />
-              <AssignTaskButton students={studentOptions} />
+              <AssignTaskButton
+                students={studentOptions}
+                categories={categories ?? []}
+              />
             </>
           ) : undefined
         }

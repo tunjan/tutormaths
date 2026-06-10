@@ -9,3 +9,11 @@ export const SUBMISSION_MIME = ["application/pdf", "image/jpeg"] as const;
 
 export const BUCKET_ASSIGNMENTS = "assignment-files";
 export const BUCKET_SUBMISSIONS = "submissions";
+export const BUCKET_LIBRARY = "library";
+
+/** Documents the tutor can upload to the shared Library. */
+export const LIBRARY_MIME = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+] as const;

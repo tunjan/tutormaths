@@ -34,11 +34,14 @@ export default async function NewAssignmentPage({
   const { student } = await searchParams;
   const supabase = await createClient();
 
-  const { data: students } = await supabase
-    .from("profiles")
-    .select("id, full_name, email")
-    .eq("role", "student")
-    .order("full_name", { ascending: true });
+  const [{ data: students }, { data: categories }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .eq("role", "student")
+      .order("full_name", { ascending: true }),
+    supabase.from("categories").select("id, name").order("name"),
+  ]);
 
   const defaultStudentId = students?.some((s) => s.id === student)
     ? student
@@ -75,6 +78,7 @@ export default async function NewAssignmentPage({
             <CardContent className="py-2">
               <NewAssignmentForm
                 students={students}
+                categories={categories ?? []}
                 defaultStudentId={defaultStudentId}
               />
             </CardContent>

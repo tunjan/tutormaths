@@ -1,5 +1,7 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
+import { signedUrl } from "@/lib/storage";
+import { BUCKET_LIBRARY } from "@/lib/constants";
 import type { CommentView } from "@/components/comment-thread";
 
 /**
@@ -55,4 +57,65 @@ export async function loadComments(
       authorRole: a?.role ?? "student",
     };
   });
+}
+
+export interface LibraryDoc {
+  id: string;
+  title: string;
+  mimeType: string;
+  sizeBytes: number | null;
+  createdAt: string;
+  /** Short-lived signed download URL (null if signing failed). */
+  url: string | null;
+}
+
+export interface LibraryCategory {
+  id: string;
+  name: string;
+  documents: LibraryDoc[];
+}
+
+/**
+ * Loads every category with its documents and a signed download URL per file.
+ * RLS lets both tutors and students read the shared Library, so this is shared
+ * by both library pages. Categories come back alphabetically; empty ones are
+ * included so the tutor can see topics with no documents yet.
+ */
+export async function loadLibrary(): Promise<LibraryCategory[]> {
+  const supabase = await createClient();
+
+  const [{ data: categories }, { data: docs }] = await Promise.all([
+    supabase.from("categories").select("id, name").order("name"),
+    supabase
+      .from("library_documents")
+      .select("id, title, mime_type, size_bytes, created_at, file_path, category_id")
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const withUrls = await Promise.all(
+    (docs ?? []).map(async (d) => ({
+      categoryId: d.category_id,
+      doc: {
+        id: d.id,
+        title: d.title,
+        mimeType: d.mime_type,
+        sizeBytes: d.size_bytes,
+        createdAt: d.created_at,
+        url: await signedUrl(BUCKET_LIBRARY, d.file_path),
+      } satisfies LibraryDoc,
+    })),
+  );
+
+  const byCategory = new Map<string, LibraryDoc[]>();
+  for (const { categoryId, doc } of withUrls) {
+    const list = byCategory.get(categoryId);
+    if (list) list.push(doc);
+    else byCategory.set(categoryId, [doc]);
+  }
+
+  return (categories ?? []).map((c) => ({
+    id: c.id,
+    name: c.name,
+    documents: byCategory.get(c.id) ?? [],
+  }));
 }

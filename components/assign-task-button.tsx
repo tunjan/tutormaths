@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AssignTaskModal } from "@/components/assign-task-modal";
+import type { CategoryRow } from "@/lib/actions/library";
 
 interface StudentOption {
   id: string;
@@ -14,6 +15,7 @@ interface StudentOption {
 /** "Assign task" button that opens the new-assignment dialog. */
 export function AssignTaskButton({
   students,
+  categories = [],
   defaultStudentId,
   variant = "default",
   size = "default",
@@ -21,6 +23,7 @@ export function AssignTaskButton({
   className,
 }: {
   students: StudentOption[];
+  categories?: CategoryRow[];
   defaultStudentId?: string;
   variant?: "default" | "outline" | "soft";
   size?: "default" | "sm";
@@ -42,6 +45,7 @@ export function AssignTaskButton({
         open={open}
         onClose={() => setOpen(false)}
         students={students}
+        categories={categories}
         defaultStudentId={defaultStudentId}
       />
     </>
