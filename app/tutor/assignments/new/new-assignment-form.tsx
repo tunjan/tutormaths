@@ -105,8 +105,8 @@ export function NewAssignmentForm({
       next.due = "The due date must be in the future.";
     if (creatingNewCategory && !newCategory.trim())
       next.category = "Name the new topic.";
-    if (!file) next.file = "Attach the assignment PDF.";
-    else if (!accept.includes(file.type)) next.file = "The file must be a PDF.";
+    if (!file) next.file = "Attach the assignment file.";
+    else if (!accept.includes(file.type)) next.file = "Allowed types: PDF, JPG, PNG.";
     else if (file.size > MAX_FILE_BYTES) next.file = "That file is larger than 20 MB.";
 
     setErrors(next);
@@ -315,8 +315,8 @@ export function NewAssignmentForm({
       <fieldset className="flex flex-col gap-4">
         <SectionHeading>Assignment file</SectionHeading>
         <FileDropzone
-          accept="application/pdf"
-          hint="PDF, up to 20 MB"
+          accept={accept.join(",")}
+          hint="PDF, JPG or PNG, up to 20 MB"
           selectedName={selectedFile?.name}
           onFile={(f) => {
             setSelectedFile(f ?? null);

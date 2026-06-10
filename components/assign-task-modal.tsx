@@ -30,7 +30,7 @@ export function AssignTaskModal({
       open={open}
       onClose={onClose}
       title="Assign a task"
-      description="Attach a PDF, pick a student, and set a due date."
+      description="Attach a file, pick a student, and set a due date."
       className="max-w-xl"
     >
       <NewAssignmentForm

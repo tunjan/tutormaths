@@ -90,7 +90,7 @@ export function AssignmentActions({
     const file = fileRef.current?.files?.[0];
     if (file) {
       if (!accept.includes(file.type)) {
-        toast.error("The replacement file must be a PDF.");
+        toast.error("Allowed types: PDF, JPG, PNG.");
         return;
       }
       if (file.size > MAX_FILE_BYTES) {
@@ -271,12 +271,12 @@ export function AssignmentActions({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Replace PDF (optional)</Label>
+            <Label>Replace file (optional)</Label>
             <div className="flex items-center gap-3">
               <input
                 ref={fileRef}
                 type="file"
-                accept="application/pdf"
+                accept={accept.join(",")}
                 className="hidden"
                 onChange={(e) => setFileName(e.target.files?.[0]?.name ?? "")}
               />
@@ -286,7 +286,7 @@ export function AssignmentActions({
                 size="sm"
                 onClick={() => fileRef.current?.click()}
               >
-                {fileName ? "Change PDF" : "Choose new PDF"}
+                {fileName ? "Change file" : "Choose new file"}
               </Button>
               <span className="truncate text-sm text-muted-foreground">
                 {fileName || "Keep current file"}

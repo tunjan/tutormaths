@@ -51,6 +51,14 @@ export default async function TutorAssignmentPage({
 
   const pdfUrl = await signedUrl(BUCKET_ASSIGNMENTS, a.file_path);
 
+  /** Infer MIME from the stored file extension so FilePreview picks the right renderer. */
+  const ext = a.file_path.split(".").pop()?.toLowerCase();
+  const fileMime =
+    ext === "png" ? "image/png"
+    : ext === "jpg" || ext === "jpeg" ? "image/jpeg"
+    : "application/pdf";
+  const isImage = fileMime.startsWith("image/");
+
   const { data: categories } = await supabase
     .from("categories")
     .select("id, name")
@@ -157,7 +165,7 @@ export default async function TutorAssignmentPage({
 
             <section className="flex flex-col gap-6 py-8 lg:py-10 px-4 md:px-8 lg:px-12">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="text-[14px] font-semibold text-foreground uppercase tracking-wider">Assignment Document</h2>
+                <h2 className="text-[14px] font-semibold text-foreground uppercase tracking-wider">Assignment File</h2>
                 {pdfUrl && (
                   <a
                     href={pdfUrl}
@@ -165,13 +173,13 @@ export default async function TutorAssignmentPage({
                     rel="noopener noreferrer"
                     className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
                   >
-                    Open PDF
+                    {isImage ? "View image" : "Open PDF"}
                   </a>
                 )}
               </div>
               {pdfUrl ? (
                 <div className="rounded-xl overflow-hidden border border-border/50">
-                  <FilePreview url={pdfUrl} mimeType="application/pdf" title={a.title} />
+                  <FilePreview url={pdfUrl} mimeType={fileMime} title={a.title} />
                 </div>
               ) : (
                 <div className="py-10 text-center text-[15px] text-muted-foreground bg-secondary/10 rounded-xl">

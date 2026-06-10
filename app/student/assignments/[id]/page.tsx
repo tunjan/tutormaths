@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Download, FileText } from "lucide-react";
+import { Download, FileText, Image } from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { signedUrl } from "@/lib/storage";
@@ -7,6 +7,7 @@ import { loadComments } from "@/lib/queries";
 import { addComment } from "@/lib/actions/comments";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import { CompletionControl } from "@/components/completion-control";
+import { FilePreview } from "@/components/ui/file-preview";
 import { StudentSubmitPanel } from "@/components/student-submit-panel";
 import { LiveCommentThread, type Participant } from "@/components/live-comment-thread";
 import { CommentComposer } from "@/components/comment-composer";
@@ -42,6 +43,14 @@ export default async function StudentAssignmentPage({
   if (!a) notFound();
 
   const pdfUrl = await signedUrl(BUCKET_ASSIGNMENTS, a.file_path);
+
+  /** Infer MIME from the stored file extension so FilePreview picks the right renderer. */
+  const ext = a.file_path.split(".").pop()?.toLowerCase();
+  const fileMime =
+    ext === "png" ? "image/png"
+    : ext === "jpg" || ext === "jpeg" ? "image/jpeg"
+    : "application/pdf";
+  const isImage = fileMime.startsWith("image/");
 
   const { data: category } = a.category_id
     ? await supabase
@@ -117,7 +126,32 @@ export default async function StudentAssignmentPage({
                 </p>
               )}
               
-              {pdfUrl && (
+              {pdfUrl && isImage ? (
+                <div className="pt-2 flex flex-col gap-3">
+                  <div className="rounded-xl overflow-hidden border border-border/50">
+                    <FilePreview url={pdfUrl} mimeType={fileMime} title={a.title} />
+                  </div>
+                  <a
+                    href={pdfUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center justify-between transition-opacity duration-200 hover:opacity-70"
+                  >
+                    <div className="flex items-center gap-4">
+                      <Image className="size-5 text-foreground" strokeWidth={2} />
+                      <div className="flex flex-col">
+                        <span className="text-[13px] font-mono uppercase tracking-widest text-muted-foreground mb-1">
+                          Attached Image
+                        </span>
+                        <span className="text-[16px] font-medium text-foreground tracking-tight">
+                          {fileLabel(a.file_path)}
+                        </span>
+                      </div>
+                    </div>
+                    <Download className="size-5 text-muted-foreground transition-colors" strokeWidth={2} />
+                  </a>
+                </div>
+              ) : pdfUrl && (
                 <div className="pt-2">
                   <a
                     href={pdfUrl}

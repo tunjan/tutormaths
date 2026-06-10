@@ -2,7 +2,11 @@
 export const MAX_FILE_BYTES = 20 * 1024 * 1024;
 
 /** Tutor-uploaded assignment files. */
-export const ASSIGNMENT_MIME = ["application/pdf"] as const;
+export const ASSIGNMENT_MIME = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+] as const;
 
 /** Student-uploaded work. */
 export const SUBMISSION_MIME = ["application/pdf", "image/jpeg"] as const;
