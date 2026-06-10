@@ -1,10 +1,13 @@
 // ============================================================================
-// Mascot generator — "Manta" the pixelated manta ray.
+// Mascot generator — "Bubbles" the pixelated cauldron.
 //
-// The same character is drawn from a single 20×17 bitmap (top-down view) and
-// re-posed by overriding the eye cells and adding small decorations. This keeps
-// every pose pixel-perfectly aligned to the same grid. Output is crisp,
-// theme-agnostic SVG (fixed brand colours that read on both light and dark).
+// Three adorable pixel-art cauldron characters in a dark purple/plum palette:
+//   1. Witch-hat cauldron  — wears a big floppy witch hat, cream bubbles
+//   2. Bubbly cauldron     — round body, zigzag mouth, bubbles on top
+//   3. Magic-wand cauldron — swinging a wand, overflowing with potion
+//
+// Brand palette: deep plum/purple body with cream/white bubble accents
+// on a transparent background (theme-agnostic).
 //
 //   node scripts/generate-mascot.mjs
 //
@@ -25,129 +28,248 @@ const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "masco
 mkdirSync(OUT, { recursive: true });
 
 const P = 4; // pixel size in viewBox units
-const COLS = 20;
-const ROWS = 17;
 
-// Brand-aligned palette (primary blue #2563EB). Chosen to read on white *and*
-// near-black backgrounds, so a single asset works in both themes.
-const COLORS = {
-  e: "#1E3A8A", // edge / outline — deep blue
-  b: "#2563EB", // body — primary
-  l: "#60A5FA", // light accent — wing leading edge
-  w: "#FFFFFF", // belly spots + eye sclera
-  k: "#0F172A", // pupils
-  s: "#FBBF24", // sparkle — warm gold
-  z: "#94A3B8", // sleep "z" — muted slate
+// Palette — dark plum/purple body, cream/white bubbles, warm accents
+const C = {
+  // Body
+  e: "#2D1B3D", // edge / darkest outline
+  b: "#3D2352", // body — dark plum
+  d: "#4A2D64", // body mid — purple
+  l: "#5C3A7A", // body light — lighter purple
+  a: "#6B4590", // body accent — lightest purple
+  // Face features
+  w: "#FFFBE6", // eye sclera / belly spot — cream white
+  k: "#1A0E26", // pupil — near black
+  h: "#F5E6D0", // highlight — warm cream
+  // Bubbles / steam
+  c: "#FFF8E1", // cream bubble — light
+  f: "#F5E6D0", // cream bubble — mid
+  g: "#EDD9BE", // cream bubble — shadow
+  // Hat / wand
+  t: "#2D1B3D", // hat — same as edge
+  u: "#3D2352", // hat mid
+  // Mouth
+  m: "#D4A843", // zigzag mouth — gold/amber
+  // Sparkle
+  s: "#FFFBE6", // sparkle — cream
+  // Legs
+  p: "#2D1B3D", // legs — dark
+  // Wand
+  v: "#2D1B3D", // wand handle
+  // Cheek blush
+  r: "#8B5A8A", // rosy cheeks
 };
 
-// --- Base bitmap (glide): head up, wings level, tail down ------------------
-// 20 columns wide, symmetric about the centre. '.' = transparent.
-const BASE = [
-  ".......e....e.......", // 0  cephalic-fin tips
-  ".......b....b.......", // 1  cephalic fins
-  "......ebbbbbbe......", // 2  head crown
-  ".....ebwwbbwwbe.....", // 3  face — eye sclera (top)
-  "....ebbwkbbkwbbe....", // 4  face — pupils (bottom)
-  "...ebbbbbbbbbbbbe...", // 5  shoulders
-  "..ebbbwbbbbbbwbbbe..", // 6  wings + spots
-  "ebbbbbbbbbbbbbbbbbbe", // 7  widest span
-  ".ebbbbbbbbbbbbbbbbe.", // 8
-  "...ebbwbbbbbbwbbe...", // 9  trailing edge + spots
-  "....ebbbbbbbbbbe....", // 10
-  ".....ebbbbbbbbe.....", // 11
-  "......ebbbbbbe......", // 12
-  ".......ebbbbe.......", // 13
-  "........ebbe........", // 14 tail base
-  ".........bb.........", // 15 tail
-  ".........ee.........", // 16 tail tip
+// ============================================================================
+// POSE 1: WITCH HAT CAULDRON — "glide" / "wave" / "sleep"
+// 32 cols × 32 rows
+// ============================================================================
+const HAT_COLS = 32;
+const HAT_ROWS = 32;
+
+// Legend:
+// e=edge  b=body  d=mid-body  l=light  a=accent
+// w=eye-white  k=pupil  h=highlight
+// c=cream-bubble  f=cream-mid  g=cream-shadow
+// t=hat-dark  u=hat-mid
+// s=sparkle  p=leg  r=blush  .=transparent
+const HAT_BASE = [
+  //       0         1         2         3
+  //       01234567890123456789012345678901
+  /* 0 */ "..........tttttttt..............",
+  /* 1 */ ".........tttttttttt.............",
+  /* 2 */ "........tttttttttttt............",
+  /* 3 */ ".......tttttttttttttt...........",
+  /* 4 */ "......ttttttttttttttttt.........",
+  /* 5 */ ".....ttttttttttttttttttt........",
+  /* 6 */ "....ttttttttttttttttttttt.......",
+  /* 7 */ "...tttttttttttttttttttttttt.....",
+  /* 8 */ "..tttttttttttttttttttttttttt....",
+  /* 9 */ ".ttttttttttttttttttttttttttttt..",
+  /*10 */ "tttttttttttttttttttttttttttttttt",
+  /*11 */ "..ttuuttttttttttttttttttttuu....",
+  /*12 */ "....uufffffffffffffffffff.......",
+  /*13 */ "....eeeeeecccccccceeeeee........",
+  /*14 */ "...eebbbbccccccccccbbbbee.......",
+  /*15 */ "..eebbbbbcccccccccccbbbbee......",
+  /*16 */ "..ebbbbbbbbccccccbbbbbbbbe......",
+  /*17 */ ".ebbbbbbbbbbbbbbbbbbbbbbbbe.....",
+  /*18 */ ".ebbwwbbbbbbbbbbbbbbbwwbbbe.....",
+  /*19 */ ".ebwhkbbbbbbbbbbbbbbhkwbbe......",
+  /*20 */ ".ebbbbbbbbbbbbbbbbbbbbbbbbe.....",
+  /*21 */ ".ebbbrbbbbbbbbbbbbbbbrbbbbe..s..",
+  /*22 */ ".ebbbbbbbbbbbbbbbbbbbbbbbbbe....",
+  /*23 */ "..ebbbbbbbbbbbbbbbbbbbbbbee.....",
+  /*24 */ "..eebbbbbbbbbbbbbbbbbbbbbee.....",
+  /*25 */ "...eebbbbbbbbbbbbbbbbbbee.......",
+  /*26 */ "....eeeeeeeeeeeeeeeeee..........",
+  /*27 */ "......pp..........pp............",
+  /*28 */ "......pp..........pp............",
+  /*29 */ "................................",
+  /*30 */ ".s.............................s",
+  /*31 */ "................................",
 ];
 
-// Eye cell coordinates [row, col] so poses can repaint just the face.
-const EYE_CELLS = {
-  topLeft: [3, 7], topLeftIn: [3, 8],
-  topRight: [3, 11], topRightIn: [3, 12],
-  botLeft: [4, 7], botLeftIn: [4, 8],
-  botRight: [4, 11], botRightIn: [4, 12],
-};
+// ============================================================================
+// POSE 2: BUBBLY CAULDRON — "cheer" / "peek"
+// 32 cols × 32 rows
+// ============================================================================
+const BUBBLY_BASE = [
+  //       0         1         2         3
+  //       01234567890123456789012345678901
+  /* 0 */ "................................",
+  /* 1 */ "..........cccc.................s",
+  /* 2 */ ".........cccccc..ccc............",
+  /* 3 */ "........cccccccccccc............",
+  /* 4 */ ".......cccccccccccccc...........",
+  /* 5 */ "......ccccccccccccccccc.........",
+  /* 6 */ ".......ccccccccccccccc..........",
+  /* 7 */ "....eeeeeecccccccceeeeeee.......",
+  /* 8 */ "...eebbbbbccccccccbbbbbbee......",
+  /* 9 */ "..eebbbbbbbbccccbbbbbbbbbee.....",
+  /*10 */ "..ebbbbbbbbbbbbbbbbbbbbbbbbe....",
+  /*11 */ ".ebbbbbbbbbbbbbbbbbbbbbbbbbbe...",
+  /*12 */ ".ebbbbbbbbbbbbbbbbbbbbbbbbbbe...",
+  /*13 */ ".ebbbwwbbbbbbbbbbbbbbbwwbbbbe...",
+  /*14 */ ".ebbwhkbbbbbbbbbbbbbbbhkwbbbe...",
+  /*15 */ ".ebbbbbbbbbbbbbbbbbbbbbbbbbbe...",
+  /*16 */ ".ebbbbbbbbbbbbbbbbbbbbbbbbbe....",
+  /*17 */ ".ebbbbbbbbmmmmmmmmbbbbbbbbe.....",
+  /*18 */ ".ebbbbbbbbbbbbbbbbbbbbbbbbe.....",
+  /*19 */ ".ebbbbrbbbbbbbbbbbbbbrbbbe......",
+  /*20 */ "..ebbbbbbbbbbbbbbbbbbbbbbe......",
+  /*21 */ "..eebbbbbbbbbbbbbbbbbbbee.......",
+  /*22 */ "...eebbbbbbbbbbbbbbbbbee........",
+  /*23 */ "....eeeeeeeeeeeeeeeee...........",
+  /*24 */ "......pp..........pp............",
+  /*25 */ "......pp..........pp............",
+  /*26 */ "................................",
+  /*27 */ "s...............................",
+  /*28 */ "................................",
+  /*29 */ "................................",
+  /*30 */ "................................",
+  /*31 */ "................................",
+];
+
+// ============================================================================
+// POSE 3: MAGIC WAND CAULDRON — "dive"
+// 32 cols × 32 rows
+// ============================================================================
+const WAND_BASE = [
+  //       0         1         2         3
+  //       01234567890123456789012345678901
+  /* 0 */ "..........................s.....",
+  /* 1 */ ".........................ss.....",
+  /* 2 */ "........................vvs.....",
+  /* 3 */ ".......................vv.......",
+  /* 4 */ "......................vv........",
+  /* 5 */ "...........cccc......vv.........",
+  /* 6 */ "..........cccccc...vv...........",
+  /* 7 */ ".........cccccccccvv............",
+  /* 8 */ "........cccccccccccc............",
+  /* 9 */ ".......ccccccccccccccc..........",
+  /*10 */ "........cccccccccccccc..........",
+  /*11 */ "....eeeeeecccccccceeeeee........",
+  /*12 */ "...eebbbbbbccccccbbbbbbee.......",
+  /*13 */ "..eebbbbbbbbbccbbbbbbbbee.......",
+  /*14 */ "..ebbbbbbbbbbbbbbbbbbbbbbe......",
+  /*15 */ ".ebbbbbbbbbbbbbbbbbbbbbbbbe.....",
+  /*16 */ ".ebbbbwwbbbbbbbbbbbbwwbbbbe.....",
+  /*17 */ ".ebbbwhkbbbbbbbbbbbbhkwbbbe.....",
+  /*18 */ ".ebbbbbbbbbbbbbbbbbbbbbbbbe.....",
+  /*19 */ ".ebbbbrbbbbbbbbbbbbbbrbbbbe.....",
+  /*20 */ ".ebbbbbbbbbbbmbbbbbbbbbbbe......",
+  /*21 */ "..ebbbbbbbbbbbbbbbbbbbbbbe......",
+  /*22 */ "..eebbbbbbbbbbbbbbbbbbbee.......",
+  /*23 */ "...eebbbbbbbbbbbbbbbbee.........",
+  /*24 */ "....eeeeeeeeeeeeeeeee...........",
+  /*25 */ "......pp..........pp............",
+  /*26 */ "......pp..........pp............",
+  /*27 */ "................................",
+  /*28 */ ".s..............................",
+  /*29 */ "................................",
+  /*30 */ "................................",
+  /*31 */ "................................",
+];
+
+// ============================================================================
+// Rendering helpers
+// ============================================================================
+
+function validateGrid(grid, name, cols) {
+  for (let i = 0; i < grid.length; i++) {
+    if (grid[i].length !== cols) {
+      console.error(`[${name}] Row ${i} has ${grid[i].length} cols (expected ${cols}): "${grid[i]}"`);
+      process.exit(1);
+    }
+  }
+}
+
+validateGrid(HAT_BASE, "HAT", HAT_COLS);
+validateGrid(BUBBLY_BASE, "BUBBLY", HAT_COLS);
+validateGrid(WAND_BASE, "WAND", HAT_COLS);
 
 function cloneGrid(grid) {
   return grid.map((row) => row.split(""));
 }
 
 function setCell(g, r, c, ch) {
-  g[r][c] = ch;
-}
-
-// Repaint the eyes for a given expression, mutating a char-grid in place.
-function applyEyes(g, kind) {
-  const E = EYE_CELLS;
-  if (kind === "open") return; // base already has open eyes
-  if (kind === "closed") {
-    // Flat lash line across the lower eye row; skin above.
-    for (const [r, c] of [E.topLeft, E.topLeftIn, E.topRight, E.topRightIn]) setCell(g, r, c, "b");
-    for (const [r, c] of [E.botLeft, E.botLeftIn, E.botRight, E.botRightIn]) setCell(g, r, c, "e");
-  } else if (kind === "happy") {
-    // ^_^ — upward diagonals.
-    for (const [r, c] of [E.topLeft, E.topLeftIn, E.topRight, E.topRightIn, E.botLeft, E.botLeftIn, E.botRight, E.botRightIn]) setCell(g, r, c, "b");
-    setCell(g, ...E.topLeft, "e"); setCell(g, ...E.botLeftIn, "e");
-    setCell(g, ...E.topRightIn, "e"); setCell(g, ...E.botRight, "e");
+  if (r >= 0 && r < g.length && c >= 0 && c < g[r].length) {
+    g[r][c] = ch;
   }
 }
 
 function gridToRects(g) {
-  // Merge horizontal runs of identical colour into a single <rect> per run.
   const parts = [];
   for (let r = 0; r < g.length; r++) {
-    let c = 0;
-    while (c < g[r].length) {
-      const ch = g[r][c];
-      if (ch === "." || !COLORS[ch]) { c++; continue; }
+    let col = 0;
+    while (col < g[r].length) {
+      const ch = g[r][col];
+      if (ch === "." || !C[ch]) { col++; continue; }
       let run = 1;
-      while (c + run < g[r].length && g[r][c + run] === ch) run++;
+      while (col + run < g[r].length && g[r][col + run] === ch) run++;
       parts.push(
-        `<rect x="${c * P}" y="${r * P}" width="${run * P}" height="${P}" fill="${COLORS[ch]}"/>`,
+        `<rect x="${col * P}" y="${r * P}" width="${run * P}" height="${P}" fill="${C[ch]}"/>`,
       );
-      c += run;
+      col += run;
     }
   }
   return parts.join("");
 }
 
-// Small decorative helpers (coordinates in viewBox units) -------------------
+// Sparkle decoration
 function sparkle(cx, cy, size, fill) {
   const h = size, t = Math.max(2, Math.round(size / 2));
-  const o = (size - t) / 2;
   return (
-    `<rect x="${cx - t / 2}" y="${cy - h / 2}" width="${t}" height="${h}" fill="${fill}"/>` +
-    `<rect x="${cx - h / 2}" y="${cy - t / 2}" width="${h}" height="${t}" fill="${fill}"/>`
+    `<rect x="${cx - t / 2}" y="${cy - h / 2}" width="${t}" height="${h}" fill="${fill}" rx="1"/>` +
+    `<rect x="${cx - h / 2}" y="${cy - t / 2}" width="${h}" height="${t}" fill="${fill}" rx="1"/>`
   );
 }
 
-// Pixel "Z" built from stair-stepped blocks.
+// Pixel "Z" for sleep
 function letterZ(x, y, u, fill) {
   const px = (cx, cy, w = 1, h = 1) =>
     `<rect x="${x + cx * u}" y="${y + cy * u}" width="${w * u}" height="${h * u}" fill="${fill}"/>`;
   return [
-    px(0, 0, 3, 1), // top bar
-    px(2, 1), px(1, 2), px(0, 3), // diagonal
-    px(0, 4, 3, 1), // bottom bar
+    px(0, 0, 3, 1),
+    px(2, 1), px(1, 2), px(0, 3),
+    px(0, 4, 3, 1),
   ].join("");
 }
 
+// Motion dash
 function dash(x, y, w, fill) {
-  return `<rect x="${x}" y="${y}" width="${w}" height="${P}" fill="${fill}"/>`;
+  return `<rect x="${x}" y="${y}" width="${w}" height="${P}" fill="${fill}" rx="1"/>`;
 }
 
-// Assemble one pose into a complete SVG document.
-function buildSvg({ eyes = "open", rotate = 0, extras = "", crop = null, title }) {
-  const g = cloneGrid(BASE);
-  applyEyes(g, eyes);
+// Build SVG
+function buildSvg({ grid, cols, rows, rotate = 0, extras = "", crop = null, title }) {
+  const g = cloneGrid(grid);
   const body = gridToRects(g);
 
-  const W = COLS * P; // 80
-  const H = ROWS * P; // 68
-  // Generous padding so decorations/rotation never clip.
-  const pad = 16;
+  const W = cols * P;
+  const H = rows * P;
+  const pad = 20;
   let vb = `${-pad} ${-pad} ${W + pad * 2} ${H + pad * 2}`;
   if (crop) vb = crop;
 
@@ -163,55 +285,99 @@ function buildSvg({ eyes = "open", rotate = 0, extras = "", crop = null, title }
   );
 }
 
-const W = COLS * P, H = ROWS * P;
+// Eye cell coordinates for the HAT cauldron (for blink/sleep)
+function applyHatEyes(grid, kind) {
+  const g = cloneGrid(grid);
+  if (kind === "closed") {
+    // Close eyes — flat line
+    setCell(g, 18, 7, "d"); setCell(g, 18, 8, "d");
+    setCell(g, 19, 7, "e"); setCell(g, 19, 8, "e"); setCell(g, 19, 9, "e");
+    setCell(g, 18, 21, "d"); setCell(g, 18, 22, "d");
+    setCell(g, 19, 21, "e"); setCell(g, 19, 22, "e"); setCell(g, 19, 23, "e");
+  } else if (kind === "happy") {
+    // Happy ^_^ eyes
+    setCell(g, 18, 7, "d"); setCell(g, 18, 8, "e"); setCell(g, 18, 9, "d");
+    setCell(g, 19, 7, "e"); setCell(g, 19, 8, "d"); setCell(g, 19, 9, "e");
+    setCell(g, 18, 21, "d"); setCell(g, 18, 22, "e"); setCell(g, 18, 23, "d");
+    setCell(g, 19, 21, "e"); setCell(g, 19, 22, "d"); setCell(g, 19, 23, "e");
+  }
+  return g.map(row => row.join(""));
+}
 
+const W_HAT = HAT_COLS * P;
+const H_HAT = HAT_ROWS * P;
+
+// ============================================================================
+// Generate all 6 poses — map to the three cauldron designs
+// ============================================================================
 const poses = {
-  // Default level glide — nav, headers, login.
-  "manta-glide": buildSvg({ title: "Manta, the friendly manta ray" }),
+  // GLIDE — witch hat cauldron, neutral, default
+  "manta-glide": buildSvg({
+    grid: HAT_BASE,
+    cols: HAT_COLS,
+    rows: HAT_ROWS,
+    title: "Bubbles the cauldron, wearing a witch hat",
+  }),
 
-  // Greeting — a little tilt + motion lines off the right wing.
+  // WAVE — witch hat, slight tilt + motion dashes
   "manta-wave": buildSvg({
-    title: "Manta waving hello",
-    rotate: -10,
+    grid: HAT_BASE,
+    cols: HAT_COLS,
+    rows: HAT_ROWS,
+    title: "Bubbles waving hello",
+    rotate: -8,
     extras:
-      dash(W + 6, 18, 12, COLORS.l) +
-      dash(W + 10, 30, 16, COLORS.l) +
-      dash(W + 6, 42, 12, COLORS.l),
+      dash(W_HAT + 8, 36, 14, C.a) +
+      dash(W_HAT + 14, 48, 18, C.l) +
+      dash(W_HAT + 8, 60, 14, C.a) +
+      dash(W_HAT + 18, 54, 10, C.d),
   }),
 
-  // Celebration — happy eyes + sparkles.
+  // CHEER — bubbly cauldron, sparkles around
   "manta-cheer": buildSvg({
-    title: "Manta celebrating",
-    eyes: "happy",
+    grid: BUBBLY_BASE,
+    cols: HAT_COLS,
+    rows: HAT_ROWS,
+    title: "Bubbles celebrating",
     extras:
-      sparkle(2, 4, 10, COLORS.s) +
-      sparkle(W - 2, 0, 8, COLORS.s) +
-      sparkle(W / 2, -10, 7, COLORS.s),
+      sparkle(4, 6, 10, C.s) +
+      sparkle(W_HAT - 4, 4, 8, C.s) +
+      sparkle(W_HAT / 2, -8, 7, C.s) +
+      sparkle(W_HAT + 8, 24, 6, C.s),
   }),
 
-  // Resting / nothing-to-do — closed eyes + zzz.
+  // SLEEP — witch hat with closed eyes + zzz
   "manta-sleep": buildSvg({
-    title: "Manta resting",
-    eyes: "closed",
+    grid: applyHatEyes(HAT_BASE, "closed"),
+    cols: HAT_COLS,
+    rows: HAT_ROWS,
+    title: "Bubbles resting",
     extras:
-      letterZ(W - 6, -2, 3, COLORS.z) +
-      letterZ(W + 10, -16, 2, COLORS.z),
+      letterZ(W_HAT - 8, -4, 3, C.a) +
+      letterZ(W_HAT + 8, -18, 2.5, C.a) +
+      letterZ(W_HAT + 22, -28, 2, C.l),
   }),
 
-  // Diving in — rotated, for empty/CTA moments with energy.
+  // DIVE — wand cauldron, rotated with energy
   "manta-dive": buildSvg({
-    title: "Manta diving in",
-    rotate: 32,
+    grid: WAND_BASE,
+    cols: HAT_COLS,
+    rows: HAT_ROWS,
+    title: "Bubbles casting a spell",
+    rotate: 12,
     extras:
-      `<circle cx="${-6}" cy="${H - 10}" r="3" fill="${COLORS.l}"/>` +
-      `<circle cx="${-14}" cy="${H - 2}" r="2" fill="${COLORS.l}"/>`,
+      sparkle(-4, H_HAT - 16, 6, C.s) +
+      sparkle(-12, H_HAT - 6, 4, C.s) +
+      sparkle(W_HAT + 12, 8, 5, C.s),
   }),
 
-  // Peeking up from a bottom edge — 404 / errors. Crop to head + upper wings.
+  // PEEK — bubbly cauldron, cropped to upper body
   "manta-peek": buildSvg({
-    title: "Manta peeking",
-    // Show rows 0..8 (head + widest span); leave a little air above.
-    crop: `-12 -16 ${W + 24} ${9 * P + 16}`,
+    grid: BUBBLY_BASE,
+    cols: HAT_COLS,
+    rows: HAT_ROWS,
+    title: "Bubbles peeking",
+    crop: `-16 -20 ${W_HAT + 32} ${20 * P + 20}`,
   }),
 };
 

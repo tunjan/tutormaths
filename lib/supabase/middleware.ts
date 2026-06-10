@@ -11,6 +11,10 @@ import type { Database } from "@/lib/database.types";
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
+  // "Keep me signed in" preference — when absent the session should end when
+  // the browser closes (session-only cookies, no maxAge/expires).
+  const rememberMe = request.cookies.get("remember_me")?.value === "1";
+
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -24,9 +28,15 @@ export async function updateSession(request: NextRequest) {
             request.cookies.set(name, value),
           );
           supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
+          cookiesToSet.forEach(({ name, value, options }) => {
+            // When the user chose NOT to stay signed in, strip the persistence
+            // attributes so the cookie becomes session-only and disappears when
+            // the browser is closed.
+            const finalOptions = rememberMe
+              ? options
+              : { ...options, maxAge: undefined, expires: undefined };
+            supabaseResponse.cookies.set(name, value, finalOptions);
+          });
         },
       },
     },

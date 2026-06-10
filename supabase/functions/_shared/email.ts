@@ -5,9 +5,9 @@
 // email (per-notification + reminders). Built table-first with inline styles
 // so it renders consistently across Gmail, Apple Mail, and Outlook.
 //
-// The "Manta" mascot is served from the app's /public/mascot folder. Emails
-// reference the PNG renders (manta-*.png) rather than the SVGs, because Gmail
-// and Outlook don't render SVG <img>; PNG is universally supported. The
+// The "Bubbles" cauldron mascot is served from the app's /public/mascot folder.
+// Emails reference the PNG renders (manta-*.png) rather than the SVGs, because
+// Gmail and Outlook don't render SVG <img>; PNG is universally supported. The
 // wordmark + alt text still carry the brand if images are blocked.
 //
 // `_shared` is underscore-prefixed, so Supabase does NOT deploy it as its own
@@ -110,7 +110,7 @@ export function renderEmail(opts: EmailOptions): string {
       : "";
 
   const mascotHtml = mascotSrc
-    ? `<img src="${mascotSrc}" width="64" alt="Manta the manta ray" style="display:block;width:64px;height:auto;border:0;outline:none;" />`
+    ? `<img src="${mascotSrc}" width="64" alt="Bubbles the cauldron" style="display:block;width:64px;height:auto;border:0;outline:none;" />`
     : "";
 
   return `<!DOCTYPE html>

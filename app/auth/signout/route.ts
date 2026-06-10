@@ -5,7 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  return NextResponse.redirect(new URL("/login", request.url), {
+  const response = NextResponse.redirect(new URL("/login", request.url), {
     status: 303,
   });
+  // Clear the "keep me signed in" preference so next login starts fresh.
+  response.cookies.delete("remember_me");
+  return response;
 }

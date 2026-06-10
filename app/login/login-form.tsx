@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { signIn, type LoginState } from "./actions";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -45,6 +46,20 @@ export function LoginForm() {
           required
           className="h-11 text-base md:text-base"
         />
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id="rememberMe"
+          name="rememberMe"
+          defaultChecked
+        />
+        <Label
+          htmlFor="rememberMe"
+          className="cursor-pointer text-sm font-normal text-muted-foreground"
+        >
+          Keep me signed in
+        </Label>
       </div>
 
       <Button
