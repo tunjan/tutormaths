@@ -13,7 +13,6 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 import {
   renderEmail,
   type BadgeTone,
-  type MascotPose,
 } from "../_shared/email.ts";
 
 interface NotificationPayload {
@@ -31,7 +30,7 @@ interface NotificationPayload {
 interface TypeMeta {
   subject: string;
   heading: string;
-  pose: MascotPose;
+
   badge: { label: string; tone: BadgeTone };
 }
 
@@ -39,43 +38,36 @@ const META: Record<string, TypeMeta> = {
   assignment_created: {
     subject: "New assignment from your tutor",
     heading: "You have a new assignment",
-    pose: "wave",
     badge: { label: "Assignment", tone: "info" },
   },
   tutor_comment: {
     subject: "Your tutor left a comment",
     heading: "Your tutor left a comment",
-    pose: "glide",
     badge: { label: "Comment", tone: "info" },
   },
   student_comment: {
     subject: "New comment from your student",
     heading: "New comment from your student",
-    pose: "glide",
     badge: { label: "Comment", tone: "info" },
   },
   submission_updated: {
     subject: "A student updated their work",
     heading: "A student updated their work",
-    pose: "glide",
     badge: { label: "Update", tone: "info" },
   },
   homework_requested: {
     subject: "A student requested more practice",
     heading: "A student wants more practice",
-    pose: "wave",
     badge: { label: "Request", tone: "info" },
   },
   work_approved: {
     subject: "Your work was approved",
     heading: "Nice work — approved! ",
-    pose: "cheer",
     badge: { label: "Approved", tone: "success" },
   },
   work_returned: {
     subject: "Your tutor asked for changes",
     heading: "Your tutor asked for changes",
-    pose: "glide",
     badge: { label: "Needs changes", tone: "warning" },
   },
 };
@@ -83,7 +75,6 @@ const META: Record<string, TypeMeta> = {
 const FALLBACK_META: TypeMeta = {
   subject: "New notification",
   heading: "You have a new notification",
-  pose: "glide",
   badge: { label: "Update", tone: "info" },
 };
 
@@ -154,7 +145,6 @@ Deno.serve(async (req) => {
     heading: meta.heading,
     body: text,
     badge: meta.badge,
-    pose: meta.pose,
     preheader: text,
     ctaLabel: link ? "Open Maths Tasks" : undefined,
     ctaUrl: link || undefined,

@@ -5,11 +5,6 @@
 // email (per-notification + reminders). Built table-first with inline styles
 // so it renders consistently across Gmail, Apple Mail, and Outlook.
 //
-// The "Bubbles" cauldron mascot is served from the app's /public/mascot folder.
-// Emails reference the PNG renders (manta-*.png) rather than the SVGs, because
-// Gmail and Outlook don't render SVG <img>; PNG is universally supported. The
-// wordmark + alt text still carry the brand if images are blocked.
-//
 // `_shared` is underscore-prefixed, so Supabase does NOT deploy it as its own
 // function — it's imported by the real functions via `../_shared/email.ts`.
 // ============================================================================
@@ -22,13 +17,7 @@ export function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
-export type MascotPose =
-  | "glide"
-  | "wave"
-  | "cheer"
-  | "sleep"
-  | "dive"
-  | "peek";
+
 
 export type BadgeTone = "info" | "success" | "warning";
 
@@ -44,8 +33,7 @@ export interface EmailOptions {
   ctaUrl?: string;
   /** Small pill above the heading (e.g. the notification category). */
   badge?: { label: string; tone: BadgeTone };
-  /** Mascot mood shown in the header. */
-  pose?: MascotPose;
+
   /** Hidden inbox preview text. */
   preheader?: string;
   /** Absolute site origin (no trailing slash) for assets + footer links. */
@@ -82,14 +70,14 @@ export function renderEmail(opts: EmailOptions): string {
     ctaLabel,
     ctaUrl,
     badge,
-    pose = "glide",
+
     preheader,
     siteUrl = "",
   } = opts;
 
   const name = (recipientName || "there").trim();
   const bodyHtml = escapeHtml(body).replace(/\n/g, "<br/>");
-  const mascotSrc = siteUrl ? `${siteUrl}/mascot/manta-${pose}.png` : "";
+
 
   const badgeHtml = badge
     ? `<tr><td style="padding:0 0 14px;">
@@ -109,9 +97,7 @@ export function renderEmail(opts: EmailOptions): string {
          </td></tr>`
       : "";
 
-  const mascotHtml = mascotSrc
-    ? `<img src="${mascotSrc}" width="64" alt="Bubbles the cauldron" style="display:block;width:64px;height:auto;border:0;outline:none;" />`
-    : "";
+
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -133,7 +119,6 @@ ${preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;"
           <td style="padding:4px 8px 20px;">
             <table role="presentation" cellpadding="0" cellspacing="0" border="0">
               <tr>
-                <td style="vertical-align:middle;padding-right:10px;">${mascotHtml}</td>
                 <td style="vertical-align:middle;font-family:${FONT};font-size:20px;font-weight:700;letter-spacing:-.01em;color:${C.ink};">
                   Maths<span style="color:${C.primary};">Tasks</span>
                 </td>

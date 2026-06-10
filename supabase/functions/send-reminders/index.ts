@@ -48,7 +48,7 @@ Deno.serve(async () => {
   const resendKey = Deno.env.get("RESEND_API_KEY");
   const fromEmail =
     Deno.env.get("RESEND_FROM_EMAIL") ?? "Maths Tasks <onboarding@resend.dev>";
-  // Absolute origin for the CTA link + mascot asset (no trailing slash).
+  // Absolute origin for the CTA link (no trailing slash).
   const siteUrl = (Deno.env.get("SITE_URL") ?? "").replace(/\/$/, "");
 
   const supabase = createClient(supabaseUrl, serviceKey, {
@@ -140,7 +140,6 @@ Deno.serve(async () => {
                 heading: hoursLeft <= 6 ? "Due very soon" : "Practice due soon",
                 body,
                 badge: { label: "Reminder", tone: "warning" },
-                pose: "dive",
                 preheader: body,
                 ctaLabel: link ? "Open assignment" : undefined,
                 ctaUrl: link || undefined,

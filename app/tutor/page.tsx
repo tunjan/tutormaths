@@ -5,7 +5,6 @@ import { unreadAssignmentIds } from "@/lib/queries";
 import { PageHeader } from "@/components/ui/page-header";
 import { AddStudentButton } from "@/components/add-student-button";
 import { AssignTaskButton } from "@/components/assign-task-button";
-import { Mascot } from "@/components/mascot";
 import {
   TutorAssignmentBrowser,
   type BrowserItem,
@@ -143,7 +142,7 @@ function StatItem({
 function Onboarding() {
   return (
     <div className="flex flex-col items-center justify-center gap-6 py-24 text-center animate-fade-in">
-      <Mascot pose="wave" className="size-28" />
+
       <div className="space-y-4 max-w-md mx-auto">
         <h2 className="text-[24px] font-medium text-foreground tracking-tight">Welcome to Maths Tasks</h2>
         <p className="text-[16px] leading-[1.6] text-muted-foreground">

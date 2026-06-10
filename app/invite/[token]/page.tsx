@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-import { Mascot } from "@/components/mascot";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AcceptInviteForm } from "./accept-form";
 import {
@@ -36,7 +35,6 @@ export default async function InvitePage({
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-8 px-4 py-16">
       <div className="flex flex-col items-center gap-4 text-center">
-        <Mascot pose={valid ? "wave" : "peek"} className="size-20 animate-fade-in" />
         <Logo />
         <p className="text-sm text-muted-foreground">
           {valid ? "Set up your student account" : "Invitation"}
