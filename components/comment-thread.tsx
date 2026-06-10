@@ -25,7 +25,6 @@ export function CommentThread({ comments }: { comments: CommentView[] }) {
   return (
     <ul className="flex flex-col gap-5">
       {comments.map((c) => {
-        const isTutor = c.authorRole === "tutor";
         return (
           <li key={c.id} className="flex gap-3">
             <span

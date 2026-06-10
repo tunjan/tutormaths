@@ -5,11 +5,7 @@ import { UploadCloud } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Presentational drag-and-drop file picker. Owns the drag/hover affordance and
- * a hidden <input>, and hands the chosen File back via `onFile` — callers decide
- * what to do with it (upload immediately, or hold until form submit). Shared by
- * the submission uploader and the new-assignment form so both file inputs feel
- * identical.
+ * Presentational drag-and-drop file picker.
  */
 export function FileDropzone({
   accept,
@@ -20,14 +16,11 @@ export function FileDropzone({
   selectedName,
   disabled = false,
 }: {
-  /** Value for the input's `accept` attribute, e.g. "application/pdf". */
   accept: string;
-  /** Secondary line, e.g. "PDF or JPG, up to 20 MB". */
   hint: string;
   onFile: (file: File | undefined) => void;
   busy?: boolean;
   busyLabel?: string;
-  /** When set, shows the chosen file name and a "replace" affordance. */
   selectedName?: string;
   disabled?: boolean;
 }) {
@@ -54,29 +47,29 @@ export function FileDropzone({
       aria-disabled={!interactive}
       aria-live="polite"
       className={cn(
-        "flex flex-col items-center justify-center gap-2 rounded-[8px] border border-dashed px-6 py-8 text-center text-sm transition-colors focus-within:outline-none focus-within:ring-1 focus-within:ring-foreground",
+        "flex flex-col items-center justify-center gap-2 rounded-[8px] border border-dashed px-6 py-8 text-center text-sm transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#0a0a0a] dark:focus-within:ring-white",
         interactive ? "cursor-pointer" : "cursor-default opacity-80",
         dragging
-          ? "border-foreground bg-accent/30 text-foreground"
-          : "border-border bg-transparent text-muted-foreground hover:border-foreground/40",
+          ? "border-black dark:border-white bg-[#fafafa] dark:bg-[#0a0a0a] text-foreground"
+          : "border-[#e5e5e5] dark:border-[#262626] bg-transparent text-[#737373] dark:text-[#a3a3a3] hover:border-[#a3a3a3] dark:hover:border-[#737373]",
       )}
     >
       {busy ? (
-        <span>{busyLabel}</span>
+        <span className="text-sm font-medium">{busyLabel}</span>
       ) : selectedName ? (
         <>
-          <span className="max-w-full truncate font-medium text-foreground">
+          <span className="max-w-full truncate font-semibold text-foreground">
             {selectedName}
           </span>
-          <span className="text-xs">Click or drop a file to replace</span>
+          <span className="text-xs text-[#525252] dark:text-[#a3a3a3]">Click or drop a file to replace</span>
         </>
       ) : (
         <>
-          <UploadCloud className="mb-1 size-5 text-muted-foreground" />
-          <span className="font-medium text-foreground">
+          <UploadCloud className="mb-1 size-5 text-[#737373] dark:text-[#a3a3a3]" />
+          <span className="font-semibold text-foreground">
             Drag a file here, or click to choose
           </span>
-          <span className="text-xs">{hint}</span>
+          <span className="text-xs text-[#737373] dark:text-[#a3a3a3]">{hint}</span>
         </>
       )}
       <input

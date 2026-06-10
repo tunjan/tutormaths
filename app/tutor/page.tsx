@@ -9,7 +9,6 @@ import {
   TutorAssignmentBrowser,
   type BrowserItem,
 } from "@/components/tutor-assignment-browser";
-import { cn } from "@/lib/utils";
 
 export default async function TutorDashboard() {
   await requireTutor();
@@ -48,9 +47,6 @@ export default async function TutorDashboard() {
 
   const awaiting = all.filter((a) => a.review_status === "submitted").length;
   const active = all.filter((a) => a.review_status !== "approved").length;
-  // Overdue = the student is late and it's on them to act (not yet submitted,
-  // not approved). This definition matches the Overdue section in
-  // TutorAssignmentBrowser so the headline number and the list always agree.
   // eslint-disable-next-line react-hooks/purity
   const nowMs = Date.now();
   const overdue = all.filter(
@@ -76,30 +72,27 @@ export default async function TutorDashboard() {
         }
         actions={
           hasStudents ? (
-            <>
+            <div className="flex gap-3">
               <AddStudentButton variant="outline" />
               <AssignTaskButton
                 students={studentOptions}
                 categories={categories ?? []}
               />
-            </>
+            </div>
           ) : undefined
         }
       />
 
       {hasStudents ? (
         <>
-          <div className="flex flex-wrap items-center gap-6 py-2 mb-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
             <StatItem label="Students" value={studentOptions.length} href="/tutor/students" />
-            <div className="h-8 w-px bg-border/50 hidden sm:block" />
             <StatItem label="Active" value={active} />
-            <div className="h-8 w-px bg-border/50 hidden sm:block" />
             <StatItem label="Awaiting review" value={awaiting} href={awaiting > 0 ? "#awaiting" : undefined} />
-            <div className="h-8 w-px bg-border/50 hidden sm:block" />
             <StatItem label="Overdue" value={overdue} href={overdue > 0 ? "#overdue" : undefined} />
           </div>
 
-          <div className="mt-8">
+          <div className="mt-10">
             <TutorAssignmentBrowser items={items} nowMs={nowMs} />
           </div>
         </>
@@ -120,11 +113,11 @@ function StatItem({
   href?: string;
 }) {
   const inner = (
-    <div className="flex items-baseline gap-2 group-hover:opacity-70 transition-opacity">
-      <span className="tabular-nums text-[24px] font-medium tracking-tight text-foreground">
+    <div className="card card-interactive flex flex-col gap-2 p-6 select-none shadow-[var(--shadow-sm)] h-full">
+      <span className="text-xs font-semibold text-[#737373] dark:text-[#a3a3a3] uppercase tracking-wider">{label}</span>
+      <span className="font-metric text-4xl lg:text-5xl font-bold text-[#0a0a0a] dark:text-[#fafafa] leading-none mt-1">
         {value}
       </span>
-      <span className="text-[13px] text-muted-foreground uppercase tracking-wider">{label}</span>
     </div>
   );
   if (!href) return inner;
@@ -142,10 +135,9 @@ function StatItem({
 function Onboarding() {
   return (
     <div className="flex flex-col items-center justify-center gap-6 py-24 text-center animate-fade-in">
-
       <div className="space-y-4 max-w-md mx-auto">
-        <h2 className="text-[24px] font-medium text-foreground tracking-tight">Welcome to Maths Tasks</h2>
-        <p className="text-[16px] leading-[1.6] text-muted-foreground">
+        <h2 className="text-h3 font-semibold text-foreground tracking-tight">Welcome to Maths Tasks</h2>
+        <p className="text-body text-[#525252] dark:text-[#a3a3a3] leading-[1.6]">
           Get set up in two steps: invite a student, then send them their first
           assignment. You&rsquo;ll review their work and track progress right
           here.

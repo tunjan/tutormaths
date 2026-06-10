@@ -5,11 +5,9 @@ import { BookOpen, ChevronRight, FileText } from "lucide-react";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import {
   type ReviewStatus,
-  formatDateTime,
   relativeTime,
   typeLabel,
 } from "@/lib/format";
-import { cn } from "@/lib/utils";
 
 export interface AssignmentRowProps {
   href: string;
@@ -18,9 +16,7 @@ export interface AssignmentRowProps {
   dueAt: string;
   pct: number;
   reviewStatus: ReviewStatus;
-  /** Shown only on the tutor's multi-student lists. */
   student?: string;
-  /** True when there is unread activity (comment/submission/review) for the viewer. */
   unread?: boolean;
 }
 
@@ -53,58 +49,58 @@ export function AssignmentRow({
   return (
     <Link
       href={href}
-      className="group relative flex items-center gap-5 py-4 px-4 transition-colors duration-150 hover:bg-accent/30"
+      className="group relative flex items-center justify-between gap-4 py-4 px-5 transition-colors duration-200 hover:bg-[#f5f5f5] dark:hover:bg-[#171717]"
     >
-      <div className="shrink-0 relative">
-        {student ? (
-          <span className="grid size-9 place-items-center rounded-full bg-secondary/50 text-[11px] font-semibold text-foreground">
-            {initials(student)}
-          </span>
-        ) : (
-          <span className="grid size-9 place-items-center rounded-full bg-secondary/40 text-muted-foreground group-hover:text-foreground transition-colors">
-            <TypeIcon className="size-4" strokeWidth={1.5} />
-          </span>
-        )}
+      <div className="flex items-center gap-4 min-w-0 flex-1">
+        <div className="shrink-0 relative">
+          {student ? (
+            <span className="grid size-9 place-items-center rounded-full bg-[#fafafa] dark:bg-[#171717] border border-[#e5e5e5] dark:border-[#262626] text-xs font-semibold text-foreground">
+              {initials(student)}
+            </span>
+          ) : (
+            <span className="grid size-9 place-items-center rounded-full bg-[#fafafa] dark:bg-[#171717] border border-[#e5e5e5] dark:border-[#262626] text-muted-foreground group-hover:text-foreground transition-colors">
+              <TypeIcon className="size-4" strokeWidth={1.5} />
+            </span>
+          )}
 
-        {unread && (
-          <span
-            className="absolute -top-1 -right-1 size-2 rounded-full bg-foreground"
-            aria-label="Unread activity"
-          />
-        )}
-      </div>
+          {unread && (
+            <span
+              className="absolute -top-0.5 -right-0.5 size-2.5 rounded-full bg-[#ef4444] border-2 border-white dark:border-[#0a0a0a]"
+              aria-label="Unread activity"
+            />
+          )}
+        </div>
 
-      <div className="flex-1 min-w-0 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-col gap-1 w-full max-w-sm">
-          <h3 className="text-[15px] font-medium text-foreground truncate">
+        <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+          <h3 className="text-sm font-semibold text-[#0a0a0a] dark:text-[#fafafa] truncate">
             {title}
           </h3>
-          <span className="text-[13px] text-muted-foreground truncate">
+          <span className="text-[13px] text-[#525252] dark:text-[#a3a3a3] truncate">
             {meta}
           </span>
         </div>
+      </div>
 
-        <div className="flex items-center gap-6 shrink-0">
-          {showBar && (
-            <div className="hidden sm:flex items-center gap-3">
-              <span className="h-[2px] w-16 overflow-hidden rounded-full bg-border">
-                <span
-                  className="block h-full bg-foreground transition-all duration-500"
-                  style={{ width: `${pct}%` }}
-                />
-              </span>
-              <span className="font-mono text-[11px] text-muted-foreground">
-                {pct}%
-              </span>
-            </div>
-          )}
-          
-          <div className="hidden sm:block">
-            <AssignmentStatusBadge reviewStatus={reviewStatus} dueAt={dueAt} />
+      <div className="flex items-center gap-6 shrink-0">
+        {showBar && (
+          <div className="hidden sm:flex items-center gap-2">
+            <span className="h-[4px] w-12 overflow-hidden rounded-full bg-border">
+              <span
+                className="block h-full bg-[#000000] dark:bg-[#ffffff] transition-all duration-500"
+                style={{ width: `${pct}%` }}
+              />
+            </span>
+            <span className="font-mono text-[11px] text-[#525252] dark:text-[#a3a3a3]">
+              {pct}%
+            </span>
           </div>
-          
-          <ChevronRight className="size-4 text-muted-foreground/30 transition-all group-hover:text-foreground group-hover:translate-x-0.5" strokeWidth={2} />
+        )}
+        
+        <div className="hidden sm:block">
+          <AssignmentStatusBadge reviewStatus={reviewStatus} dueAt={dueAt} />
         </div>
+        
+        <ChevronRight className="size-4 text-muted-foreground/40 transition-all group-hover:text-foreground group-hover:translate-x-0.5" strokeWidth={2} />
       </div>
     </Link>
   );

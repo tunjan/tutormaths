@@ -25,8 +25,8 @@ export function AssignTaskButton({
   students: StudentOption[];
   categories?: CategoryRow[];
   defaultStudentId?: string;
-  variant?: "default" | "outline" | "soft";
-  size?: "default" | "sm";
+  variant?: "default" | "outline" | "secondary" | "ghost" | "soft" | "destructive";
+  size?: "default" | "sm" | "md" | "lg" | "xl" | "icon" | "icon-xs" | "icon-sm" | "icon-lg";
   label?: string;
   className?: string;
 }) {

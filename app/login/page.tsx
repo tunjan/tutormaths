@@ -8,12 +8,12 @@ export default function LoginPage() {
         <div className="mb-8 flex flex-col items-center gap-5 text-center">
           <Logo />
           <div className="flex flex-col gap-2">
-            <h1 className="text-[32px] font-medium leading-tight tracking-tight text-foreground">
+            <h1 className="text-h2 font-semibold tracking-tight text-foreground">
               Sign in
             </h1>
           </div>
         </div>
-        <div className="border border-border bg-card p-8">
+        <div className="card shadow-[var(--shadow-md)] p-8 rounded-[12px] bg-card border border-border">
           <LoginForm />
         </div>
       </div>

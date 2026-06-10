@@ -1,39 +1,57 @@
 import { Badge } from "@/components/ui/badge";
 import {
   type AssignmentStatus,
-  type DueState,
   type ReviewStatus,
   assignmentStatus,
   dueLabel,
   reviewLabel,
 } from "@/lib/format";
 
-const dueStyles: Record<Exclude<DueState, "done">, string> = {
-  overdue: "border-border text-foreground",
-  "due-soon": "border-border text-foreground",
-  upcoming: "border-transparent text-muted-foreground",
-};
-
-const reviewStyles: Record<Exclude<ReviewStatus, "assigned">, string> = {
-  submitted: "border-transparent text-muted-foreground",
-  approved: "border-transparent text-muted-foreground",
-  needs_work: "border-border text-foreground",
-};
-
-function content(status: AssignmentStatus): { label: string; className: string; dot?: string } {
+function content(status: AssignmentStatus): { 
+  label: string; 
+  variant: "success" | "warning" | "info" | "outline" | "destructive"; 
+  dot?: string 
+} {
   if (status.kind === "review") {
-    const isNeedsWork = status.review === "needs_work";
+    if (status.review === "approved") {
+      return { 
+        label: reviewLabel("approved"), 
+        variant: "success", 
+        dot: "bg-success-green dark:bg-success-green-light" 
+      };
+    }
+    if (status.review === "needs_work") {
+      return { 
+        label: reviewLabel("needs_work"), 
+        variant: "warning", 
+        dot: "bg-warning-orange dark:bg-warning-orange-light" 
+      };
+    }
     return { 
-      label: reviewLabel(status.review), 
-      className: reviewStyles[status.review],
-      dot: isNeedsWork ? "bg-foreground" : "bg-muted-foreground"
+      label: reviewLabel("submitted"), 
+      variant: "info", 
+      dot: "bg-interactive-blue dark:bg-interactive-blue-light" 
     };
   }
-  const isOverdue = status.due === "overdue";
+
+  if (status.due === "overdue") {
+    return { 
+      label: dueLabel("overdue"), 
+      variant: "destructive", 
+      dot: "bg-status-error" 
+    };
+  }
+  if (status.due === "due-soon") {
+    return { 
+      label: dueLabel("due-soon"), 
+      variant: "warning", 
+      dot: "bg-warning-orange dark:bg-warning-orange-light" 
+    };
+  }
   return { 
-    label: dueLabel(status.due), 
-    className: dueStyles[status.due],
-    dot: isOverdue ? "bg-foreground" : "bg-muted-foreground"
+    label: dueLabel("upcoming"), 
+    variant: "outline", 
+    dot: "bg-gray-400" 
   };
 }
 
@@ -48,11 +66,11 @@ export function AssignmentStatusBadge({
   reviewStatus: ReviewStatus;
   dueAt: string;
 }) {
-  const { label, className, dot } = content(assignmentStatus(reviewStatus, dueAt));
+  const { label, variant, dot } = content(assignmentStatus(reviewStatus, dueAt));
   return (
     <Badge
-      variant="outline"
-      className={`gap-1.5 shadow-none rounded-md px-2 py-0.5 text-[13px] font-normal border ${className}`}
+      variant={variant}
+      className="gap-1.5 shadow-none rounded-[6px] px-2 py-0.5 text-[13px] font-normal border border-transparent"
     >
       <span className={`size-1.5 rounded-full ${dot}`} aria-hidden />
       {label}

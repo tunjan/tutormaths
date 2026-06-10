@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { BackLink } from "@/components/ui/back-link";
 import { AssignmentRow } from "@/components/assignment-row";
@@ -43,18 +42,18 @@ export default async function StudentDetailPage({
         );
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-10 animate-rise">
       <div>
         <BackLink href="/tutor/students" className="mb-4">
           All students
         </BackLink>
 
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-4 mt-2">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground">
               {student.full_name || student.email}
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-[#525252] dark:text-[#a3a3a3]">
               {student.email} · joined {formatDate(student.created_at)}
             </p>
           </div>
@@ -67,13 +66,13 @@ export default async function StudentDetailPage({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
         <Stat label="Active" value={active.length} />
         <Stat label="Completed" value={completed.length} />
         <Stat label="Avg progress" value={`${avg}%`} />
       </div>
 
-      <div className="flex flex-col gap-4 my-8">
+      <div className="flex flex-col gap-4">
         <div>
           <SectionHeading>Active assignments</SectionHeading>
         </div>
@@ -106,7 +105,7 @@ type AssignmentItem = {
 
 function AssignmentList({ items }: { items: AssignmentItem[] }) {
   return (
-    <div className="stagger-children divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
+    <div className="flex flex-col stagger-children border border-[#e5e5e5] dark:border-[#262626] rounded-[12px] divide-y divide-[#e5e5e5] dark:divide-[#262626] bg-card overflow-hidden shadow-[var(--shadow-sm)]">
       {items.map((a) => (
         <AssignmentRow
           key={a.id}
@@ -124,11 +123,11 @@ function AssignmentList({ items }: { items: AssignmentItem[] }) {
 
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="flex flex-col p-4 border border-border rounded-lg bg-card transition-colors hover:bg-accent/50">
-      <div className="tabular-nums text-2xl font-semibold leading-none text-foreground">
+    <div className="card card-interactive flex flex-col gap-1 p-6 select-none shadow-[var(--shadow-sm)]">
+      <span className="text-xs font-semibold text-[#737373] dark:text-[#a3a3a3] uppercase tracking-wider">{label}</span>
+      <span className="font-metric text-3xl font-bold text-[#0a0a0a] dark:text-[#fafafa] leading-none mt-1">
         {value}
-      </div>
-      <div className="mt-1 text-xs text-muted-foreground">{label}</div>
+      </span>
     </div>
   );
 }
@@ -150,8 +149,8 @@ function Section({
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <div className="py-10 text-center text-sm text-muted-foreground border-y border-border">
+    <p className="card border border-border p-6 text-center text-sm text-[#737373] dark:text-[#a3a3a3] shadow-[var(--shadow-sm)] bg-card rounded-[12px]">
       {children}
-    </div>
+    </p>
   );
 }

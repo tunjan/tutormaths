@@ -6,9 +6,7 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * A centred form dialog: a dimmed graph-paper backdrop and a paper panel that
- * closes on Escape or backdrop click. Used for the "Add student" and
- * "Assign task" flows.
+ * A centred form dialog conforming to the premium design system modals.
  */
 export function Modal({
   open,
@@ -27,7 +25,6 @@ export function Modal({
   footer?: ReactNode;
   className?: string;
 }) {
-  // Only render the portal after mount so SSR and the first client render match.
   const [mounted, setMounted] = useState(false);
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
@@ -45,13 +42,10 @@ export function Modal({
 
   if (!open || !mounted) return null;
 
-  // Render to document.body so the fixed overlay is anchored to the viewport,
-  // not clipped by a transformed/contained ancestor (e.g. the view-transition
-  // wrapper or the max-width <main> column).
   return createPortal(
-    <div className="fixed inset-0 z-[90] grid place-items-center overflow-y-auto p-4">
+    <div className="modal-overlay">
       <div
-        className="animate-fade-in absolute inset-0 bg-[var(--overlay)] backdrop-blur-[2px]"
+        className="absolute inset-0 cursor-default"
         onClick={onClose}
         aria-hidden
       />
@@ -60,33 +54,33 @@ export function Modal({
         aria-modal="true"
         aria-label={title}
         className={cn(
-          "animate-pop relative my-auto w-full max-w-lg overflow-hidden rounded-[20px] border border-border bg-card shadow-[0_12px_32px_rgba(0,0,0,0.12)]",
-          className,
+          "modal",
+          className
         )}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-border p-5">
+        <div className="modal-header">
           <div>
-            <h2 className="font-display text-xl leading-tight text-foreground">
+            <h2 className="modal-title font-heading tracking-tight">
               {title}
             </h2>
             {description && (
-              <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+              <p className="mt-1 text-sm text-[#525252] dark:text-[#a3a3a3]">{description}</p>
             )}
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="-mr-1 -mt-1 grid size-8 shrink-0 place-items-center rounded-full text-ink-faint transition-colors hover:bg-muted hover:text-foreground"
+            className="modal-close text-[#737373] hover:text-[#0a0a0a] dark:hover:text-[#fafafa]"
           >
             <X className="size-4" />
           </button>
         </div>
 
-        <div className="p-5">{children}</div>
+        <div className="py-2">{children}</div>
 
         {footer && (
-          <div className="flex items-center justify-end gap-3 border-t border-border bg-muted/50 p-4">
+          <div className="mt-6 flex items-center justify-end gap-3 border-t border-border pt-4">
             {footer}
           </div>
         )}

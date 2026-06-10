@@ -21,11 +21,6 @@ export interface BrowserItem {
   unread: boolean;
 }
 
-/**
- * Client-side search across a tutor's assignments so the dashboard stays usable
- * as the list grows. Matches title or student name; sections are split by the
- * review workflow — work awaiting review surfaces first.
- */
 export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[]; nowMs: number }) {
   const [query, setQuery] = useState("");
 
@@ -44,8 +39,6 @@ export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[];
     );
     return {
       awaiting: matched.filter((a) => a.review_status === "submitted"),
-      // Late work the student still owes — its own section so the dashboard's
-      // "Overdue" number maps to a place you can actually go.
       overdue: open.filter(isLate),
       active: open.filter((a) => !isLate(a)),
       completed: matched.filter((a) => a.review_status === "approved"),
@@ -55,14 +48,14 @@ export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[];
   return (
     <div className="flex flex-col gap-10">
       <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-[#737373] dark:text-[#a3a3a3]" />
         <Input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by assignment or student…"
           aria-label="Search assignments"
-          className="h-12 pl-11 pr-4 border border-border/30 rounded-lg bg-transparent shadow-none focus-visible:ring-1 focus-visible:ring-border text-[15px] transition-colors hover:border-border/50"
+          className="h-11 pl-11 pr-4"
         />
       </div>
 
@@ -133,25 +126,25 @@ function SectionHead({
   count: number;
   icon?: React.ReactNode;
   muted?: boolean;
-}) {
+  }) {
   return (
-    <div className="mb-3 flex items-baseline justify-between pb-2">
-      <div className="flex items-center gap-3">
+    <div className="mb-4 flex items-baseline justify-between border-b border-[#f0f0f0] dark:border-[#171717] pb-3">
+      <div className="flex items-center gap-2">
         {icon && (
-          <span className="flex size-5 items-center justify-center text-muted-foreground">
+          <span className="flex size-5 items-center justify-center text-[#737373] dark:text-[#a3a3a3]">
             {icon}
           </span>
         )}
         <h2
           className={cn(
-            "text-[20px] font-medium tracking-tight",
-            muted ? "text-muted-foreground" : "text-foreground"
+            "text-h4 font-semibold tracking-tight",
+            muted ? "text-[#737373] dark:text-[#a3a3a3]" : "text-[#0a0a0a] dark:text-[#fafafa]"
           )}
         >
           {title}
         </h2>
       </div>
-      <span className="font-mono text-[12px] uppercase tracking-[0.05em] text-muted-foreground">
+      <span className="font-mono text-xs uppercase tracking-wider text-[#737373] dark:text-[#a3a3a3]">
         {count} assignment{count === 1 ? "" : "s"}
       </span>
     </div>
@@ -160,7 +153,7 @@ function SectionHead({
 
 function List({ items }: { items: BrowserItem[] }) {
   return (
-    <div className="flex flex-col stagger-children border border-border rounded-xl divide-y divide-border bg-background overflow-hidden">
+    <div className="flex flex-col stagger-children border border-[#e5e5e5] dark:border-[#262626] rounded-[12px] divide-y divide-[#e5e5e5] dark:divide-[#262626] bg-card overflow-hidden shadow-[var(--shadow-sm)]">
       {items.map((a) => (
         <div key={a.id} className="animate-fade-in">
           <AssignmentRow
@@ -181,7 +174,7 @@ function List({ items }: { items: BrowserItem[] }) {
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="px-6 py-12 text-center text-[16px] text-muted-foreground">
+    <p className="px-6 py-12 text-center text-[16px] text-[#737373] dark:text-[#a3a3a3]">
       {children}
     </p>
   );

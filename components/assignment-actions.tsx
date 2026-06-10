@@ -186,10 +186,10 @@ export function AssignmentActions({
 
       <dialog
         ref={dialogRef}
-        className="fixed left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl border-none bg-card p-6 text-foreground shadow-xl ring-1 ring-foreground/10 backdrop:bg-foreground/30 max-h-[85vh] overflow-y-auto"
+        className="fixed left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-[16px] border border-border bg-card p-8 text-foreground shadow-2xl backdrop:bg-black/50 backdrop:backdrop-blur-[4px] max-h-[85vh] overflow-y-auto outline-none"
       >
         {globalError && (
-          <div className="mb-4 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
+          <div className="mb-4 rounded-[8px] border border-destructive/30 bg-[#fef2f2] dark:bg-[#ef4444]/10 dark:text-[#fca5a5] px-3 py-2 text-sm text-destructive" role="alert">
             {globalError}
           </div>
         )}

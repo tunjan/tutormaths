@@ -22,11 +22,11 @@ function AlertDialogContent({
 }: AlertDialogPrimitive.Popup.Props) {
   return (
     <AlertDialogPrimitive.Portal>
-      <AlertDialogPrimitive.Backdrop className="fixed inset-0 z-50 bg-[var(--overlay)] backdrop-blur-[2px] duration-150 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
+      <AlertDialogPrimitive.Backdrop className="fixed inset-0 z-50 bg-[var(--overlay)] backdrop-blur-[4px] duration-150 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
       <AlertDialogPrimitive.Popup
         data-slot="alert-dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 flex w-full max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-[20px] bg-popover p-6 text-popover-foreground shadow-[0_12px_32px_rgba(0,0,0,0.12)] ring-1 ring-border duration-150 outline-hidden",
+          "fixed top-1/2 left-1/2 z-50 flex w-full max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-[16px] bg-card p-8 text-card-foreground shadow-2xl border border-border duration-150 outline-hidden",
           className,
         )}
         {...props}
@@ -49,7 +49,7 @@ function AlertDialogFooter({ className, ...props }: React.ComponentProps<"div">)
   return (
     <div
       data-slot="alert-dialog-footer"
-      className={cn("flex justify-end gap-2", className)}
+      className={cn("flex justify-end gap-3 mt-4", className)}
       {...props}
     />
   );
@@ -62,7 +62,7 @@ function AlertDialogTitle({
   return (
     <AlertDialogPrimitive.Title
       data-slot="alert-dialog-title"
-      className={cn("font-display text-lg leading-tight", className)}
+      className={cn("font-heading text-lg font-semibold leading-tight", className)}
       {...props}
     />
   );
@@ -75,7 +75,7 @@ function AlertDialogDescription({
   return (
     <AlertDialogPrimitive.Description
       data-slot="alert-dialog-description"
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn("text-sm text-[#525252] dark:text-[#a3a3a3]", className)}
       {...props}
     />
   );
@@ -88,7 +88,7 @@ function AlertDialogAction({
   return (
     <AlertDialogPrimitive.Close
       data-slot="alert-dialog-action"
-      className={cn(buttonVariants(), className)}
+      className={cn(buttonVariants({ variant: "destructive" }), className)}
       {...props}
     />
   );

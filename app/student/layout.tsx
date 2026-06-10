@@ -19,12 +19,12 @@ export default async function StudentLayout({
         <div className="mx-auto flex h-16 max-w-5xl items-center gap-4 px-6">
           <Link
             href="/student"
-            aria-label="Maths Tasks — home"
-            className="flex items-center gap-2.5 transition-opacity hover:opacity-80"
+            aria-label="Maths Tasks — dashboard"
+            className="flex items-center transition-opacity hover:opacity-80"
           >
             <Logo />
           </Link>
-          <span className="mx-1 hidden h-6 w-px bg-border md:block" />
+          <span className="mx-1 hidden h-4 w-px bg-border md:block" />
           <StudentNav />
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
             <NotificationBell userId={ctx.userId} role="student" />

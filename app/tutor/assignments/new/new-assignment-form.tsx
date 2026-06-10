@@ -328,7 +328,7 @@ export function NewAssignmentForm({
 
       <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-end">
         {globalError && (
-          <div className="sm:mr-auto rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
+          <div className="sm:mr-auto rounded-[8px] border border-destructive/30 bg-[#fef2f2] dark:bg-[#ef4444]/10 dark:text-[#fca5a5] px-3 py-2 text-sm text-destructive" role="alert">
             {globalError}
           </div>
         )}

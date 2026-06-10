@@ -67,9 +67,10 @@ export function CommentComposer({
           onClick={submit}
           disabled={pending || !value.trim()}
           aria-label="Post comment"
-          className="shrink-0 h-[46px] w-[46px] rounded-md"
+          size="icon"
+          className="shrink-0 h-[46px] w-[46px] rounded-full"
         >
-          <Send className="size-4" />
+          <Send className="size-4 translate-x-[-1px] translate-y-[0.5px]" />
         </Button>
       </div>
     </div>

@@ -14,11 +14,6 @@ interface Created {
   link: string;
 }
 
-/**
- * Dialog for adding a student. The tutor enters only a NAME; we create a
- * pending invite via /api/invites and reveal a shareable link. The student
- * opens the link to set their own email and password (see app/invite/[token]).
- */
 export function AddStudentModal({
   open,
   onClose,
@@ -74,16 +69,16 @@ export function AddStudentModal({
       description="Enter their name and we'll generate a link to share — they set their own email and password."
     >
       {created ? (
-        <div className="flex flex-col gap-3">
-          <p className="text-sm font-medium text-foreground">
+        <div className="flex flex-col gap-4">
+          <p className="text-sm font-semibold text-foreground">
             Share this link with {created.fullName}
           </p>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-[#525252] dark:text-[#a3a3a3]">
             When they open it, they&rsquo;ll choose their email and a password.
             You can copy it again later from the students list.
           </p>
           <div className="flex items-center gap-2">
-            <code className="flex-1 truncate rounded-xl bg-muted px-3 py-2.5 text-sm text-foreground">
+            <code className="flex-1 truncate rounded-[8px] bg-muted border border-border px-3 py-2.5 text-sm text-foreground">
               {created.link}
             </code>
             <Button
@@ -94,7 +89,7 @@ export function AddStudentModal({
                 toast.success("Link copied.");
               }}
             >
-              <Copy /> Copy
+              <Copy className="size-4" /> Copy
             </Button>
           </div>
           <div className="flex justify-end gap-3 pt-2">
@@ -119,7 +114,7 @@ export function AddStudentModal({
 
           {error && (
             <p
-              className="rounded-xl border border-destructive/30 bg-destructive-muted px-3 py-2 text-sm text-destructive"
+              className="rounded-[8px] border border-destructive/30 bg-[#fef2f2] dark:bg-[#ef4444]/10 dark:text-[#fca5a5] px-3 py-2 text-sm text-destructive"
               role="alert"
             >
               {error}
@@ -131,7 +126,7 @@ export function AddStudentModal({
               Cancel
             </Button>
             <Button type="submit" disabled={busy}>
-              <UserPlus /> {busy ? "Creating…" : "Create invite link"}
+              <UserPlus className="size-4" /> {busy ? "Creating…" : "Create invite link"}
             </Button>
           </div>
         </form>

@@ -10,7 +10,7 @@ export function AddStudentButton({
   variant = "default",
   label = "Add student",
 }: {
-  variant?: "default" | "outline" | "soft";
+  variant?: "default" | "outline" | "soft" | "ghost";
   label?: string;
 }) {
   const [open, setOpen] = useState(false);

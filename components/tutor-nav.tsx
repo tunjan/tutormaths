@@ -21,17 +21,12 @@ function isActive(pathname: string, href: string, exact?: boolean) {
   return exact ? pathname === href : pathname.startsWith(href);
 }
 
-/**
- * Tutor navigation: a quiet row of pill tabs. The active route carries a soft
- * inset wash; the rest are ink-soft until hovered. On small screens it collapses
- * into a menu popover.
- */
 export function TutorNav() {
   const pathname = usePathname();
 
   return (
     <>
-      <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+      <nav className="hidden items-center gap-4 md:flex" aria-label="Primary">
         {links.map((l) => {
           const active = isActive(pathname, l.href, l.exact);
           return (
@@ -40,10 +35,10 @@ export function TutorNav() {
               href={l.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "px-2 py-1.5 text-sm transition-colors",
+                "navbar-link text-sm font-medium transition-colors",
                 active
-                  ? "text-foreground font-semibold"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? "text-[#0a0a0a] dark:text-[#fafafa] font-semibold"
+                  : "text-[#525252] hover:text-[#0a0a0a] dark:text-[#a3a3a3] dark:hover:text-[#fafafa]",
               )}
             >
               {l.label}
@@ -72,10 +67,10 @@ export function TutorNav() {
                       href={l.href}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "relative block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted",
+                        "relative block rounded-[6px] px-3 py-2 text-sm transition-colors",
                         active
-                          ? "bg-muted font-semibold text-foreground"
-                          : "text-muted-foreground hover:text-foreground",
+                          ? "bg-[#f0f0f0] dark:bg-[#171717] font-semibold text-[#0a0a0a] dark:text-[#fafafa]"
+                          : "text-[#525252] hover:bg-[#fafafa] dark:text-[#a3a3a3] dark:hover:bg-[#0a0a0a]",
                       )}
                     >
                       {l.label}

@@ -1,9 +1,7 @@
 import type { ReactNode } from "react";
 
 /**
- * The standard page masthead: a small mono "eyebrow", a serif display title,
- * an optional description, and right-aligned actions. Matches the scholarly
- * graph-paper language used across the app.
+ * Standard page masthead matching the premium design system.
  */
 export function PageHeader({
   eyebrow,
@@ -17,24 +15,24 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="mb-20 flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+    <div className="mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
       <div>
         {eyebrow && (
-          <p className="text-sm font-medium text-muted-foreground">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#737373] dark:text-[#a3a3a3]">
             {eyebrow}
           </p>
         )}
-        <h1 className="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">
+        <h1 className="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-[#0a0a0a] dark:text-[#fafafa]">
           {title}
         </h1>
         {description && (
-          <p className="mt-4 max-w-2xl text-base sm:text-lg text-muted-foreground">
+          <p className="mt-3 max-w-2xl text-sm sm:text-base text-[#525252] dark:text-[#a3a3a3] leading-relaxed">
             {description}
           </p>
         )}
       </div>
       {actions && (
-        <div className="flex shrink-0 items-center gap-4">{actions}</div>
+        <div className="flex shrink-0 items-center gap-3">{actions}</div>
       )}
     </div>
   );

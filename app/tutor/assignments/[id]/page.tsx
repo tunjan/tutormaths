@@ -8,7 +8,7 @@ import { addComment } from "@/lib/actions/comments";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import { FilePreview } from "@/components/ui/file-preview";
 import { LiveCommentThread, type Participant } from "@/components/live-comment-thread";
-import { CommentForm } from "@/components/comment-form";
+import { CommentComposer } from "@/components/comment-composer";
 import { AssignmentActions } from "@/components/assignment-actions";
 import { MarkAssignmentRead } from "@/components/mark-assignment-read";
 import { ReviewControls } from "@/components/review-controls";
@@ -51,7 +51,6 @@ export default async function TutorAssignmentPage({
 
   const pdfUrl = await signedUrl(BUCKET_ASSIGNMENTS, a.file_path);
 
-  /** Infer MIME from the stored file extension so FilePreview picks the right renderer. */
   const ext = a.file_path.split(".").pop()?.toLowerCase();
   const fileMime =
     ext === "png" ? "image/png"
@@ -85,24 +84,24 @@ export default async function TutorAssignmentPage({
   const comments = await loadComments(id);
 
   return (
-    <div className="w-full bg-background text-foreground flex flex-col selection:bg-primary selection:text-primary-foreground mb-12">
+    <div className="w-full bg-background text-foreground flex flex-col selection:bg-primary selection:text-primary-foreground mb-12 border border-[#e5e5e5] dark:border-[#262626] rounded-[12px] overflow-hidden shadow-[var(--shadow-sm)] animate-rise">
       <MarkAssignmentRead assignmentId={id} />
 
-      <main className="w-full flex flex-col divide-y divide-border">
+      <main className="w-full flex flex-col divide-y divide-[#e5e5e5] dark:divide-[#262626]">
         {/* HERO SECTION */}
-        <header className="flex flex-col gap-6 pt-0 pb-8 lg:pt-0 lg:pb-10 bg-secondary/10 px-4 md:px-8 lg:px-12">
-          <BackLink href="/tutor" className="text-[13px] tracking-wide text-muted-foreground hover:text-foreground transition-opacity opacity-80 hover:opacity-100 mt-2">
+        <header className="flex flex-col gap-6 pt-6 pb-8 bg-[#fafafa] dark:bg-[#0a0a0a] px-6 md:px-8">
+          <BackLink href="/tutor" className="text-xs tracking-wider text-[#737373] dark:text-[#a3a3a3] hover:text-[#0a0a0a] dark:hover:text-[#fafafa] mt-2 font-mono uppercase">
             Back to dashboard
           </BackLink>
           
           <div className="flex flex-col gap-4">
-            <h1 className="text-[32px] md:text-[40px] font-semibold text-foreground tracking-tight leading-tight">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight leading-tight">
               {a.title}
             </h1>
             
-            <div className="flex flex-wrap items-center gap-3 text-[14px] text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-3 text-sm text-[#525252] dark:text-[#a3a3a3]">
               <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
-              <span className="flex items-center gap-1.5 font-medium text-foreground">
+              <span className="flex items-center gap-1.5 font-semibold text-foreground">
                 <span>{student?.full_name || student?.email}</span>
               </span>
               {categoryName && (
@@ -117,9 +116,9 @@ export default async function TutorAssignmentPage({
               <span>Due {formatDateTime(a.due_at)}</span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-6 text-[13px] text-muted-foreground mt-2">
+            <div className="flex flex-wrap items-center gap-6 text-xs text-[#737373] dark:text-[#a3a3a3] mt-2 font-mono">
               {a.student_opened_at ? (
-                <span className="flex items-center gap-1.5 text-success">
+                <span className="flex items-center gap-1.5 text-success-green dark:text-[#86efac]">
                   <Eye className="size-4 shrink-0" />
                   Opened by student · {formatDateTime(a.student_opened_at)}
                 </span>
@@ -131,7 +130,7 @@ export default async function TutorAssignmentPage({
               )}
               <span className="opacity-30">·</span>
               <span>
-                Reported progress: <span className="font-medium text-foreground">{a.completion_pct}%</span>
+                Reported progress: <span className="font-semibold text-foreground">{a.completion_pct}%</span>
               </span>
             </div>
             
@@ -151,21 +150,21 @@ export default async function TutorAssignmentPage({
         </header>
 
         {/* CONTENT SPLIT */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] divide-y lg:divide-y-0 lg:divide-x divide-border">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] divide-y lg:divide-y-0 lg:divide-x divide-[#e5e5e5] dark:divide-[#262626]">
           
           {/* LEFT COLUMN: ASSIGNMENT DETAILS & FILE PREVIEW */}
-          <div className="flex flex-col divide-y divide-border">
+          <div className="flex flex-col divide-y divide-[#e5e5e5] dark:divide-[#262626] p-6 md:p-8">
             {a.description && (
-              <section className="flex flex-col gap-6 py-8 lg:py-10 px-4 md:px-8 lg:px-12">
-                <p className="text-[16px] leading-[1.65] text-foreground">
+              <section className="flex flex-col gap-4 pb-6">
+                <p className="text-base leading-relaxed text-foreground">
                   {a.description}
                 </p>
               </section>
             )}
 
-            <section className="flex flex-col gap-6 py-8 lg:py-10 px-4 md:px-8 lg:px-12">
+            <section className="flex flex-col gap-6 pt-6">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="text-[14px] font-semibold text-foreground uppercase tracking-wider">Assignment File</h2>
+                <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">Assignment File</h2>
                 {pdfUrl && (
                   <a
                     href={pdfUrl}
@@ -178,11 +177,11 @@ export default async function TutorAssignmentPage({
                 )}
               </div>
               {pdfUrl ? (
-                <div className="rounded-xl overflow-hidden border border-border/50">
+                <div className="rounded-[12px] overflow-hidden border border-[#e5e5e5] dark:border-[#262626]">
                   <FilePreview url={pdfUrl} mimeType={fileMime} title={a.title} />
                 </div>
               ) : (
-                <div className="py-10 text-center text-[15px] text-muted-foreground bg-secondary/10 rounded-xl">
+                <div className="card text-center p-8 bg-card border border-border rounded-[12px] text-[#737373] dark:text-[#a3a3a3]">
                   The assignment file could not be loaded.
                 </div>
               )}
@@ -190,14 +189,14 @@ export default async function TutorAssignmentPage({
           </div>
 
           {/* RIGHT COLUMN: WORK, REVIEW & COMMENTS */}
-          <aside className="flex flex-col divide-y divide-border bg-secondary/5">
+          <aside className="flex flex-col divide-y divide-[#e5e5e5] dark:divide-[#262626] bg-[#fafafa]/50 dark:bg-[#0a0a0a]/50 p-6 md:p-8">
             {/* SUBMITTED WORK */}
-            <section className="flex flex-col gap-6 py-8 lg:py-10 px-4 md:px-8 lg:px-12">
-              <h3 className="text-[14px] font-semibold text-foreground uppercase tracking-wider">
+            <section className="flex flex-col gap-4 pb-6">
+              <h3 className="text-xs font-semibold text-foreground uppercase tracking-wider">
                 Submitted work
               </h3>
               {submissions.length === 0 ? (
-                <div className="py-12 text-center text-[15px] text-muted-foreground bg-secondary/20 rounded-xl">
+                <div className="card text-center p-8 bg-card border border-border rounded-[12px] text-[#737373] dark:text-[#a3a3a3] shadow-none">
                   No work submitted yet.
                 </div>
               ) : (
@@ -206,27 +205,27 @@ export default async function TutorAssignmentPage({
             </section>
 
             {/* REVIEW VERDICT */}
-            <section className="flex flex-col gap-6 py-8 lg:py-10 px-4 md:px-8 lg:px-12">
-              <h3 className="text-[14px] font-semibold text-foreground uppercase tracking-wider">
+            <section className="flex flex-col gap-4 py-6">
+              <h3 className="text-xs font-semibold text-foreground uppercase tracking-wider">
                 Your Review
               </h3>
               <ReviewControls assignmentId={a.id} status={a.review_status} />
             </section>
 
             {/* COMMENTS */}
-            <section className="flex flex-col gap-6 py-8 lg:py-10 px-4 md:px-8 lg:px-12">
-              <h3 className="text-[14px] font-semibold text-foreground flex items-center justify-between uppercase tracking-wider">
+            <section className="flex flex-col gap-4 pt-6">
+              <h3 className="text-xs font-semibold text-foreground flex items-center justify-between uppercase tracking-wider">
                 <span>Comments</span>
-                <span className="text-muted-foreground bg-background border border-border/40 px-2 py-0.5 rounded-full text-xs">{comments.length}</span>
+                <span className="text-[#737373] dark:text-[#a3a3a3] bg-card border border-[#e5e5e5] dark:border-[#262626] px-2 py-0.5 rounded-full text-[11px] font-mono">{comments.length}</span>
               </h3>
               
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-6 mt-2">
                 <LiveCommentThread
                   assignmentId={id}
                   initial={comments}
                   participants={participants}
                 />
-                <CommentForm assignmentId={id} action={addComment} />
+                <CommentComposer assignmentId={id} action={addComment} />
               </div>
             </section>
           </aside>

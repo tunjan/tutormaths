@@ -11,9 +11,7 @@ import {
 } from "@/components/ui/card";
 
 /**
- * Public landing for an invite link. Looks the token up with the admin client
- * (the visitor is unauthenticated). A missing or already-redeemed token shows
- * an "invalid" card; otherwise the student gets a welcome + the accept form.
+ * Public landing for an invite link. Looks the token up with the admin client.
  */
 export default async function InvitePage({
   params,
@@ -33,7 +31,7 @@ export default async function InvitePage({
   const firstName = invite?.full_name?.trim().split(/\s+/)[0] ?? "";
 
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-8 px-4 py-16">
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 px-4 py-16">
       <div className="flex flex-col items-center gap-4 text-center">
         <Logo />
         <p className="text-sm text-muted-foreground">
@@ -41,11 +39,11 @@ export default async function InvitePage({
         </p>
       </div>
 
-      <Card className="w-full max-w-md gap-8 rounded-2xl py-10">
+      <Card className="w-full max-w-md gap-6 shadow-[var(--shadow-md)]">
         {valid ? (
           <>
-            <CardHeader className="gap-2 px-10 text-center">
-              <CardTitle className="text-xl font-medium">
+            <CardHeader className="gap-2 text-center">
+              <CardTitle className="text-xl font-semibold">
                 {firstName ? `Welcome, ${firstName}` : "Welcome"}
               </CardTitle>
               <CardDescription>
@@ -53,14 +51,14 @@ export default async function InvitePage({
                 account.
               </CardDescription>
             </CardHeader>
-            <CardContent className="px-10">
+            <CardContent>
               <AcceptInviteForm token={token} />
             </CardContent>
           </>
         ) : (
           <>
-            <CardHeader className="gap-2 px-10 text-center">
-              <CardTitle className="text-xl font-medium">
+            <CardHeader className="gap-2 text-center">
+              <CardTitle className="text-xl font-semibold text-[#ef4444]">
                 This link is no longer valid
               </CardTitle>
               <CardDescription>
@@ -68,10 +66,10 @@ export default async function InvitePage({
                 to send you a new invite link.
               </CardDescription>
             </CardHeader>
-            <CardContent className="px-10 text-center">
+            <CardContent className="text-center">
               <Link
                 href="/login"
-                className="text-sm text-foreground underline underline-offset-4"
+                className="text-sm text-foreground underline underline-offset-4 font-medium"
               >
                 Go to sign in
               </Link>

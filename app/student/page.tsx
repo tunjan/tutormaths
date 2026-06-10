@@ -1,4 +1,3 @@
-import { CheckCircle2 } from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { unreadAssignmentIds } from "@/lib/queries";
@@ -10,7 +9,6 @@ export default async function StudentDashboard() {
   await requireStudent();
   const supabase = await createClient();
 
-  // RLS limits this to the student's own assignments.
   const [{ data: assignments }, unread] = await Promise.all([
     supabase
       .from("assignments")
@@ -24,26 +22,25 @@ export default async function StudentDashboard() {
   const completed = all.filter((a) => a.review_status === "approved");
 
   return (
-    <div className="w-full py-8 animate-rise">
+    <div className="w-full py-2 animate-rise">
       <PageHeader
         title="My practice"
         description="Your assignments, with progress you control."
         actions={<RequestHomeworkButton />}
       />
 
-      <div className="mb-6 mt-24 flex items-baseline justify-between border-b border-border/40 pb-4">
-        <h2 className="text-[24px] font-medium tracking-tight text-foreground">Active Tasks</h2>
-        <span className="font-mono text-[12px] uppercase tracking-[0.05em] text-muted-foreground">
+      <div className="mb-4 mt-10 flex items-baseline justify-between border-b border-[#e5e5e5] dark:border-[#262626] pb-3">
+        <h2 className="text-h4 font-semibold tracking-tight text-foreground">Active Tasks</h2>
+        <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
           {active.length} task{active.length === 1 ? "" : "s"}
         </span>
       </div>
 
       {active.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-6 py-24 text-center animate-fade-in rounded-2xl bg-secondary/20">
-
-          <div className="space-y-4">
-            <h3 className="text-xl font-medium text-foreground">Nothing due right now</h3>
-            <p className="max-w-md text-[16px] leading-[1.6] text-muted-foreground">
+        <div className="card flex flex-col items-center justify-center gap-4 py-16 text-center animate-fade-in bg-card border border-border shadow-[var(--shadow-sm)]">
+          <div className="space-y-2 max-w-md">
+            <h3 className="text-lg font-semibold text-foreground">Nothing due right now</h3>
+            <p className="text-sm text-[#525252] dark:text-[#a3a3a3]">
               {completed.length > 0
                 ? "You're all caught up. Want a head start? Ask for more."
                 : "Use “Request more practice” above when you’re ready for work."}
@@ -51,7 +48,7 @@ export default async function StudentDashboard() {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col stagger-children mb-24 border border-border rounded-xl divide-y divide-border bg-background overflow-hidden">
+        <div className="flex flex-col stagger-children mb-10 border border-[#e5e5e5] dark:border-[#262626] rounded-[12px] divide-y divide-[#e5e5e5] dark:divide-[#262626] bg-card overflow-hidden shadow-[var(--shadow-sm)]">
           {active.map((a) => (
             <div key={a.id} className="animate-fade-in">
               <AssignmentRow
@@ -69,14 +66,14 @@ export default async function StudentDashboard() {
       )}
 
       {completed.length > 0 && (
-        <div className="animate-fade-in mt-24" style={{ animationDelay: '200ms' }}>
-          <div className="mb-6 flex items-baseline justify-between border-b border-border/40 pb-4">
-            <h2 className="text-[24px] font-medium tracking-tight text-foreground">Completed</h2>
-            <span className="font-mono text-[12px] uppercase tracking-[0.05em] text-muted-foreground">
+        <div className="animate-fade-in mt-10" style={{ animationDelay: '100ms' }}>
+          <div className="mb-4 flex items-baseline justify-between border-b border-[#e5e5e5] dark:border-[#262626] pb-3">
+            <h2 className="text-h4 font-semibold tracking-tight text-foreground">Completed</h2>
+            <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
               {completed.length} task{completed.length === 1 ? "" : "s"}
             </span>
           </div>
-          <div className="flex flex-col stagger-children opacity-80 transition-opacity hover:opacity-100 border border-border rounded-xl divide-y divide-border bg-background overflow-hidden">
+          <div className="flex flex-col stagger-children border border-[#e5e5e5] dark:border-[#262626] rounded-[12px] divide-y divide-[#e5e5e5] dark:divide-[#262626] bg-card overflow-hidden shadow-[var(--shadow-sm)]">
             {completed.map((a) => (
               <div key={a.id} className="animate-fade-in">
                 <AssignmentRow
