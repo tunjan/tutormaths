@@ -5,10 +5,10 @@
 // email (per-notification + reminders). Built table-first with inline styles
 // so it renders consistently across Gmail, Apple Mail, and Outlook.
 //
-// The "Manta" mascot is served from the app's /public/mascot folder as an SVG
-// referenced by absolute URL. SVG renders in Apple Mail / iOS / most modern
-// clients; where a client can't render SVG (older Gmail web), the wordmark and
-// alt text carry the brand, so the email always looks intentional.
+// The "Manta" mascot is served from the app's /public/mascot folder. Emails
+// reference the PNG renders (manta-*.png) rather than the SVGs, because Gmail
+// and Outlook don't render SVG <img>; PNG is universally supported. The
+// wordmark + alt text still carry the brand if images are blocked.
 //
 // `_shared` is underscore-prefixed, so Supabase does NOT deploy it as its own
 // function — it's imported by the real functions via `../_shared/email.ts`.
@@ -89,7 +89,7 @@ export function renderEmail(opts: EmailOptions): string {
 
   const name = (recipientName || "there").trim();
   const bodyHtml = escapeHtml(body).replace(/\n/g, "<br/>");
-  const mascotSrc = siteUrl ? `${siteUrl}/mascot/manta-${pose}.svg` : "";
+  const mascotSrc = siteUrl ? `${siteUrl}/mascot/manta-${pose}.png` : "";
 
   const badgeHtml = badge
     ? `<tr><td style="padding:0 0 14px;">
