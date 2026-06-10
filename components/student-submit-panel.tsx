@@ -134,18 +134,17 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
                 </Button>
               }
             />
-            <AlertDialogContent className="rounded-xl border-border/60 shadow-lg">
+            <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle className="tracking-tight text-[18px]">Remove this submission?</AlertDialogTitle>
-                <AlertDialogDescription className="text-[15px] text-muted-foreground leading-relaxed">
+                <AlertDialogTitle>Remove this submission?</AlertDialogTitle>
+                <AlertDialogDescription>
                   The uploaded file will be permanently removed. You can upload a
                   replacement afterwards.
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter className="mt-4">
-                <AlertDialogCancel className="rounded-lg font-medium text-[14px] shadow-none">Cancel</AlertDialogCancel>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
-                  className="rounded-lg font-medium text-[14px] bg-foreground text-background hover:bg-foreground/90 shadow-none"
                   onClick={() =>
                     startDelete(async () => {
                       try {

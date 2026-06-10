@@ -59,28 +59,27 @@ export function Modal({
         )}
       >
         <div className="modal-header">
-          <div>
-            <h2 className="modal-title font-heading tracking-tight">
-              {title}
-            </h2>
-            {description && (
-              <p className="mt-1 text-sm text-[#525252] dark:text-[#a3a3a3]">{description}</p>
-            )}
-          </div>
+          <h2 className="modal-title font-heading tracking-tight">
+            {title}
+          </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="modal-close text-[#737373] hover:text-[#0a0a0a] dark:hover:text-[#fafafa]"
+            className="modal-close"
           >
-            <X className="size-4" />
+            <X className="size-3.5" />
           </button>
         </div>
 
-        <div className="py-2">{children}</div>
+        {description && (
+          <p className="text-[13px] text-[#737373] dark:text-[#a3a3a3] -mt-3 mb-5 leading-relaxed">{description}</p>
+        )}
+
+        <div>{children}</div>
 
         {footer && (
-          <div className="mt-6 flex items-center justify-end gap-3 border-t border-border pt-4">
+          <div className="mt-5 flex items-center justify-end gap-3 border-t border-[#f0f0f0] dark:border-[#262626] pt-4">
             {footer}
           </div>
         )}

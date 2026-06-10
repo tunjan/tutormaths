@@ -11,7 +11,7 @@ import {
   BUCKET_ASSIGNMENTS,
   MAX_FILE_BYTES,
 } from "@/lib/constants";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,7 +34,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { cn } from "@/lib/utils";
+
 
 interface Props {
   id: string;
@@ -170,7 +170,6 @@ export function AssignmentActions({
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
-                className={cn(buttonVariants({ variant: "destructive" }))}
                 onClick={() =>
                   startDelete(async () => {
                     await deleteAssignment(id);
@@ -186,7 +185,7 @@ export function AssignmentActions({
 
       <dialog
         ref={dialogRef}
-        className="fixed left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-[16px] border border-border bg-card p-8 text-foreground shadow-2xl backdrop:bg-black/50 backdrop:backdrop-blur-[4px] max-h-[85vh] overflow-y-auto outline-none"
+        className="fixed left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-[440px] -translate-x-1/2 -translate-y-1/2 rounded-[20px] border border-[#f0f0f0] dark:border-[#262626] bg-card p-7 text-foreground shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.04),0_12px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_2px_4px_rgba(0,0,0,0.2),0_12px_40px_rgba(0,0,0,0.4)] backdrop:bg-black/35 backdrop:backdrop-blur-[6px] max-h-[85vh] overflow-y-auto outline-none"
       >
         {globalError && (
           <div className="mb-4 rounded-[8px] border border-destructive/30 bg-[#fef2f2] dark:bg-[#ef4444]/10 dark:text-[#fca5a5] px-3 py-2 text-sm text-destructive" role="alert">

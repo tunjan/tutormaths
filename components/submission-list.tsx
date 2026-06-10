@@ -2,12 +2,11 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ExternalLink, Trash2 } from "lucide-react";
+import { ExternalLink, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteSubmission } from "@/app/student/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { FilePreview } from "@/components/ui/file-preview";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -61,7 +60,6 @@ function SubmissionItem({
   canDelete: boolean;
 }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
   const [deleting, startDelete] = useTransition();
   const [globalError, setGlobalError] = useState("");
 
@@ -81,20 +79,6 @@ function SubmissionItem({
           </div>
         </div>
         <div className="flex items-center gap-1">
-          {s.url && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setOpen((o) => !o)}
-              aria-expanded={open}
-            >
-              <ChevronDown
-                className={cn("transition-transform", open && "rotate-180")}
-              />
-              {open ? "Hide" : "View"}
-            </Button>
-          )}
           {s.url && (
             <a
               href={s.url}
@@ -155,14 +139,6 @@ function SubmissionItem({
           )}
         </div>
       </div>
-      {open && s.url && (
-        <FilePreview
-          url={s.url}
-          mimeType={s.mime_type}
-          title="Submitted work"
-          className="mt-4"
-        />
-      )}
     </div>
   );
 }

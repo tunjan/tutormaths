@@ -18,7 +18,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FileDropzone } from "@/components/ui/file-dropzone";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
-import { SectionHeading } from "@/components/ui/section-heading";
 import {
   Select,
   SelectContent,
@@ -170,150 +169,144 @@ export function NewAssignmentForm({
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
-      <fieldset className="flex flex-col gap-4">
-        <SectionHeading>Recipient</SectionHeading>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="flex flex-col gap-2">
-            <Label id="student-label">Student</Label>
-            <Select
-              value={studentId}
-              onValueChange={(v) => {
-                setStudentId(v ?? "");
-                setErrors((e) => ({ ...e, student: undefined }));
-              }}
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-1.5">
+          <Label id="student-label">Student</Label>
+          <Select
+            value={studentId}
+            onValueChange={(v) => {
+              setStudentId(v ?? "");
+              setErrors((e) => ({ ...e, student: undefined }));
+            }}
+          >
+            <SelectTrigger 
+              aria-labelledby="student-label" 
+              aria-invalid={!!errors.student}
+              aria-describedby={errors.student ? "student-error" : undefined}
             >
-              <SelectTrigger 
-                aria-labelledby="student-label" 
-                aria-invalid={!!errors.student}
-                aria-describedby={errors.student ? "student-error" : undefined}
-              >
-                <SelectValue placeholder="Choose a student…">
-                  {studentId 
-                    ? students.find((s) => s.id === studentId)?.full_name || 
-                      students.find((s) => s.id === studentId)?.email
-                    : undefined}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {students.map((s) => (
-                  <SelectItem key={s.id} value={s.id}>
-                    {s.full_name || s.email}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FieldError id="student-error" message={errors.student} />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label id="type-label">Type</Label>
-            <Select
-              value={type}
-              onValueChange={(v) =>
-                setType((v as "problem_set" | "reading_notes") ?? "problem_set")
-              }
-            >
-              <SelectTrigger aria-labelledby="type-label">
-                <SelectValue>
-                  {type === "problem_set" ? "Problem set" : type === "reading_notes" ? "Reading notes" : undefined}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="problem_set">Problem set</SelectItem>
-                <SelectItem value="reading_notes">Reading notes</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset className="flex flex-col gap-4">
-        <SectionHeading>Details</SectionHeading>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="title">Title</Label>
-          <Input
-            id="title"
-            name="title"
-            type="text"
-            aria-invalid={!!errors.title}
-            placeholder="Quadratic equations — set 3"
-            onChange={() => setErrors((e) => ({ ...e, title: undefined }))}
-          />
-          <FieldError message={errors.title} />
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="due_at">Due</Label>
-            <DateTimePicker
-              id="due_at"
-              name="due_at"
-              defaultValue={defaultDue()}
-              invalid={!!errors.due}
-              aria-describedby={errors.due ? "due-error" : undefined}
-              onChange={() => setErrors((e) => ({ ...e, due: undefined }))}
-            />
-            <FieldError id="due-error" message={errors.due} />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <Label id="category-label">Topic (optional)</Label>
-            <Select
-              value={categoryId}
-              onValueChange={(v) => {
-                setCategoryId(v ?? "");
-                setErrors((e) => ({ ...e, category: undefined }));
-              }}
-            >
-              <SelectTrigger aria-labelledby="category-label" className="w-full">
-                <SelectValue placeholder="No topic">
-                  {creatingNewCategory
-                    ? "New topic…"
-                    : categories.find((c) => c.id === categoryId)?.name}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">No topic</SelectItem>
-                {categories.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-                <SelectItem value={NEW_CATEGORY}>
-                  <Plus className="size-3.5" /> Create new topic…
+              <SelectValue placeholder="Choose a student…">
+                {studentId 
+                  ? students.find((s) => s.id === studentId)?.full_name || 
+                    students.find((s) => s.id === studentId)?.email
+                  : undefined}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {students.map((s) => (
+                <SelectItem key={s.id} value={s.id}>
+                  {s.full_name || s.email}
                 </SelectItem>
-              </SelectContent>
-            </Select>
-            {creatingNewCategory && (
-              <Input
-                type="text"
-                value={newCategory}
-                placeholder="New topic name"
-                aria-invalid={!!errors.category}
-                onChange={(e) => {
-                  setNewCategory(e.target.value);
-                  setErrors((er) => ({ ...er, category: undefined }));
-                }}
-              />
-            )}
-            <FieldError message={errors.category} />
-          </div>
+              ))}
+            </SelectContent>
+          </Select>
+          <FieldError id="student-error" message={errors.student} />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="description">Description (optional)</Label>
-          <Textarea
-            id="description"
-            name="description"
-            rows={3}
-            placeholder="Notes for the student — focus areas, page numbers, hints…"
+        <div className="flex flex-col gap-1.5">
+          <Label id="type-label">Type</Label>
+          <Select
+            value={type}
+            onValueChange={(v) =>
+              setType((v as "problem_set" | "reading_notes") ?? "problem_set")
+            }
+          >
+            <SelectTrigger aria-labelledby="type-label">
+              <SelectValue>
+                {type === "problem_set" ? "Problem set" : type === "reading_notes" ? "Reading notes" : undefined}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="problem_set">Problem set</SelectItem>
+              <SelectItem value="reading_notes">Reading notes</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="title">Title</Label>
+        <Input
+          id="title"
+          name="title"
+          type="text"
+          aria-invalid={!!errors.title}
+          placeholder="Quadratic equations — set 3"
+          onChange={() => setErrors((e) => ({ ...e, title: undefined }))}
+        />
+        <FieldError message={errors.title} />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="due_at">Due</Label>
+          <DateTimePicker
+            id="due_at"
+            name="due_at"
+            defaultValue={defaultDue()}
+            invalid={!!errors.due}
+            aria-describedby={errors.due ? "due-error" : undefined}
+            onChange={() => setErrors((e) => ({ ...e, due: undefined }))}
           />
+          <FieldError id="due-error" message={errors.due} />
         </div>
-      </fieldset>
 
-      <fieldset className="flex flex-col gap-4">
-        <SectionHeading>Assignment file</SectionHeading>
+        <div className="flex flex-col gap-1.5">
+          <Label id="category-label">Topic (optional)</Label>
+          <Select
+            value={categoryId}
+            onValueChange={(v) => {
+              setCategoryId(v ?? "");
+              setErrors((e) => ({ ...e, category: undefined }));
+            }}
+          >
+            <SelectTrigger aria-labelledby="category-label" className="w-full">
+              <SelectValue placeholder="No topic">
+                {creatingNewCategory
+                  ? "New topic…"
+                  : categories.find((c) => c.id === categoryId)?.name}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">No topic</SelectItem>
+              {categories.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
+              ))}
+              <SelectItem value={NEW_CATEGORY}>
+                <Plus className="size-3.5" /> Create new topic…
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          {creatingNewCategory && (
+            <Input
+              type="text"
+              value={newCategory}
+              placeholder="New topic name"
+              aria-invalid={!!errors.category}
+              onChange={(e) => {
+                setNewCategory(e.target.value);
+                setErrors((er) => ({ ...er, category: undefined }));
+              }}
+            />
+          )}
+          <FieldError message={errors.category} />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="description">Description (optional)</Label>
+        <Textarea
+          id="description"
+          name="description"
+          rows={2}
+          placeholder="Notes for the student — focus areas, page numbers, hints…"
+        />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label>Assignment file</Label>
         <FileDropzone
           accept={accept.join(",")}
           hint="PDF, JPG or PNG, up to 20 MB"
@@ -324,9 +317,9 @@ export function NewAssignmentForm({
           }}
         />
         <FieldError id="file-error" message={errors.file} />
-      </fieldset>
+      </div>
 
-      <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-end">
+      <div className="flex flex-col-reverse gap-3 border-t border-[#f0f0f0] dark:border-[#262626] pt-5 sm:flex-row sm:items-center sm:justify-end">
         {globalError && (
           <div className="sm:mr-auto rounded-[8px] border border-destructive/30 bg-[#fef2f2] dark:bg-[#ef4444]/10 dark:text-[#fca5a5] px-3 py-2 text-sm text-destructive" role="alert">
             {globalError}

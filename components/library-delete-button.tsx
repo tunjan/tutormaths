@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteCategory, deleteLibraryDocument } from "@/lib/actions/library";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { cn } from "@/lib/utils";
+
 
 /** Tutor-only confirm-and-delete for a Library document or a whole topic. */
 export function LibraryDeleteButton({
@@ -60,7 +60,6 @@ export function LibraryDeleteButton({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className={cn(buttonVariants({ variant: "destructive" }))}
             onClick={() =>
               start(async () => {
                 try {

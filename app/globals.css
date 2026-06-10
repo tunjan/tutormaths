@@ -648,53 +648,80 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: var(--overlay);
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: var(--z-modal-overlay);
   padding: 24px;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
+  animation: fadeIn var(--duration-fast) var(--ease-out) both;
+}
+.dark .modal-overlay {
+  background: rgba(0, 0, 0, 0.6);
 }
 .modal {
   position: relative;
   background: var(--bg-primary);
-  border-radius: var(--modal-radius);
-  padding: 32px;
-  max-width: 560px;
+  border-radius: 20px;
+  border: 1px solid var(--border-secondary);
+  padding: 28px 28px 24px;
+  max-width: 440px;
   width: 100%;
-  max-height: 90vh;
+  max-height: 85vh;
   overflow-y: auto;
   scrollbar-width: none;
-  box-shadow: var(--shadow-2xl);
-  animation: modalSlideIn 0.3s var(--ease-default);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 12px 40px rgba(0, 0, 0, 0.08);
+  animation: modalSlideIn 0.28s var(--ease-out) both;
+}
+.dark .modal {
+  border-color: var(--border-primary);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    0 12px 40px rgba(0, 0, 0, 0.4);
 }
 .modal::-webkit-scrollbar {
   display: none;
 }
 .modal-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-secondary);
 }
 .modal-title {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 .modal-close {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--btn-radius-sm);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.15s ease;
+  color: var(--text-quaternary);
+  border: 1px solid transparent;
 }
 .modal-close:hover {
   background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+.modal-section-divider {
+  height: 1px;
+  background: var(--border-secondary);
+  margin: 16px 0;
 }
 
 /* Dropdowns */

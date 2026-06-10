@@ -32,12 +32,12 @@ function PopoverContent({
         alignOffset={alignOffset}
         side={side}
         sideOffset={sideOffset}
-        className="isolate z-[100]"
+        className="isolate z-[2100]"
       >
         <PopoverPrimitive.Popup
           data-slot="popover-content"
           className={cn(
-            "z-[100] flex w-72 origin-(--transform-origin) flex-col rounded-[10px] bg-card p-3 text-sm text-foreground shadow-[var(--shadow-lg)] border border-[#e5e5e5] dark:border-[#262626] outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+            "z-[2100] flex w-72 origin-(--transform-origin) flex-col rounded-[10px] bg-card p-3 text-sm text-foreground shadow-[var(--shadow-lg)] border border-[#e5e5e5] dark:border-[#262626] outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
             className
           )}
           {...props}
