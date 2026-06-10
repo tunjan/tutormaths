@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef, useEffect } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -20,6 +20,7 @@ export function CommentComposer({
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   function submit() {
     const body = value.trim();
@@ -38,6 +39,14 @@ export function CommentComposer({
     });
   }
 
+  // Auto-grow height on value change
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [value]);
+
   return (
     <div className="flex flex-col gap-1.5">
       {error && (
@@ -48,8 +57,9 @@ export function CommentComposer({
           {error}
         </div>
       )}
-      <div className="flex items-end gap-2">
+      <div className="flex items-center gap-2 rounded-md border border-border bg-background pl-3.5 pr-1.5 py-1.5 transition-colors focus-within:border-foreground">
         <textarea
+          ref={textareaRef}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => {
@@ -60,7 +70,7 @@ export function CommentComposer({
           }}
           rows={1}
           placeholder="Write a comment…"
-          className="min-h-[46px] flex-1 resize-none rounded-md border border-border bg-background px-3.5 py-2.5 text-[15px] leading-relaxed transition-colors placeholder:text-muted-foreground focus-visible:border-foreground focus-visible:outline-none"
+          className="min-h-[34px] max-h-[160px] flex-1 resize-none bg-transparent py-[5px] text-[15px] leading-6 placeholder:text-muted-foreground focus:outline-none"
         />
         <Button
           type="button"
@@ -68,9 +78,10 @@ export function CommentComposer({
           disabled={pending || !value.trim()}
           aria-label="Post comment"
           size="icon"
-          className="shrink-0 h-[46px] w-[46px] rounded-full"
+          variant="ghost"
+          className="shrink-0 h-[34px] w-[34px] rounded-full text-black hover:bg-neutral-100 hover:text-black dark:text-white dark:hover:bg-neutral-900 dark:hover:text-white"
         >
-          <Send className="size-4 translate-x-[-1px] translate-y-[0.5px]" />
+          <Send className="size-4 translate-x-[-0.5px]" />
         </Button>
       </div>
     </div>
