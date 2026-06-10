@@ -665,12 +665,16 @@
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
+  scrollbar-width: none;
   box-shadow: var(--shadow-2xl);
   animation: modalSlideIn 0.3s var(--ease-default);
 }
+.modal::-webkit-scrollbar {
+  display: none;
+}
 .modal-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 24px;
 }

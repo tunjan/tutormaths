@@ -170,7 +170,7 @@ export function NewAssignmentForm({
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-8">
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
       <fieldset className="flex flex-col gap-4">
         <SectionHeading>Recipient</SectionHeading>
         <div className="grid gap-4 sm:grid-cols-2">
