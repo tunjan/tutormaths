@@ -657,6 +657,7 @@
   backdrop-filter: blur(4px);
 }
 .modal {
+  position: relative;
   background: var(--bg-primary);
   border-radius: var(--modal-radius);
   padding: 32px;
