@@ -7,6 +7,7 @@ import { loadComments } from "@/lib/queries";
 import { addComment } from "@/lib/actions/comments";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import { FilePreview } from "@/components/ui/file-preview";
+import { LatexContent } from "@/components/ui/latex-content";
 import { LiveCommentThread, type Participant } from "@/components/live-comment-thread";
 import { CommentComposer } from "@/components/comment-composer";
 import { AssignmentActions } from "@/components/assignment-actions";
@@ -49,9 +50,11 @@ export default async function TutorAssignmentPage({
     };
   }
 
-  const pdfUrl = await signedUrl(BUCKET_ASSIGNMENTS, a.file_path);
+  const pdfUrl = a.file_path
+    ? await signedUrl(BUCKET_ASSIGNMENTS, a.file_path)
+    : null;
 
-  const ext = a.file_path.split(".").pop()?.toLowerCase();
+  const ext = a.file_path?.split(".").pop()?.toLowerCase();
   const fileMime =
     ext === "png" ? "image/png"
     : ext === "jpg" || ext === "jpeg" ? "image/jpeg"
@@ -144,6 +147,8 @@ export default async function TutorAssignmentPage({
                 studentId={a.student_id}
                 categoryId={a.category_id}
                 categories={categories ?? []}
+                hasFile={!!a.file_path}
+                latexBody={a.latex_body}
               />
             </div>
           </div>
@@ -164,7 +169,9 @@ export default async function TutorAssignmentPage({
 
             <section className="flex flex-col gap-6 pt-6">
               <div className="flex items-center justify-between gap-3">
-                <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">Assignment File</h2>
+                <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">
+                  {a.latex_body ? "Assignment" : "Assignment File"}
+                </h2>
                 {pdfUrl && (
                   <a
                     href={pdfUrl}
@@ -176,7 +183,11 @@ export default async function TutorAssignmentPage({
                   </a>
                 )}
               </div>
-              {pdfUrl ? (
+              {a.latex_body ? (
+                <div className="rounded-[12px] border border-[#e5e5e5] dark:border-[#262626] bg-[#fafafa] dark:bg-[#0a0a0a] p-6">
+                  <LatexContent source={a.latex_body} />
+                </div>
+              ) : pdfUrl ? (
                 <div className="rounded-[12px] overflow-hidden border border-[#e5e5e5] dark:border-[#262626]">
                   <FilePreview url={pdfUrl} mimeType={fileMime} title={a.title} />
                 </div>

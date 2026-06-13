@@ -14,7 +14,8 @@ export interface CreateAssignmentInput {
   title: string;
   description: string | null;
   dueAt: string; // ISO timestamp
-  filePath: string; // object key already uploaded to assignment-files
+  filePath: string | null; // object key already uploaded to assignment-files
+  latexBody: string | null; // Markdown+LaTeX body, when no file is attached
   categoryId?: string | null; // optional topic tag
 }
 
@@ -33,6 +34,11 @@ export async function createAssignment(
     throw new Error("The due date must be in the future.");
   }
 
+  const latexBody = input.latexBody?.trim() || null;
+  if (!input.filePath && !latexBody) {
+    throw new Error("Attach a file or write the assignment in LaTeX.");
+  }
+
   const supabase = await createClient();
 
   const { error } = await supabase.from("assignments").insert({
@@ -44,6 +50,7 @@ export async function createAssignment(
     description: input.description?.trim() || null,
     due_at: input.dueAt,
     file_path: input.filePath,
+    latex_body: latexBody,
     category_id: input.categoryId || null,
   });
   if (error) throw new Error(error.message);
@@ -112,6 +119,10 @@ export async function updateAssignment(formData: FormData): Promise<void> {
     | "reading_notes";
   const dueLocal = String(formData.get("due_at") ?? "");
   const newFilePath = String(formData.get("file_path") ?? "").trim();
+  // "file" | "latex" — which content source the tutor saved. Omitted means the
+  // content wasn't touched (metadata-only edit).
+  const source = String(formData.get("source") ?? "");
+  const latexBody = String(formData.get("latex_body") ?? "").trim();
   // category_id is sent as "" to clear the tag, or omitted to leave unchanged.
   const hasCategory = formData.has("category_id");
   const categoryId = String(formData.get("category_id") ?? "").trim();
@@ -123,14 +134,27 @@ export async function updateAssignment(formData: FormData): Promise<void> {
 
   const supabase = await createClient();
 
-  let oldFilePath: string | null = null;
-  if (newFilePath) {
+  // Resolve the content change (if any) and what file, if any, to clean up.
+  // Switching to LaTeX, or replacing the file, leaves the old object orphaned.
+  let contentUpdate: { file_path?: string | null; latex_body?: string | null } =
+    {};
+  let removeFilePath: string | null = null;
+
+  if (source === "latex") {
+    if (!latexBody) throw new Error("Write the assignment in LaTeX.");
+    contentUpdate = { latex_body: latexBody, file_path: null };
+  } else if (source === "file" && newFilePath) {
+    contentUpdate = { file_path: newFilePath, latex_body: null };
+  }
+
+  if (Object.keys(contentUpdate).length > 0) {
     const { data: existing } = await supabase
       .from("assignments")
       .select("file_path")
       .eq("id", id)
       .single();
-    oldFilePath = existing?.file_path ?? null;
+    const oldFilePath = existing?.file_path ?? null;
+    if (oldFilePath && oldFilePath !== newFilePath) removeFilePath = oldFilePath;
   }
 
   const { error } = await supabase
@@ -140,14 +164,14 @@ export async function updateAssignment(formData: FormData): Promise<void> {
       description: description || null,
       type,
       due_at: new Date(dueLocal).toISOString(),
-      ...(newFilePath ? { file_path: newFilePath } : {}),
+      ...contentUpdate,
       ...(hasCategory ? { category_id: categoryId || null } : {}),
     })
     .eq("id", id);
   if (error) throw new Error(error.message);
 
-  if (newFilePath && oldFilePath && oldFilePath !== newFilePath) {
-    await supabase.storage.from(BUCKET_ASSIGNMENTS).remove([oldFilePath]);
+  if (removeFilePath) {
+    await supabase.storage.from(BUCKET_ASSIGNMENTS).remove([removeFilePath]);
   }
 
   revalidatePath(`/tutor/assignments/${id}`);

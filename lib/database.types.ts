@@ -21,8 +21,9 @@ export type Database = {
           created_at: string
           description: string | null
           due_at: string
-          file_path: string
+          file_path: string | null
           id: string
+          latex_body: string | null
           review_status: Database["public"]["Enums"]["review_status"]
           reviewed_at: string | null
           student_id: string
@@ -38,8 +39,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_at: string
-          file_path: string
+          file_path?: string | null
           id?: string
+          latex_body?: string | null
           review_status?: Database["public"]["Enums"]["review_status"]
           reviewed_at?: string | null
           student_id: string
@@ -55,8 +57,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_at?: string
-          file_path?: string
+          file_path?: string | null
           id?: string
+          latex_body?: string | null
           review_status?: Database["public"]["Enums"]["review_status"]
           reviewed_at?: string | null
           student_id?: string

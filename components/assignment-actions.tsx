@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import {
   Select,
@@ -45,6 +46,8 @@ interface Props {
   studentId: string;
   categoryId: string | null;
   categories: CategoryRow[];
+  hasFile: boolean;
+  latexBody: string | null;
 }
 
 const accept = ASSIGNMENT_MIME as readonly string[];
@@ -67,11 +70,17 @@ export function AssignmentActions({
   studentId,
   categoryId,
   categories,
+  hasFile,
+  latexBody,
 }: Props) {
   const [supabase] = useState(() => createClient());
   const [formType, setFormType] = useState(type);
   const [formCategory, setFormCategory] = useState(categoryId ?? "");
   const [newCategory, setNewCategory] = useState("");
+  const [source, setSource] = useState<"file" | "latex">(
+    latexBody ? "latex" : "file",
+  );
+  const [latexValue, setLatexValue] = useState(latexBody ?? "");
   const [deleting, startDelete] = useTransition();
   const fileRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -86,17 +95,27 @@ export function AssignmentActions({
     const form = e.currentTarget;
     const formData = new FormData(form);
     formData.set("type", formType);
+    formData.set("source", source);
 
     const file = fileRef.current?.files?.[0];
-    if (file) {
-      if (!accept.includes(file.type)) {
-        toast.error("Allowed types: PDF, JPG, PNG.");
+    if (source === "file") {
+      if (file) {
+        if (!accept.includes(file.type)) {
+          toast.error("Allowed types: PDF, JPG, PNG.");
+          return;
+        }
+        if (file.size > MAX_FILE_BYTES) {
+          toast.error("That file is larger than 20 MB.");
+          return;
+        }
+      } else if (!hasFile) {
+        // Switching from LaTeX to a file requires actually choosing one.
+        toast.error("Choose a file to attach.");
         return;
       }
-      if (file.size > MAX_FILE_BYTES) {
-        toast.error("That file is larger than 20 MB.");
-        return;
-      }
+    } else if (!latexValue.trim()) {
+      toast.error("Write the assignment in LaTeX.");
+      return;
     }
 
     if (creatingNewCategory && !newCategory.trim()) {
@@ -106,7 +125,7 @@ export function AssignmentActions({
 
     setBusy(true);
     try {
-      if (file) {
+      if (source === "file" && file) {
         const safeName = file.name.replace(/[^\w.\-]+/g, "_");
         const path = `${studentId}/${id}/${Date.now()}-${safeName}`;
         const { error: upErr } = await supabase.storage
@@ -270,27 +289,67 @@ export function AssignmentActions({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Replace file (optional)</Label>
-            <div className="flex items-center gap-3">
-              <input
-                ref={fileRef}
-                type="file"
-                accept={accept.join(",")}
-                className="hidden"
-                onChange={(e) => setFileName(e.target.files?.[0]?.name ?? "")}
-              />
-              <Button
+            <Label>Content</Label>
+            <div className="inline-flex rounded-[10px] border border-[#e5e5e5] dark:border-[#262626] bg-[#fafafa] dark:bg-[#171717] p-1 self-start">
+              <button
                 type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => fileRef.current?.click()}
+                onClick={() => setSource("file")}
+                aria-pressed={source === "file"}
+                className={cn(
+                  "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors",
+                  source === "file"
+                    ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
+                    : "text-[#737373] dark:text-[#a3a3a3] hover:text-foreground",
+                )}
               >
-                {fileName ? "Change file" : "Choose new file"}
-              </Button>
-              <span className="truncate text-sm text-muted-foreground">
-                {fileName || "Keep current file"}
-              </span>
+                File
+              </button>
+              <button
+                type="button"
+                onClick={() => setSource("latex")}
+                aria-pressed={source === "latex"}
+                className={cn(
+                  "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors",
+                  source === "latex"
+                    ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
+                    : "text-[#737373] dark:text-[#a3a3a3] hover:text-foreground",
+                )}
+              >
+                LaTeX
+              </button>
             </div>
+
+            {source === "file" ? (
+              <div className="flex items-center gap-3">
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept={accept.join(",")}
+                  className="hidden"
+                  onChange={(e) => setFileName(e.target.files?.[0]?.name ?? "")}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileRef.current?.click()}
+                >
+                  {fileName ? "Change file" : hasFile ? "Choose new file" : "Choose file"}
+                </Button>
+                <span className="truncate text-sm text-muted-foreground">
+                  {fileName || (hasFile ? "Keep current file" : "No file chosen")}
+                </span>
+              </div>
+            ) : (
+              <Textarea
+                name="latex_body"
+                rows={8}
+                className="font-mono text-sm"
+                placeholder="Markdown with inline $…$ and display $$…$$ maths."
+                value={latexValue}
+                onChange={(e) => setLatexValue(e.target.value)}
+              />
+            )}
           </div>
           <div className="flex gap-2">
             <Button type="submit" disabled={busy}>
