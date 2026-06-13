@@ -22,8 +22,8 @@ import {
   typeLabel,
 } from "@/lib/format";
 
-function fileLabel(path: string): string {
-  return (path.split("/").pop() ?? "file").replace(/^\d+-/, "");
+function fileLabel(path: string | null): string {
+  return ((path ?? "").split("/").pop() || "file").replace(/^\d+-/, "");
 }
 
 export default async function StudentAssignmentPage({
