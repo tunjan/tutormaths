@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { unstable_rethrow } from "next/navigation";
-import { Plus } from "lucide-react";
+import { FileText, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createAssignment } from "@/app/tutor/actions";
 import { createCategory, type CategoryRow } from "@/lib/actions/library";
@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FileDropzone } from "@/components/ui/file-dropzone";
+import { LatexContent } from "@/components/ui/latex-content";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import {
   Select,
@@ -37,8 +38,17 @@ const accept = ASSIGNMENT_MIME as readonly string[];
 const NEW_CATEGORY = "__new__";
 
 type FieldErrors = Partial<
-  Record<"student" | "title" | "due" | "file" | "category", string>
+  Record<"student" | "title" | "due" | "file" | "latex" | "category", string>
 >;
+
+const LATEX_PLACEHOLDER = `Solve each equation.
+
+1. $x^2 + 3x + 2 = 0$
+2. $\\dfrac{1}{x} + \\dfrac{1}{x+1} = 1$
+
+Then evaluate the integral:
+
+$$\\int_0^1 x^2 \\, dx$$`;
 
 /** A sensible default due date: a week out, at 17:00 local, as a datetime-local string. */
 function defaultDue(): string {
@@ -75,7 +85,9 @@ export function NewAssignmentForm({
   onCancel?: () => void;
 }) {
   const [supabase] = useState(() => createClient());
+  const [source, setSource] = useState<"file" | "latex">("file");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [latexBody, setLatexBody] = useState("");
   const [studentId, setStudentId] = useState(defaultStudentId);
   const [type, setType] = useState<"problem_set" | "reading_notes">(
     "problem_set",
@@ -87,6 +99,17 @@ export function NewAssignmentForm({
   const [globalError, setGlobalError] = useState("");
 
   const creatingNewCategory = categoryId === NEW_CATEGORY;
+
+  // Object URL for previewing a selected image (revoked on change/unmount).
+  const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
+  useEffect(() => {
+    if (selectedFile && selectedFile.type.startsWith("image/")) {
+      const url = URL.createObjectURL(selectedFile);
+      setFilePreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setFilePreviewUrl(null);
+  }, [selectedFile]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -104,9 +127,13 @@ export function NewAssignmentForm({
       next.due = "The due date must be in the future.";
     if (creatingNewCategory && !newCategory.trim())
       next.category = "Name the new topic.";
-    if (!file) next.file = "Attach the assignment file.";
-    else if (!accept.includes(file.type)) next.file = "Allowed types: PDF, JPG, PNG.";
-    else if (file.size > MAX_FILE_BYTES) next.file = "That file is larger than 20 MB.";
+    if (source === "file") {
+      if (!file) next.file = "Attach the assignment file.";
+      else if (!accept.includes(file.type)) next.file = "Allowed types: PDF, JPG, PNG.";
+      else if (file.size > MAX_FILE_BYTES) next.file = "That file is larger than 20 MB.";
+    } else if (!latexBody.trim()) {
+      next.latex = "Write the assignment in LaTeX.";
+    }
 
     setErrors(next);
     setGlobalError("");
@@ -130,17 +157,22 @@ export function NewAssignmentForm({
     }
 
     const id = crypto.randomUUID();
-    const safeName = file!.name.replace(/[^\w.\-]+/g, "_");
-    const path = `${studentId}/${id}/${safeName}`;
 
-    const { error: upErr } = await supabase.storage
-      .from(BUCKET_ASSIGNMENTS)
-      .upload(path, file!, { contentType: file!.type });
+    // LaTeX-bodied assignments carry no file; file-backed ones upload first.
+    let path: string | null = null;
+    if (source === "file") {
+      const safeName = file!.name.replace(/[^\w.\-]+/g, "_");
+      path = `${studentId}/${id}/${safeName}`;
 
-    if (upErr) {
-      setGlobalError(upErr.message);
-      setBusy(false);
-      return;
+      const { error: upErr } = await supabase.storage
+        .from(BUCKET_ASSIGNMENTS)
+        .upload(path, file!, { contentType: file!.type });
+
+      if (upErr) {
+        setGlobalError(upErr.message);
+        setBusy(false);
+        return;
+      }
     }
 
     try {
@@ -152,6 +184,7 @@ export function NewAssignmentForm({
         description: description || null,
         dueAt: new Date(dueLocal).toISOString(),
         filePath: path,
+        latexBody: source === "latex" ? latexBody : null,
         categoryId: resolvedCategoryId,
       });
       // createAssignment redirects on success.
@@ -162,7 +195,7 @@ export function NewAssignmentForm({
       // "NEXT_REDIRECT" as a toast, and delete the PDF we just uploaded.
       unstable_rethrow(err);
       // A genuine failure: the row was never created — remove the orphaned upload.
-      await supabase.storage.from(BUCKET_ASSIGNMENTS).remove([path]);
+      if (path) await supabase.storage.from(BUCKET_ASSIGNMENTS).remove([path]);
       setGlobalError((err as Error).message);
       setBusy(false);
     }
@@ -170,6 +203,9 @@ export function NewAssignmentForm({
 
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* LEFT COLUMN — the form fields */}
+        <div className="flex flex-col gap-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label id="student-label">Student</Label>
@@ -306,17 +342,104 @@ export function NewAssignmentForm({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label>Assignment file</Label>
-        <FileDropzone
-          accept={accept.join(",")}
-          hint="PDF, JPG or PNG, up to 20 MB"
-          selectedName={selectedFile?.name}
-          onFile={(f) => {
-            setSelectedFile(f ?? null);
-            setErrors((er) => ({ ...er, file: undefined }));
-          }}
-        />
-        <FieldError id="file-error" message={errors.file} />
+        <Label>Assignment content</Label>
+        <div className="inline-flex rounded-[10px] border border-[#e5e5e5] dark:border-[#262626] bg-[#fafafa] dark:bg-[#171717] p-1 self-start">
+          <button
+            type="button"
+            onClick={() => setSource("file")}
+            aria-pressed={source === "file"}
+            className={cn(
+              "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors",
+              source === "file"
+                ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
+                : "text-[#737373] dark:text-[#a3a3a3] hover:text-foreground",
+            )}
+          >
+            Upload file
+          </button>
+          <button
+            type="button"
+            onClick={() => setSource("latex")}
+            aria-pressed={source === "latex"}
+            className={cn(
+              "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors",
+              source === "latex"
+                ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
+                : "text-[#737373] dark:text-[#a3a3a3] hover:text-foreground",
+            )}
+          >
+            Write LaTeX
+          </button>
+        </div>
+
+        {source === "file" ? (
+          <>
+            <FileDropzone
+              accept={accept.join(",")}
+              hint="PDF, JPG or PNG, up to 20 MB"
+              selectedName={selectedFile?.name}
+              onFile={(f) => {
+                setSelectedFile(f ?? null);
+                setErrors((er) => ({ ...er, file: undefined }));
+              }}
+            />
+            <FieldError id="file-error" message={errors.file} />
+          </>
+        ) : (
+          <>
+            <Textarea
+              name="latex_body"
+              rows={10}
+              className="font-mono text-sm"
+              placeholder={LATEX_PLACEHOLDER}
+              value={latexBody}
+              aria-invalid={!!errors.latex}
+              onChange={(e) => {
+                setLatexBody(e.target.value);
+                setErrors((er) => ({ ...er, latex: undefined }));
+              }}
+            />
+            <p className="text-xs text-[#737373] dark:text-[#a3a3a3]">
+              Markdown with inline <code>$…$</code> and display{" "}
+              <code>$$…$$</code> maths.
+            </p>
+            <FieldError message={errors.latex} />
+          </>
+        )}
+      </div>
+        </div>
+
+        {/* RIGHT COLUMN — live preview */}
+        <div className="flex flex-col gap-1.5">
+          <Label>Preview</Label>
+          <div className="flex-1 min-h-[18rem] rounded-[12px] border border-[#e5e5e5] dark:border-[#262626] bg-[#fafafa] dark:bg-[#0a0a0a] p-5 overflow-auto">
+            {source === "latex" ? (
+              latexBody.trim() ? (
+                <LatexContent source={latexBody} />
+              ) : (
+                <p className="text-sm text-[#737373] dark:text-[#a3a3a3]">
+                  Start typing LaTeX on the left to see it rendered here.
+                </p>
+              )
+            ) : filePreviewUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={filePreviewUrl}
+                alt={selectedFile?.name ?? "Selected image"}
+                className="max-h-[60vh] w-full rounded-[8px] object-contain"
+              />
+            ) : selectedFile ? (
+              <div className="flex items-center gap-3 text-sm text-foreground">
+                <FileText className="size-5 shrink-0 text-[#737373] dark:text-[#a3a3a3]" />
+                <span className="truncate">{selectedFile.name}</span>
+              </div>
+            ) : (
+              <p className="text-sm text-[#737373] dark:text-[#a3a3a3]">
+                Choose a file on the left to preview it here.
+              </p>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-col-reverse gap-3 border-t border-[#f0f0f0] dark:border-[#262626] pt-5 sm:flex-row sm:items-center sm:justify-end">

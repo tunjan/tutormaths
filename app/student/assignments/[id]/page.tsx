@@ -8,6 +8,7 @@ import { addComment } from "@/lib/actions/comments";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import { CompletionControl } from "@/components/completion-control";
 import { FilePreview } from "@/components/ui/file-preview";
+import { LatexContent } from "@/components/ui/latex-content";
 import { StudentSubmitPanel } from "@/components/student-submit-panel";
 import { LiveCommentThread, type Participant } from "@/components/live-comment-thread";
 import { CommentComposer } from "@/components/comment-composer";
@@ -21,8 +22,8 @@ import {
   typeLabel,
 } from "@/lib/format";
 
-function fileLabel(path: string): string {
-  return (path.split("/").pop() ?? "file").replace(/^\d+-/, "");
+function fileLabel(path: string | null): string {
+  return ((path ?? "").split("/").pop() || "file").replace(/^\d+-/, "");
 }
 
 export default async function StudentAssignmentPage({
@@ -41,9 +42,11 @@ export default async function StudentAssignmentPage({
     .single();
   if (!a) notFound();
 
-  const pdfUrl = await signedUrl(BUCKET_ASSIGNMENTS, a.file_path);
+  const pdfUrl = a.file_path
+    ? await signedUrl(BUCKET_ASSIGNMENTS, a.file_path)
+    : null;
 
-  const ext = a.file_path.split(".").pop()?.toLowerCase();
+  const ext = a.file_path?.split(".").pop()?.toLowerCase();
   const fileMime =
     ext === "png" ? "image/png"
     : ext === "jpg" || ext === "jpeg" ? "image/jpeg"
@@ -123,7 +126,13 @@ export default async function StudentAssignmentPage({
                   {a.description}
                 </p>
               )}
-              
+
+              {a.latex_body && (
+                <div className="rounded-[12px] border border-[#e5e5e5] dark:border-[#262626] bg-[#fafafa] dark:bg-[#0a0a0a] p-6">
+                  <LatexContent source={a.latex_body} />
+                </div>
+              )}
+
               {pdfUrl && isImage ? (
                 <div className="pt-2 flex flex-col gap-3">
                   <div className="rounded-[12px] overflow-hidden border border-[#e5e5e5] dark:border-[#262626]">
