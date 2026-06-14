@@ -18,7 +18,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { BUCKET_ASSIGNMENTS, BUCKET_SUBMISSIONS } from "@/lib/constants";
-import { formatDateTime, typeLabel } from "@/lib/format";
+import { formatDateTime, typeLabel, mimeFromPath, fileLabel } from "@/lib/format";
 
 export default async function TutorAssignmentPage({
   params,
@@ -50,16 +50,21 @@ export default async function TutorAssignmentPage({
     };
   }
 
-  const pdfUrl = a.file_path
-    ? await signedUrl(BUCKET_ASSIGNMENTS, a.file_path)
-    : null;
+  const { data: files } = await supabase
+    .from("assignment_files")
+    .select("id, file_path, mime_type, created_at")
+    .eq("assignment_id", id)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
 
-  const ext = a.file_path?.split(".").pop()?.toLowerCase();
-  const fileMime =
-    ext === "png" ? "image/png"
-    : ext === "jpg" || ext === "jpeg" ? "image/jpeg"
-    : "application/pdf";
-  const isImage = fileMime.startsWith("image/");
+  const attachments = await Promise.all(
+    (files ?? []).map(async (f) => ({
+      id: f.id,
+      name: fileLabel(f.file_path),
+      mimeType: f.mime_type || mimeFromPath(f.file_path),
+      url: await signedUrl(BUCKET_ASSIGNMENTS, f.file_path),
+    })),
+  );
 
   const { data: categories } = await supabase
     .from("categories")
@@ -96,12 +101,12 @@ export default async function TutorAssignmentPage({
           <BackLink href="/tutor" className="text-xs tracking-wider text-[#737373] dark:text-[#a3a3a3] hover:text-[#0a0a0a] dark:hover:text-[#fafafa] mt-2 font-mono uppercase">
             Back to dashboard
           </BackLink>
-          
+
           <div className="flex flex-col gap-4">
             <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight leading-tight">
               {a.title}
             </h1>
-            
+
             <div className="flex flex-wrap items-center gap-3 text-sm text-[#525252] dark:text-[#a3a3a3]">
               <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
               <span className="flex items-center gap-1.5 font-semibold text-foreground">
@@ -136,7 +141,7 @@ export default async function TutorAssignmentPage({
                 Reported progress: <span className="font-semibold text-foreground">{a.completion_pct}%</span>
               </span>
             </div>
-            
+
             <div className="pt-2">
               <AssignmentActions
                 id={a.id}
@@ -147,7 +152,11 @@ export default async function TutorAssignmentPage({
                 studentId={a.student_id}
                 categoryId={a.category_id}
                 categories={categories ?? []}
-                hasFile={!!a.file_path}
+                attachments={attachments.map(({ id, name, mimeType }) => ({
+                  id,
+                  name,
+                  mimeType,
+                }))}
                 latexBody={a.latex_body}
               />
             </div>
@@ -156,7 +165,7 @@ export default async function TutorAssignmentPage({
 
         {/* CONTENT SPLIT */}
         <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] divide-y lg:divide-y-0 lg:divide-x divide-[#e5e5e5] dark:divide-[#262626]">
-          
+
           {/* LEFT COLUMN: ASSIGNMENT DETAILS & FILE PREVIEW */}
           <div className="flex flex-col divide-y divide-[#e5e5e5] dark:divide-[#262626] p-6 md:p-8">
             {a.description && (
@@ -168,32 +177,55 @@ export default async function TutorAssignmentPage({
             )}
 
             <section className="flex flex-col gap-6 pt-6">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                  {a.latex_body ? "Assignment" : "Assignment File"}
-                </h2>
-                {pdfUrl && (
-                  <a
-                    href={pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-                  >
-                    {isImage ? "View image" : "Open PDF"}
-                  </a>
-                )}
-              </div>
+              <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">
+                {a.latex_body
+                  ? "Assignment"
+                  : attachments.length === 1
+                    ? "Assignment File"
+                    : "Assignment Files"}
+              </h2>
               {a.latex_body ? (
                 <div className="rounded-[12px] border border-[#e5e5e5] dark:border-[#262626] bg-[#fafafa] dark:bg-[#0a0a0a] p-6">
                   <LatexContent source={a.latex_body} />
                 </div>
-              ) : pdfUrl ? (
-                <div className="rounded-[12px] overflow-hidden border border-[#e5e5e5] dark:border-[#262626]">
-                  <FilePreview url={pdfUrl} mimeType={fileMime} title={a.title} />
+              ) : attachments.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {attachments.map((f) => (
+                    <div key={f.id} className="flex flex-col gap-2">
+                      <div className="rounded-[12px] overflow-hidden border border-[#e5e5e5] dark:border-[#262626]">
+                        {f.url ? (
+                          <FilePreview
+                            url={f.url}
+                            mimeType={f.mimeType}
+                            title={f.name}
+                          />
+                        ) : (
+                          <div className="p-8 text-center text-[#737373] dark:text-[#a3a3a3] text-sm">
+                            Couldn&rsquo;t load this file.
+                          </div>
+                        )}
+                      </div>
+                      {f.url && (
+                        <a
+                          href={f.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={cn(
+                            buttonVariants({ variant: "ghost", size: "sm" }),
+                            "self-start",
+                          )}
+                        >
+                          {f.mimeType.startsWith("image/")
+                            ? "View image"
+                            : "Open PDF"}
+                        </a>
+                      )}
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <div className="card text-center p-8 bg-card border border-border rounded-[12px] text-[#737373] dark:text-[#a3a3a3]">
-                  The assignment file could not be loaded.
+                  No files attached.
                 </div>
               )}
             </section>
@@ -229,7 +261,7 @@ export default async function TutorAssignmentPage({
                 <span>Comments</span>
                 <span className="text-[#737373] dark:text-[#a3a3a3] bg-card border border-[#e5e5e5] dark:border-[#262626] px-2 py-0.5 rounded-full text-[11px] font-mono">{comments.length}</span>
               </h3>
-              
+
               <div className="flex flex-col gap-6 mt-2">
                 <LiveCommentThread
                   assignmentId={id}

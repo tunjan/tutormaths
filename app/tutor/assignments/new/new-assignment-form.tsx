@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { unstable_rethrow } from "next/navigation";
 import { FileText, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -16,7 +16,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FileDropzone } from "@/components/ui/file-dropzone";
+import { MultiFileDropzone } from "@/components/ui/multi-file-dropzone";
 import { LatexContent } from "@/components/ui/latex-content";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import {
@@ -86,7 +86,7 @@ export function NewAssignmentForm({
 }) {
   const [supabase] = useState(() => createClient());
   const [source, setSource] = useState<"file" | "latex">("file");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [latexBody, setLatexBody] = useState("");
   const [studentId, setStudentId] = useState(defaultStudentId);
   const [type, setType] = useState<"problem_set" | "reading_notes">(
@@ -100,16 +100,18 @@ export function NewAssignmentForm({
 
   const creatingNewCategory = categoryId === NEW_CATEGORY;
 
-  // Object URL for previewing a selected image (revoked on change/unmount).
-  const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
-  useEffect(() => {
-    if (selectedFile && selectedFile.type.startsWith("image/")) {
-      const url = URL.createObjectURL(selectedFile);
-      setFilePreviewUrl(url);
-      return () => URL.revokeObjectURL(url);
-    }
-    setFilePreviewUrl(null);
-  }, [selectedFile]);
+  // Object URLs for previewing selected images (revoked on change/unmount).
+  const previews = useMemo(
+    () =>
+      selectedFiles
+        .filter((f) => f.type.startsWith("image/"))
+        .map((f) => ({ name: f.name, url: URL.createObjectURL(f) })),
+    [selectedFiles],
+  );
+  useEffect(
+    () => () => previews.forEach((p) => URL.revokeObjectURL(p.url)),
+    [previews],
+  );
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -117,7 +119,6 @@ export function NewAssignmentForm({
     const title = String(data.get("title") ?? "").trim();
     const description = String(data.get("description") ?? "");
     const dueLocal = String(data.get("due_at") ?? "");
-    const file = selectedFile ?? undefined;
 
     const next: FieldErrors = {};
     if (!studentId) next.student = "Choose a student.";
@@ -128,9 +129,11 @@ export function NewAssignmentForm({
     if (creatingNewCategory && !newCategory.trim())
       next.category = "Name the new topic.";
     if (source === "file") {
-      if (!file) next.file = "Attach the assignment file.";
-      else if (!accept.includes(file.type)) next.file = "Allowed types: PDF, JPG, PNG.";
-      else if (file.size > MAX_FILE_BYTES) next.file = "That file is larger than 20 MB.";
+      if (selectedFiles.length === 0) next.file = "Attach at least one file.";
+      else if (selectedFiles.some((f) => !accept.includes(f.type)))
+        next.file = "Allowed types: PDF, JPG, PNG.";
+      else if (selectedFiles.some((f) => f.size > MAX_FILE_BYTES))
+        next.file = "Each file must be 20 MB or smaller.";
     } else if (!latexBody.trim()) {
       next.latex = "Write the assignment in LaTeX.";
     }
@@ -159,19 +162,30 @@ export function NewAssignmentForm({
     const id = crypto.randomUUID();
 
     // LaTeX-bodied assignments carry no file; file-backed ones upload first.
-    let path: string | null = null;
+    const uploaded: { filePath: string; mimeType: string; sizeBytes: number }[] =
+      [];
     if (source === "file") {
-      const safeName = file!.name.replace(/[^\w.\-]+/g, "_");
-      path = `${studentId}/${id}/${safeName}`;
-
-      const { error: upErr } = await supabase.storage
-        .from(BUCKET_ASSIGNMENTS)
-        .upload(path, file!, { contentType: file!.type });
-
-      if (upErr) {
-        setGlobalError(upErr.message);
-        setBusy(false);
-        return;
+      for (const file of selectedFiles) {
+        const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+        const path = `${studentId}/${id}/${crypto.randomUUID()}-${safeName}`;
+        const { error: upErr } = await supabase.storage
+          .from(BUCKET_ASSIGNMENTS)
+          .upload(path, file, { contentType: file.type });
+        if (upErr) {
+          if (uploaded.length > 0) {
+            await supabase.storage
+              .from(BUCKET_ASSIGNMENTS)
+              .remove(uploaded.map((u) => u.filePath));
+          }
+          setGlobalError(upErr.message);
+          setBusy(false);
+          return;
+        }
+        uploaded.push({
+          filePath: path,
+          mimeType: file.type,
+          sizeBytes: file.size,
+        });
       }
     }
 
@@ -183,7 +197,7 @@ export function NewAssignmentForm({
         title,
         description: description || null,
         dueAt: new Date(dueLocal).toISOString(),
-        filePath: path,
+        files: uploaded,
         latexBody: source === "latex" ? latexBody : null,
         categoryId: resolvedCategoryId,
       });
@@ -192,10 +206,14 @@ export function NewAssignmentForm({
       // createAssignment's success path calls redirect(), which throws a
       // NEXT_REDIRECT control-flow error. Re-throw framework errors so Next can
       // navigate — otherwise we'd treat a successful create as a failure, show
-      // "NEXT_REDIRECT" as a toast, and delete the PDF we just uploaded.
+      // "NEXT_REDIRECT" as a toast, and delete the files we just uploaded.
       unstable_rethrow(err);
-      // A genuine failure: the row was never created — remove the orphaned upload.
-      if (path) await supabase.storage.from(BUCKET_ASSIGNMENTS).remove([path]);
+      // A genuine failure: the row was never created — remove orphaned uploads.
+      if (uploaded.length > 0) {
+        await supabase.storage
+          .from(BUCKET_ASSIGNMENTS)
+          .remove(uploaded.map((u) => u.filePath));
+      }
       setGlobalError((err as Error).message);
       setBusy(false);
     }
@@ -216,14 +234,14 @@ export function NewAssignmentForm({
               setErrors((e) => ({ ...e, student: undefined }));
             }}
           >
-            <SelectTrigger 
-              aria-labelledby="student-label" 
+            <SelectTrigger
+              aria-labelledby="student-label"
               aria-invalid={!!errors.student}
               aria-describedby={errors.student ? "student-error" : undefined}
             >
               <SelectValue placeholder="Choose a student…">
-                {studentId 
-                  ? students.find((s) => s.id === studentId)?.full_name || 
+                {studentId
+                  ? students.find((s) => s.id === studentId)?.full_name ||
                     students.find((s) => s.id === studentId)?.email
                   : undefined}
               </SelectValue>
@@ -355,7 +373,7 @@ export function NewAssignmentForm({
                 : "text-[#737373] dark:text-[#a3a3a3] hover:text-foreground",
             )}
           >
-            Upload file
+            Upload files
           </button>
           <button
             type="button"
@@ -374,14 +392,17 @@ export function NewAssignmentForm({
 
         {source === "file" ? (
           <>
-            <FileDropzone
+            <MultiFileDropzone
               accept={accept.join(",")}
-              hint="PDF, JPG or PNG, up to 20 MB"
-              selectedName={selectedFile?.name}
-              onFile={(f) => {
-                setSelectedFile(f ?? null);
+              hint="PDF, JPG or PNG — add as many as you like, up to 20 MB each"
+              files={selectedFiles}
+              onAdd={(fs) => {
+                setSelectedFiles((prev) => [...prev, ...fs]);
                 setErrors((er) => ({ ...er, file: undefined }));
               }}
+              onRemove={(i) =>
+                setSelectedFiles((prev) => prev.filter((_, idx) => idx !== i))
+              }
             />
             <FieldError id="file-error" message={errors.file} />
           </>
@@ -421,21 +442,32 @@ export function NewAssignmentForm({
                   Start typing LaTeX on the left to see it rendered here.
                 </p>
               )
-            ) : filePreviewUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={filePreviewUrl}
-                alt={selectedFile?.name ?? "Selected image"}
-                className="max-h-[60vh] w-full rounded-[8px] object-contain"
-              />
-            ) : selectedFile ? (
-              <div className="flex items-center gap-3 text-sm text-foreground">
-                <FileText className="size-5 shrink-0 text-[#737373] dark:text-[#a3a3a3]" />
-                <span className="truncate">{selectedFile.name}</span>
+            ) : selectedFiles.length > 0 ? (
+              <div className="flex flex-col gap-3">
+                {previews.map((p) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={p.url}
+                    src={p.url}
+                    alt={p.name}
+                    className="max-h-[40vh] w-full rounded-[8px] object-contain"
+                  />
+                ))}
+                {selectedFiles
+                  .filter((f) => !f.type.startsWith("image/"))
+                  .map((f, i) => (
+                    <div
+                      key={`${f.name}-${i}`}
+                      className="flex items-center gap-3 text-sm text-foreground"
+                    >
+                      <FileText className="size-5 shrink-0 text-[#737373] dark:text-[#a3a3a3]" />
+                      <span className="truncate">{f.name}</span>
+                    </div>
+                  ))}
               </div>
             ) : (
               <p className="text-sm text-[#737373] dark:text-[#a3a3a3]">
-                Choose a file on the left to preview it here.
+                Choose files on the left to preview them here.
               </p>
             )}
           </div>
