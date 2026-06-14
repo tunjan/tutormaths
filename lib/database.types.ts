@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      assignment_files: {
+        Row: {
+          assignment_id: string
+          created_at: string
+          file_path: string
+          id: string
+          mime_type: string
+          size_bytes: number | null
+          sort_order: number
+        }
+        Insert: {
+          assignment_id: string
+          created_at?: string
+          file_path: string
+          id?: string
+          mime_type: string
+          size_bytes?: number | null
+          sort_order?: number
+        }
+        Update: {
+          assignment_id?: string
+          created_at?: string
+          file_path?: string
+          id?: string
+          mime_type?: string
+          size_bytes?: number | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_files_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "assignments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assignments: {
         Row: {
           category_id: string | null
@@ -21,8 +59,9 @@ export type Database = {
           created_at: string
           description: string | null
           due_at: string
-          file_path: string
+          file_path: string | null
           id: string
+          latex_body: string | null
           review_status: Database["public"]["Enums"]["review_status"]
           reviewed_at: string | null
           student_id: string
@@ -38,8 +77,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_at: string
-          file_path: string
+          file_path?: string | null
           id?: string
+          latex_body?: string | null
           review_status?: Database["public"]["Enums"]["review_status"]
           reviewed_at?: string | null
           student_id: string
@@ -55,8 +95,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_at?: string
-          file_path?: string
+          file_path?: string | null
           id?: string
+          latex_body?: string | null
           review_status?: Database["public"]["Enums"]["review_status"]
           reviewed_at?: string | null
           student_id?: string
@@ -119,6 +160,45 @@ export type Database = {
           },
         ]
       }
+      comments: {
+        Row: {
+          assignment_id: string
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          assignment_id: string
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          assignment_id?: string
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       library_documents: {
         Row: {
           category_id: string
@@ -161,45 +241,6 @@ export type Database = {
           {
             foreignKeyName: "library_documents_uploaded_by_fkey"
             columns: ["uploaded_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      comments: {
-        Row: {
-          assignment_id: string
-          author_id: string
-          body: string
-          created_at: string
-          id: string
-        }
-        Insert: {
-          assignment_id: string
-          author_id: string
-          body: string
-          created_at?: string
-          id?: string
-        }
-        Update: {
-          assignment_id?: string
-          author_id?: string
-          body?: string
-          created_at?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "comments_assignment_id_fkey"
-            columns: ["assignment_id"]
-            isOneToOne: false
-            referencedRelation: "assignments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "comments_author_id_fkey"
-            columns: ["author_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]

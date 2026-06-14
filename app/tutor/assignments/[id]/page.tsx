@@ -17,7 +17,7 @@ import { BackLink } from "@/components/ui/back-link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { BUCKET_ASSIGNMENTS, BUCKET_SUBMISSIONS } from "@/lib/constants";
-import { formatDateTime, typeLabel } from "@/lib/format";
+import { formatDateTime, typeLabel, mimeFromPath, fileLabel } from "@/lib/format";
 
 export default async function TutorAssignmentPage({
   params,
@@ -49,14 +49,21 @@ export default async function TutorAssignmentPage({
     };
   }
 
-  const pdfUrl = await signedUrl(BUCKET_ASSIGNMENTS, a.file_path);
+  const { data: files } = await supabase
+    .from("assignment_files")
+    .select("id, file_path, mime_type, created_at")
+    .eq("assignment_id", id)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
 
-  const ext = a.file_path.split(".").pop()?.toLowerCase();
-  const fileMime =
-    ext === "png" ? "image/png"
-    : ext === "jpg" || ext === "jpeg" ? "image/jpeg"
-    : "application/pdf";
-  const isImage = fileMime.startsWith("image/");
+  const attachments = await Promise.all(
+    (files ?? []).map(async (f) => ({
+      id: f.id,
+      name: fileLabel(f.file_path),
+      mimeType: f.mime_type || mimeFromPath(f.file_path),
+      url: await signedUrl(BUCKET_ASSIGNMENTS, f.file_path),
+    })),
+  );
 
   const { data: categories } = await supabase
     .from("categories")
@@ -144,6 +151,11 @@ export default async function TutorAssignmentPage({
                 studentId={a.student_id}
                 categoryId={a.category_id}
                 categories={categories ?? []}
+                attachments={attachments.map(({ id, name, mimeType }) => ({
+                  id,
+                  name,
+                  mimeType,
+                }))}
               />
             </div>
           </div>
@@ -163,26 +175,47 @@ export default async function TutorAssignmentPage({
             )}
 
             <section className="flex flex-col gap-6 pt-6">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">Assignment File</h2>
-                {pdfUrl && (
-                  <a
-                    href={pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
-                  >
-                    {isImage ? "View image" : "Open PDF"}
-                  </a>
-                )}
-              </div>
-              {pdfUrl ? (
-                <div className="rounded-[12px] overflow-hidden border border-[#e5e5e5] dark:border-[#262626]">
-                  <FilePreview url={pdfUrl} mimeType={fileMime} title={a.title} />
+              <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">
+                {attachments.length === 1 ? "Assignment File" : "Assignment Files"}
+              </h2>
+              {attachments.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {attachments.map((f) => (
+                    <div key={f.id} className="flex flex-col gap-2">
+                      <div className="rounded-[12px] overflow-hidden border border-[#e5e5e5] dark:border-[#262626]">
+                        {f.url ? (
+                          <FilePreview
+                            url={f.url}
+                            mimeType={f.mimeType}
+                            title={f.name}
+                          />
+                        ) : (
+                          <div className="p-8 text-center text-[#737373] dark:text-[#a3a3a3] text-sm">
+                            Couldn&rsquo;t load this file.
+                          </div>
+                        )}
+                      </div>
+                      {f.url && (
+                        <a
+                          href={f.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={cn(
+                            buttonVariants({ variant: "ghost", size: "sm" }),
+                            "self-start",
+                          )}
+                        >
+                          {f.mimeType.startsWith("image/")
+                            ? "View image"
+                            : "Open PDF"}
+                        </a>
+                      )}
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <div className="card text-center p-8 bg-card border border-border rounded-[12px] text-[#737373] dark:text-[#a3a3a3]">
-                  The assignment file could not be loaded.
+                  No files attached.
                 </div>
               )}
             </section>

@@ -16,7 +16,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FileDropzone } from "@/components/ui/file-dropzone";
+import { MultiFileDropzone } from "@/components/ui/multi-file-dropzone";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import {
   Select,
@@ -75,7 +75,7 @@ export function NewAssignmentForm({
   onCancel?: () => void;
 }) {
   const [supabase] = useState(() => createClient());
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [studentId, setStudentId] = useState(defaultStudentId);
   const [type, setType] = useState<"problem_set" | "reading_notes">(
     "problem_set",
@@ -94,7 +94,6 @@ export function NewAssignmentForm({
     const title = String(data.get("title") ?? "").trim();
     const description = String(data.get("description") ?? "");
     const dueLocal = String(data.get("due_at") ?? "");
-    const file = selectedFile ?? undefined;
 
     const next: FieldErrors = {};
     if (!studentId) next.student = "Choose a student.";
@@ -104,9 +103,11 @@ export function NewAssignmentForm({
       next.due = "The due date must be in the future.";
     if (creatingNewCategory && !newCategory.trim())
       next.category = "Name the new topic.";
-    if (!file) next.file = "Attach the assignment file.";
-    else if (!accept.includes(file.type)) next.file = "Allowed types: PDF, JPG, PNG.";
-    else if (file.size > MAX_FILE_BYTES) next.file = "That file is larger than 20 MB.";
+    if (selectedFiles.length === 0) next.file = "Attach at least one file.";
+    else if (selectedFiles.some((f) => !accept.includes(f.type)))
+      next.file = "Allowed types: PDF, JPG, PNG.";
+    else if (selectedFiles.some((f) => f.size > MAX_FILE_BYTES))
+      next.file = "Each file must be 20 MB or smaller.";
 
     setErrors(next);
     setGlobalError("");
@@ -130,17 +131,31 @@ export function NewAssignmentForm({
     }
 
     const id = crypto.randomUUID();
-    const safeName = file!.name.replace(/[^\w.\-]+/g, "_");
-    const path = `${studentId}/${id}/${safeName}`;
+    const uploaded: { filePath: string; mimeType: string; sizeBytes: number }[] =
+      [];
 
-    const { error: upErr } = await supabase.storage
-      .from(BUCKET_ASSIGNMENTS)
-      .upload(path, file!, { contentType: file!.type });
-
-    if (upErr) {
-      setGlobalError(upErr.message);
-      setBusy(false);
-      return;
+    for (const file of selectedFiles) {
+      const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+      const path = `${studentId}/${id}/${crypto.randomUUID()}-${safeName}`;
+      const { error: upErr } = await supabase.storage
+        .from(BUCKET_ASSIGNMENTS)
+        .upload(path, file, { contentType: file.type });
+      if (upErr) {
+        // Remove anything we already uploaded for this assignment.
+        if (uploaded.length > 0) {
+          await supabase.storage
+            .from(BUCKET_ASSIGNMENTS)
+            .remove(uploaded.map((u) => u.filePath));
+        }
+        setGlobalError(upErr.message);
+        setBusy(false);
+        return;
+      }
+      uploaded.push({
+        filePath: path,
+        mimeType: file.type,
+        sizeBytes: file.size,
+      });
     }
 
     try {
@@ -151,7 +166,7 @@ export function NewAssignmentForm({
         title,
         description: description || null,
         dueAt: new Date(dueLocal).toISOString(),
-        filePath: path,
+        files: uploaded,
         categoryId: resolvedCategoryId,
       });
       // createAssignment redirects on success.
@@ -159,10 +174,12 @@ export function NewAssignmentForm({
       // createAssignment's success path calls redirect(), which throws a
       // NEXT_REDIRECT control-flow error. Re-throw framework errors so Next can
       // navigate — otherwise we'd treat a successful create as a failure, show
-      // "NEXT_REDIRECT" as a toast, and delete the PDF we just uploaded.
+      // "NEXT_REDIRECT" as a toast, and delete the files we just uploaded.
       unstable_rethrow(err);
-      // A genuine failure: the row was never created — remove the orphaned upload.
-      await supabase.storage.from(BUCKET_ASSIGNMENTS).remove([path]);
+      // A genuine failure: the row was never created — remove the orphaned uploads.
+      await supabase.storage
+        .from(BUCKET_ASSIGNMENTS)
+        .remove(uploaded.map((u) => u.filePath));
       setGlobalError((err as Error).message);
       setBusy(false);
     }
@@ -306,15 +323,18 @@ export function NewAssignmentForm({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label>Assignment file</Label>
-        <FileDropzone
+        <Label>Assignment files</Label>
+        <MultiFileDropzone
           accept={accept.join(",")}
-          hint="PDF, JPG or PNG, up to 20 MB"
-          selectedName={selectedFile?.name}
-          onFile={(f) => {
-            setSelectedFile(f ?? null);
+          hint="PDF, JPG or PNG — add as many as you like, up to 20 MB each"
+          files={selectedFiles}
+          onAdd={(fs) => {
+            setSelectedFiles((prev) => [...prev, ...fs]);
             setErrors((er) => ({ ...er, file: undefined }));
           }}
+          onRemove={(i) =>
+            setSelectedFiles((prev) => prev.filter((_, idx) => idx !== i))
+          }
         />
         <FieldError id="file-error" message={errors.file} />
       </div>

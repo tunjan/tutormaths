@@ -19,11 +19,9 @@ import { BUCKET_ASSIGNMENTS, BUCKET_SUBMISSIONS } from "@/lib/constants";
 import {
   formatDateTime,
   typeLabel,
+  mimeFromPath,
+  fileLabel,
 } from "@/lib/format";
-
-function fileLabel(path: string): string {
-  return (path.split("/").pop() ?? "file").replace(/^\d+-/, "");
-}
 
 export default async function StudentAssignmentPage({
   params,
@@ -41,14 +39,21 @@ export default async function StudentAssignmentPage({
     .single();
   if (!a) notFound();
 
-  const pdfUrl = await signedUrl(BUCKET_ASSIGNMENTS, a.file_path);
+  const { data: files } = await supabase
+    .from("assignment_files")
+    .select("id, file_path, mime_type, created_at")
+    .eq("assignment_id", id)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
 
-  const ext = a.file_path.split(".").pop()?.toLowerCase();
-  const fileMime =
-    ext === "png" ? "image/png"
-    : ext === "jpg" || ext === "jpeg" ? "image/jpeg"
-    : "application/pdf";
-  const isImage = fileMime.startsWith("image/");
+  const attachments = await Promise.all(
+    (files ?? []).map(async (f) => ({
+      id: f.id,
+      name: fileLabel(f.file_path),
+      mimeType: f.mime_type || mimeFromPath(f.file_path),
+      url: await signedUrl(BUCKET_ASSIGNMENTS, f.file_path),
+    })),
+  );
 
   const { data: category } = a.category_id
     ? await supabase
@@ -124,52 +129,58 @@ export default async function StudentAssignmentPage({
                 </p>
               )}
               
-              {pdfUrl && isImage ? (
-                <div className="pt-2 flex flex-col gap-3">
-                  <div className="rounded-[12px] overflow-hidden border border-[#e5e5e5] dark:border-[#262626]">
-                    <FilePreview url={pdfUrl} mimeType={fileMime} title={a.title} />
-                  </div>
-                  <a
-                    href={pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center justify-between transition-opacity duration-200 hover:opacity-70"
-                  >
-                    <div className="flex items-center gap-4">
-                      <ImageIcon className="size-5 text-foreground" strokeWidth={2} />
-                      <div className="flex flex-col">
-                        <span className="text-[11px] font-mono uppercase tracking-widest text-[#737373] dark:text-[#a3a3a3] mb-1">
-                          Attached Image
-                        </span>
-                        <span className="text-sm font-semibold text-foreground tracking-tight">
-                          {fileLabel(a.file_path)}
-                        </span>
+              {attachments.length > 0 && (
+                <div className="pt-2 grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  {attachments.map((f) => {
+                    const isImage = f.mimeType.startsWith("image/");
+                    return (
+                      <div key={f.id} className="flex flex-col gap-3">
+                        {f.url && isImage && (
+                          <div className="rounded-[12px] overflow-hidden border border-[#e5e5e5] dark:border-[#262626]">
+                            <FilePreview
+                              url={f.url}
+                              mimeType={f.mimeType}
+                              title={f.name}
+                            />
+                          </div>
+                        )}
+                        {f.url && (
+                          <a
+                            href={f.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group flex items-center justify-between transition-opacity duration-200 hover:opacity-70"
+                          >
+                            <div className="flex items-center gap-4">
+                              {isImage ? (
+                                <ImageIcon
+                                  className="size-5 text-foreground"
+                                  strokeWidth={2}
+                                />
+                              ) : (
+                                <FileText
+                                  className="size-5 text-foreground"
+                                  strokeWidth={2}
+                                />
+                              )}
+                              <div className="flex flex-col">
+                                <span className="text-[11px] font-mono uppercase tracking-widest text-[#737373] dark:text-[#a3a3a3] mb-1">
+                                  {isImage ? "Attached Image" : "Attached Document"}
+                                </span>
+                                <span className="text-sm font-semibold text-foreground tracking-tight">
+                                  {f.name}
+                                </span>
+                              </div>
+                            </div>
+                            <Download
+                              className="size-5 text-muted-foreground transition-colors"
+                              strokeWidth={2}
+                            />
+                          </a>
+                        )}
                       </div>
-                    </div>
-                    <Download className="size-5 text-muted-foreground transition-colors" strokeWidth={2} />
-                  </a>
-                </div>
-              ) : pdfUrl && (
-                <div className="pt-2">
-                  <a
-                    href={pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center justify-between transition-opacity duration-200 hover:opacity-70"
-                  >
-                    <div className="flex items-center gap-4">
-                      <FileText className="size-5 text-foreground" strokeWidth={2} />
-                      <div className="flex flex-col">
-                        <span className="text-[11px] font-mono uppercase tracking-widest text-[#737373] dark:text-[#a3a3a3] mb-1">
-                          Attached Document
-                        </span>
-                        <span className="text-sm font-semibold text-foreground tracking-tight">
-                          {fileLabel(a.file_path)}
-                        </span>
-                      </div>
-                    </div>
-                    <Download className="size-5 text-muted-foreground transition-colors" strokeWidth={2} />
-                  </a>
+                    );
+                  })}
                 </div>
               )}
             </section>

@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
+import { MultiFileDropzone } from "@/components/ui/multi-file-dropzone";
 import {
   Select,
   SelectContent,
@@ -36,6 +37,12 @@ import {
 } from "@/components/ui/alert-dialog";
 
 
+export interface AttachmentInfo {
+  id: string;
+  name: string;
+  mimeType: string;
+}
+
 interface Props {
   id: string;
   title: string;
@@ -45,6 +52,7 @@ interface Props {
   studentId: string;
   categoryId: string | null;
   categories: CategoryRow[];
+  attachments: AttachmentInfo[];
 }
 
 const accept = ASSIGNMENT_MIME as readonly string[];
@@ -67,58 +75,77 @@ export function AssignmentActions({
   studentId,
   categoryId,
   categories,
+  attachments,
 }: Props) {
   const [supabase] = useState(() => createClient());
   const [formType, setFormType] = useState(type);
   const [formCategory, setFormCategory] = useState(categoryId ?? "");
   const [newCategory, setNewCategory] = useState("");
   const [deleting, startDelete] = useTransition();
-  const fileRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [fileName, setFileName] = useState("");
+  const [newFiles, setNewFiles] = useState<File[]>([]);
+  const [removedIds, setRemovedIds] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [globalError, setGlobalError] = useState("");
 
   const creatingNewCategory = formCategory === NEW_CATEGORY;
+  const remainingExisting = attachments.filter((a) => !removedIds.includes(a.id));
+
+  function resetFileState() {
+    setNewFiles([]);
+    setRemovedIds([]);
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    formData.set("type", formType);
+    const formData = new FormData(e.currentTarget);
+    const title = String(formData.get("title") ?? "").trim();
+    const description = String(formData.get("description") ?? "");
+    const dueLocal = String(formData.get("due_at") ?? "");
 
-    const file = fileRef.current?.files?.[0];
-    if (file) {
-      if (!accept.includes(file.type)) {
-        toast.error("Allowed types: PDF, JPG, PNG.");
-        return;
-      }
-      if (file.size > MAX_FILE_BYTES) {
-        toast.error("That file is larger than 20 MB.");
-        return;
-      }
+    if (newFiles.some((f) => !accept.includes(f.type))) {
+      toast.error("Allowed types: PDF, JPG, PNG.");
+      return;
     }
-
+    if (newFiles.some((f) => f.size > MAX_FILE_BYTES)) {
+      toast.error("Each file must be 20 MB or smaller.");
+      return;
+    }
+    if (remainingExisting.length === 0 && newFiles.length === 0) {
+      toast.error("Keep at least one file.");
+      return;
+    }
     if (creatingNewCategory && !newCategory.trim()) {
       toast.error("Name the new topic.");
       return;
     }
 
     setBusy(true);
+    const uploaded: { filePath: string; mimeType: string; sizeBytes: number }[] =
+      [];
     try {
-      if (file) {
+      for (const file of newFiles) {
         const safeName = file.name.replace(/[^\w.\-]+/g, "_");
-        const path = `${studentId}/${id}/${Date.now()}-${safeName}`;
+        const path = `${studentId}/${id}/${crypto.randomUUID()}-${safeName}`;
         const { error: upErr } = await supabase.storage
           .from(BUCKET_ASSIGNMENTS)
           .upload(path, file, { contentType: file.type });
         if (upErr) {
+          if (uploaded.length > 0) {
+            await supabase.storage
+              .from(BUCKET_ASSIGNMENTS)
+              .remove(uploaded.map((u) => u.filePath));
+          }
           toast.error(upErr.message);
           setGlobalError(upErr.message);
           setBusy(false);
           return;
         }
-        formData.set("file_path", path);
+        uploaded.push({
+          filePath: path,
+          mimeType: file.type,
+          sizeBytes: file.size,
+        });
       }
 
       // Resolve the topic (create it if a new name was typed). Always send
@@ -126,14 +153,28 @@ export function AssignmentActions({
       const resolvedCategory = creatingNewCategory
         ? (await createCategory(newCategory)).id
         : formCategory;
-      formData.set("category_id", resolvedCategory);
 
-      await updateAssignment(formData);
-      setFileName("");
+      await updateAssignment({
+        id,
+        title,
+        description: description || null,
+        type: formType,
+        dueAt: new Date(dueLocal).toISOString(),
+        categoryId: resolvedCategory,
+        hasCategory: true,
+        addedFiles: uploaded,
+        removedFileIds: removedIds,
+      });
+      resetFileState();
       dialogRef.current?.close();
       toast.success("Assignment updated.");
       setGlobalError("");
     } catch (err) {
+      if (uploaded.length > 0) {
+        await supabase.storage
+          .from(BUCKET_ASSIGNMENTS)
+          .remove(uploaded.map((u) => u.filePath));
+      }
       toast.error((err as Error).message);
       setGlobalError((err as Error).message);
     } finally {
@@ -270,27 +311,20 @@ export function AssignmentActions({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Replace file (optional)</Label>
-            <div className="flex items-center gap-3">
-              <input
-                ref={fileRef}
-                type="file"
-                accept={accept.join(",")}
-                className="hidden"
-                onChange={(e) => setFileName(e.target.files?.[0]?.name ?? "")}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => fileRef.current?.click()}
-              >
-                {fileName ? "Change file" : "Choose new file"}
-              </Button>
-              <span className="truncate text-sm text-muted-foreground">
-                {fileName || "Keep current file"}
-              </span>
-            </div>
+            <Label>Attachments</Label>
+            <MultiFileDropzone
+              accept={accept.join(",")}
+              hint="PDF, JPG or PNG — up to 20 MB each"
+              files={newFiles}
+              onAdd={(fs) => setNewFiles((prev) => [...prev, ...fs])}
+              onRemove={(i) =>
+                setNewFiles((prev) => prev.filter((_, idx) => idx !== i))
+              }
+              existing={remainingExisting}
+              onRemoveExisting={(rid) =>
+                setRemovedIds((prev) => [...prev, rid])
+              }
+            />
           </div>
           <div className="flex gap-2">
             <Button type="submit" disabled={busy}>
@@ -302,7 +336,7 @@ export function AssignmentActions({
               disabled={busy}
               onClick={() => {
                 dialogRef.current?.close();
-                setFileName("");
+                resetFileState();
               }}
             >
               Cancel

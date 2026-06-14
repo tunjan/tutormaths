@@ -112,6 +112,24 @@ export function typeLabel(type: "problem_set" | "reading_notes"): string {
   return type === "problem_set" ? "Problem set" : "Reading notes";
 }
 
+/** Best-effort MIME type for an assignment object key, inferred from its extension. */
+export function mimeFromPath(path: string): string {
+  const ext = path.split(".").pop()?.toLowerCase();
+  if (ext === "png") return "image/png";
+  if (ext === "jpg" || ext === "jpeg") return "image/jpeg";
+  return "application/pdf";
+}
+
+/** Display name for a storage object key: last path segment, minus any timestamp/uuid prefix. */
+export function fileLabel(path: string): string {
+  const name = path.split("/").pop() ?? "file";
+  // Strip a leading UUID- (new uploads) or timestamp- (legacy edit uploads) prefix.
+  return name.replace(
+    /^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|\d+)-/i,
+    "",
+  );
+}
+
 export function humanFileSize(bytes: number | null): string {
   if (!bytes) return "";
   const mb = bytes / (1024 * 1024);
