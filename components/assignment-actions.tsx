@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { MultiFileDropzone } from "@/components/ui/multi-file-dropzone";
 import {
@@ -53,6 +54,7 @@ interface Props {
   categoryId: string | null;
   categories: CategoryRow[];
   attachments: AttachmentInfo[];
+  latexBody: string | null;
 }
 
 const accept = ASSIGNMENT_MIME as readonly string[];
@@ -76,11 +78,16 @@ export function AssignmentActions({
   categoryId,
   categories,
   attachments,
+  latexBody,
 }: Props) {
   const [supabase] = useState(() => createClient());
   const [formType, setFormType] = useState(type);
   const [formCategory, setFormCategory] = useState(categoryId ?? "");
   const [newCategory, setNewCategory] = useState("");
+  const [source, setSource] = useState<"file" | "latex">(
+    latexBody ? "latex" : "file",
+  );
+  const [latexValue, setLatexValue] = useState(latexBody ?? "");
   const [deleting, startDelete] = useTransition();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [newFiles, setNewFiles] = useState<File[]>([]);
@@ -103,18 +110,24 @@ export function AssignmentActions({
     const description = String(formData.get("description") ?? "");
     const dueLocal = String(formData.get("due_at") ?? "");
 
-    if (newFiles.some((f) => !accept.includes(f.type))) {
-      toast.error("Allowed types: PDF, JPG, PNG.");
+    if (source === "file") {
+      if (newFiles.some((f) => !accept.includes(f.type))) {
+        toast.error("Allowed types: PDF, JPG, PNG.");
+        return;
+      }
+      if (newFiles.some((f) => f.size > MAX_FILE_BYTES)) {
+        toast.error("Each file must be 20 MB or smaller.");
+        return;
+      }
+      if (remainingExisting.length === 0 && newFiles.length === 0) {
+        toast.error("Keep at least one file, or switch to LaTeX.");
+        return;
+      }
+    } else if (!latexValue.trim()) {
+      toast.error("Write the assignment in LaTeX.");
       return;
     }
-    if (newFiles.some((f) => f.size > MAX_FILE_BYTES)) {
-      toast.error("Each file must be 20 MB or smaller.");
-      return;
-    }
-    if (remainingExisting.length === 0 && newFiles.length === 0) {
-      toast.error("Keep at least one file.");
-      return;
-    }
+
     if (creatingNewCategory && !newCategory.trim()) {
       toast.error("Name the new topic.");
       return;
@@ -124,28 +137,30 @@ export function AssignmentActions({
     const uploaded: { filePath: string; mimeType: string; sizeBytes: number }[] =
       [];
     try {
-      for (const file of newFiles) {
-        const safeName = file.name.replace(/[^\w.\-]+/g, "_");
-        const path = `${studentId}/${id}/${crypto.randomUUID()}-${safeName}`;
-        const { error: upErr } = await supabase.storage
-          .from(BUCKET_ASSIGNMENTS)
-          .upload(path, file, { contentType: file.type });
-        if (upErr) {
-          if (uploaded.length > 0) {
-            await supabase.storage
-              .from(BUCKET_ASSIGNMENTS)
-              .remove(uploaded.map((u) => u.filePath));
+      if (source === "file") {
+        for (const file of newFiles) {
+          const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+          const path = `${studentId}/${id}/${crypto.randomUUID()}-${safeName}`;
+          const { error: upErr } = await supabase.storage
+            .from(BUCKET_ASSIGNMENTS)
+            .upload(path, file, { contentType: file.type });
+          if (upErr) {
+            if (uploaded.length > 0) {
+              await supabase.storage
+                .from(BUCKET_ASSIGNMENTS)
+                .remove(uploaded.map((u) => u.filePath));
+            }
+            toast.error(upErr.message);
+            setGlobalError(upErr.message);
+            setBusy(false);
+            return;
           }
-          toast.error(upErr.message);
-          setGlobalError(upErr.message);
-          setBusy(false);
-          return;
+          uploaded.push({
+            filePath: path,
+            mimeType: file.type,
+            sizeBytes: file.size,
+          });
         }
-        uploaded.push({
-          filePath: path,
-          mimeType: file.type,
-          sizeBytes: file.size,
-        });
       }
 
       // Resolve the topic (create it if a new name was typed). Always send
@@ -162,8 +177,10 @@ export function AssignmentActions({
         dueAt: new Date(dueLocal).toISOString(),
         categoryId: resolvedCategory,
         hasCategory: true,
-        addedFiles: uploaded,
-        removedFileIds: removedIds,
+        source,
+        ...(source === "latex"
+          ? { latexBody: latexValue }
+          : { addedFiles: uploaded, removedFileIds: removedIds }),
       });
       resetFileState();
       dialogRef.current?.close();
@@ -311,20 +328,60 @@ export function AssignmentActions({
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label>Attachments</Label>
-            <MultiFileDropzone
-              accept={accept.join(",")}
-              hint="PDF, JPG or PNG — up to 20 MB each"
-              files={newFiles}
-              onAdd={(fs) => setNewFiles((prev) => [...prev, ...fs])}
-              onRemove={(i) =>
-                setNewFiles((prev) => prev.filter((_, idx) => idx !== i))
-              }
-              existing={remainingExisting}
-              onRemoveExisting={(rid) =>
-                setRemovedIds((prev) => [...prev, rid])
-              }
-            />
+            <Label>Content</Label>
+            <div className="inline-flex rounded-[10px] border border-[#e5e5e5] dark:border-[#262626] bg-[#fafafa] dark:bg-[#171717] p-1 self-start">
+              <button
+                type="button"
+                onClick={() => setSource("file")}
+                aria-pressed={source === "file"}
+                className={cn(
+                  "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors",
+                  source === "file"
+                    ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
+                    : "text-[#737373] dark:text-[#a3a3a3] hover:text-foreground",
+                )}
+              >
+                Files
+              </button>
+              <button
+                type="button"
+                onClick={() => setSource("latex")}
+                aria-pressed={source === "latex"}
+                className={cn(
+                  "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors",
+                  source === "latex"
+                    ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
+                    : "text-[#737373] dark:text-[#a3a3a3] hover:text-foreground",
+                )}
+              >
+                LaTeX
+              </button>
+            </div>
+
+            {source === "file" ? (
+              <MultiFileDropzone
+                accept={accept.join(",")}
+                hint="PDF, JPG or PNG — up to 20 MB each"
+                files={newFiles}
+                onAdd={(fs) => setNewFiles((prev) => [...prev, ...fs])}
+                onRemove={(i) =>
+                  setNewFiles((prev) => prev.filter((_, idx) => idx !== i))
+                }
+                existing={remainingExisting}
+                onRemoveExisting={(rid) =>
+                  setRemovedIds((prev) => [...prev, rid])
+                }
+              />
+            ) : (
+              <Textarea
+                name="latex_body"
+                rows={8}
+                className="font-mono text-sm"
+                placeholder="Markdown with inline $…$ and display $$…$$ maths."
+                value={latexValue}
+                onChange={(e) => setLatexValue(e.target.value)}
+              />
+            )}
           </div>
           <div className="flex gap-2">
             <Button type="submit" disabled={busy}>

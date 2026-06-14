@@ -7,6 +7,7 @@ import { loadComments } from "@/lib/queries";
 import { addComment } from "@/lib/actions/comments";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import { FilePreview } from "@/components/ui/file-preview";
+import { LatexContent } from "@/components/ui/latex-content";
 import { LiveCommentThread, type Participant } from "@/components/live-comment-thread";
 import { CommentComposer } from "@/components/comment-composer";
 import { AssignmentActions } from "@/components/assignment-actions";
@@ -100,12 +101,12 @@ export default async function TutorAssignmentPage({
           <BackLink href="/tutor" className="text-xs tracking-wider text-[#737373] dark:text-[#a3a3a3] hover:text-[#0a0a0a] dark:hover:text-[#fafafa] mt-2 font-mono uppercase">
             Back to dashboard
           </BackLink>
-          
+
           <div className="flex flex-col gap-4">
             <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight leading-tight">
               {a.title}
             </h1>
-            
+
             <div className="flex flex-wrap items-center gap-3 text-sm text-[#525252] dark:text-[#a3a3a3]">
               <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
               <span className="flex items-center gap-1.5 font-semibold text-foreground">
@@ -140,7 +141,7 @@ export default async function TutorAssignmentPage({
                 Reported progress: <span className="font-semibold text-foreground">{a.completion_pct}%</span>
               </span>
             </div>
-            
+
             <div className="pt-2">
               <AssignmentActions
                 id={a.id}
@@ -156,6 +157,7 @@ export default async function TutorAssignmentPage({
                   name,
                   mimeType,
                 }))}
+                latexBody={a.latex_body}
               />
             </div>
           </div>
@@ -163,7 +165,7 @@ export default async function TutorAssignmentPage({
 
         {/* CONTENT SPLIT */}
         <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] divide-y lg:divide-y-0 lg:divide-x divide-[#e5e5e5] dark:divide-[#262626]">
-          
+
           {/* LEFT COLUMN: ASSIGNMENT DETAILS & FILE PREVIEW */}
           <div className="flex flex-col divide-y divide-[#e5e5e5] dark:divide-[#262626] p-6 md:p-8">
             {a.description && (
@@ -176,9 +178,17 @@ export default async function TutorAssignmentPage({
 
             <section className="flex flex-col gap-6 pt-6">
               <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">
-                {attachments.length === 1 ? "Assignment File" : "Assignment Files"}
+                {a.latex_body
+                  ? "Assignment"
+                  : attachments.length === 1
+                    ? "Assignment File"
+                    : "Assignment Files"}
               </h2>
-              {attachments.length > 0 ? (
+              {a.latex_body ? (
+                <div className="rounded-[12px] border border-[#e5e5e5] dark:border-[#262626] bg-[#fafafa] dark:bg-[#0a0a0a] p-6">
+                  <LatexContent source={a.latex_body} />
+                </div>
+              ) : attachments.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {attachments.map((f) => (
                     <div key={f.id} className="flex flex-col gap-2">
@@ -251,7 +261,7 @@ export default async function TutorAssignmentPage({
                 <span>Comments</span>
                 <span className="text-[#737373] dark:text-[#a3a3a3] bg-card border border-[#e5e5e5] dark:border-[#262626] px-2 py-0.5 rounded-full text-[11px] font-mono">{comments.length}</span>
               </h3>
-              
+
               <div className="flex flex-col gap-6 mt-2">
                 <LiveCommentThread
                   assignmentId={id}

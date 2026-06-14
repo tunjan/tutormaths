@@ -21,15 +21,17 @@ export interface CreateAssignmentInput {
   title: string;
   description: string | null;
   dueAt: string; // ISO timestamp
-  files: AssignmentFileInput[]; // one or more attachments already uploaded
+  files: AssignmentFileInput[]; // attachments already uploaded (empty for LaTeX)
+  latexBody: string | null; // Markdown+LaTeX body, when no file is attached
   categoryId?: string | null; // optional topic tag
 }
 
 /**
- * Inserts an assignment after the tutor has uploaded its files. Files are
- * uploaded client-side directly to storage (under {studentId}/{id}/...), so
- * this writes the assignment row plus one assignment_files row per attachment.
- * RLS requires is_tutor(); the notify trigger pings the student.
+ * Inserts an assignment after the tutor has uploaded its files (or written a
+ * LaTeX body). Files are uploaded client-side directly to storage (under
+ * {studentId}/{id}/...), so this writes the assignment row plus one
+ * assignment_files row per attachment. RLS requires is_tutor(); the notify
+ * trigger pings the student.
  */
 export async function createAssignment(
   input: CreateAssignmentInput,
@@ -39,8 +41,10 @@ export async function createAssignment(
   if (new Date(input.dueAt).getTime() <= Date.now()) {
     throw new Error("The due date must be in the future.");
   }
-  if (input.files.length === 0) {
-    throw new Error("Attach at least one file.");
+
+  const latexBody = input.latexBody?.trim() || null;
+  if (input.files.length === 0 && !latexBody) {
+    throw new Error("Attach a file or write the assignment in LaTeX.");
   }
 
   const supabase = await createClient();
@@ -53,23 +57,26 @@ export async function createAssignment(
     title: input.title.trim(),
     description: input.description?.trim() || null,
     due_at: input.dueAt,
+    latex_body: latexBody,
     category_id: input.categoryId || null,
   });
   if (error) throw new Error(error.message);
 
-  const { error: filesErr } = await supabase.from("assignment_files").insert(
-    input.files.map((f, i) => ({
-      assignment_id: input.id,
-      file_path: f.filePath,
-      mime_type: f.mimeType,
-      size_bytes: f.sizeBytes,
-      sort_order: i,
-    })),
-  );
-  if (filesErr) {
-    // Don't leave an attachment-less assignment behind.
-    await supabase.from("assignments").delete().eq("id", input.id);
-    throw new Error(filesErr.message);
+  if (input.files.length > 0) {
+    const { error: filesErr } = await supabase.from("assignment_files").insert(
+      input.files.map((f, i) => ({
+        assignment_id: input.id,
+        file_path: f.filePath,
+        mime_type: f.mimeType,
+        size_bytes: f.sizeBytes,
+        sort_order: i,
+      })),
+    );
+    if (filesErr) {
+      // Don't leave an attachment-less file assignment behind.
+      await supabase.from("assignments").delete().eq("id", input.id);
+      throw new Error(filesErr.message);
+    }
   }
 
   revalidatePath("/tutor");
@@ -127,22 +134,28 @@ export interface UpdateAssignmentInput {
   description: string | null;
   type: "problem_set" | "reading_notes";
   dueAt: string; // ISO timestamp
-  categoryId?: string | null; // omit to leave unchanged; "" / null clears the tag
-  hasCategory?: boolean; // whether categoryId is being set
+  categoryId?: string | null; // omit (hasCategory false) to leave unchanged
+  hasCategory?: boolean;
+  // Content change. "latex" switches to a LaTeX body (and clears all files);
+  // "file" manages attachments (and clears any LaTeX body). Omit to leave the
+  // content untouched (metadata-only edit).
+  source?: "file" | "latex";
+  latexBody?: string | null;
   addedFiles?: AssignmentFileInput[]; // newly uploaded attachments
   removedFileIds?: string[]; // assignment_files ids to delete
 }
 
 /**
- * Edits an assignment's metadata, and adds/removes attachments. New files are
- * uploaded client-side first; removed files are deleted from both the table and
- * the storage bucket here.
+ * Edits an assignment's metadata and content. Switching to LaTeX clears all
+ * attachments; managing files clears any LaTeX body. New files are uploaded
+ * client-side first; removed files are deleted from both the table and the
+ * storage bucket here.
  */
 export async function updateAssignment(
   input: UpdateAssignmentInput,
 ): Promise<void> {
   await requireTutor();
-  const { id } = input;
+  const { id, source } = input;
   const title = input.title.trim();
   if (!id || !title || !input.dueAt) return;
 
@@ -152,6 +165,16 @@ export async function updateAssignment(
 
   const supabase = await createClient();
 
+  // Switching to LaTeX clears any attachments; switching to file clears LaTeX.
+  let contentUpdate: { latex_body?: string | null } = {};
+  if (source === "latex") {
+    const latexBody = input.latexBody?.trim();
+    if (!latexBody) throw new Error("Write the assignment in LaTeX.");
+    contentUpdate = { latex_body: latexBody };
+  } else if (source === "file") {
+    contentUpdate = { latex_body: null };
+  }
+
   const { error } = await supabase
     .from("assignments")
     .update({
@@ -159,12 +182,30 @@ export async function updateAssignment(
       description: input.description?.trim() || null,
       type: input.type,
       due_at: input.dueAt,
+      ...contentUpdate,
       ...(input.hasCategory ? { category_id: input.categoryId || null } : {}),
     })
     .eq("id", id);
   if (error) throw new Error(error.message);
 
-  // Remove deleted attachments: read their paths, delete the rows, then the objects.
+  // When switching to LaTeX, remove every attachment (rows + storage objects).
+  if (source === "latex") {
+    const { data: all } = await supabase
+      .from("assignment_files")
+      .select("file_path")
+      .eq("assignment_id", id);
+    if (all && all.length > 0) {
+      await supabase.from("assignment_files").delete().eq("assignment_id", id);
+      await supabase.storage
+        .from(BUCKET_ASSIGNMENTS)
+        .remove(all.map((f) => f.file_path));
+    }
+    revalidatePath(`/tutor/assignments/${id}`);
+    revalidatePath("/tutor");
+    return;
+  }
+
+  // Remove deleted attachments: read their paths, delete the rows, then objects.
   const removedIds = input.removedFileIds ?? [];
   if (removedIds.length > 0) {
     const { data: gone } = await supabase
@@ -234,10 +275,11 @@ export async function reviewSubmission(
 
 /**
  * Deletes an assignment and ALL of its storage files. The DB rows (submissions,
- * comments, notifications, reminders) cascade, but storage objects are not
- * FK-linked, so we remove them explicitly. Student submission files live under
- * the students' folders, which the tutor's session can't delete — so we use the
- * service-role admin client (which bypasses storage RLS) for the file removal.
+ * comments, notifications, reminders, assignment_files) cascade, but storage
+ * objects are not FK-linked, so we remove them explicitly. Student submission
+ * files live under the students' folders, which the tutor's session can't
+ * delete — so we use the service-role admin client (which bypasses storage RLS)
+ * for the file removal.
  */
 export async function deleteAssignment(id: string): Promise<void> {
   await requireTutor();
