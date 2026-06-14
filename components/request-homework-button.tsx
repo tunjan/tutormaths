@@ -6,6 +6,8 @@ import { requestMoreHomework } from "@/app/student/actions";
 import { Button, type buttonVariants } from "@/components/ui/button";
 import { type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +19,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
+const MAX_MESSAGE_LENGTH = 500;
 
 export function RequestHomeworkButton({
   label = "Request more practice",
@@ -31,6 +35,7 @@ export function RequestHomeworkButton({
 } = {}) {
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState(false);
+  const [message, setMessage] = useState("");
 
   return (
     <AlertDialog>
@@ -61,12 +66,30 @@ export function RequestHomeworkButton({
             Your tutor will be notified that you&apos;d like to keep improving with extra exercises.
           </AlertDialogDescription>
         </AlertDialogHeader>
+        <div className="grid gap-2">
+          <Label htmlFor="homework-request-message">
+            Add a message{" "}
+            <span className="text-muted-foreground font-normal">(optional)</span>
+          </Label>
+          <Textarea
+            id="homework-request-message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            maxLength={MAX_MESSAGE_LENGTH}
+            rows={3}
+            placeholder="e.g. more practice on integration by parts, or harder problems on vectors"
+            disabled={pending || done}
+          />
+          <p className="text-muted-foreground text-xs">
+            Let your tutor know what you&apos;d like to work on.
+          </p>
+        </div>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={() =>
               startTransition(async () => {
-                await requestMoreHomework();
+                await requestMoreHomework(message);
                 setDone(true);
                 toast.success("Request sent — your tutor has been notified.");
               })

@@ -478,7 +478,10 @@ export type Database = {
     Functions: {
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
       is_tutor: { Args: never; Returns: boolean }
-      request_more_homework: { Args: never; Returns: undefined }
+      request_more_homework: {
+        Args: { p_message?: string | null }
+        Returns: undefined
+      }
     }
     Enums: {
       assignment_type: "problem_set" | "reading_notes"

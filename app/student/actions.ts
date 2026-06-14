@@ -111,9 +111,12 @@ export async function markAssignmentOpened(assignmentId: string): Promise<void> 
 }
 
 /** Asks the tutor for more homework (writes a notification via RPC). */
-export async function requestMoreHomework(): Promise<void> {
+export async function requestMoreHomework(message?: string): Promise<void> {
   await requireStudent();
   const supabase = await createClient();
-  const { error } = await supabase.rpc("request_more_homework");
+  const trimmed = message?.trim();
+  const { error } = await supabase.rpc("request_more_homework", {
+    p_message: trimmed ? trimmed.slice(0, 500) : null,
+  });
   if (error) throw new Error(error.message);
 }
