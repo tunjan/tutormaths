@@ -1,5 +1,13 @@
 import { notFound } from "next/navigation";
-import { Download, FileText, Image as ImageIcon } from "lucide-react";
+import {
+  CalendarClock,
+  ClipboardCheck,
+  Download,
+  FileText,
+  Image as ImageIcon,
+  MessageSquareText,
+  Paperclip,
+} from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { signedUrl } from "@/lib/storage";
@@ -88,138 +96,164 @@ export default async function StudentAssignmentPage({
   };
 
   return (
-    <div className="mb-12 flex w-full flex-col overflow-hidden rounded-[12px] border border-border bg-background text-foreground shadow-[var(--shadow-sm)] selection:bg-primary selection:text-primary-foreground animate-rise">
+    <div className="relative left-1/2 mb-12 flex w-[calc(100vw-2rem)] max-w-6xl -translate-x-1/2 flex-col overflow-hidden rounded-[8px] border border-border bg-surface-base text-foreground shadow-[var(--shadow-md)] selection:bg-primary selection:text-primary-foreground sm:w-[calc(100vw-3rem)] animate-rise">
       <MarkAssignmentRead assignmentId={id} />
       <MarkAssignmentOpened assignmentId={id} />
 
-      <main className="flex w-full flex-col divide-y divide-border">
-        <header className="flex flex-col gap-6 bg-surface-muted px-6 pb-8 pt-6 md:px-8">
-          <BackLink href="/student" className="mt-2 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground">
-            Back to dashboard
-          </BackLink>
+      <main className="flex w-full flex-col">
+        <header className="relative overflow-hidden border-b border-border bg-surface-paper">
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,var(--border-soft)_1px,transparent_0)] [background-size:18px_18px]"
+          />
+          <div className="relative px-5 pb-6 pt-5 md:px-8 md:pb-8 md:pt-7">
+            <BackLink href="/student" className="font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground">
+              Back to dashboard
+            </BackLink>
 
-          <div className="flex flex-col gap-4">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight leading-tight">
-              {a.title}
-            </h1>
+            <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-end">
+              <div className="flex min-w-0 flex-col gap-4">
+                <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
+                <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight text-foreground md:text-5xl">
+                  {a.title}
+                </h1>
+              </div>
 
-            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-              <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
-              <span>{formatDateTime(a.due_at)}</span>
-              {category?.name && (
-                <>
-                  <span className="text-border-strong">·</span>
-                  <span>{category.name}</span>
-                </>
-              )}
-              <span className="text-border-strong">·</span>
-              <span>{typeLabel(a.type)}</span>
+              <dl className="grid gap-3 rounded-[8px] border border-border bg-background/85 p-4 text-sm shadow-[var(--shadow-sm)] backdrop-blur-sm">
+                <div className="flex items-start gap-3">
+                  <CalendarClock className="mt-0.5 size-4 shrink-0 text-muted-foreground" strokeWidth={1.8} />
+                  <div>
+                    <dt className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                      Due
+                    </dt>
+                    <dd className="font-medium text-foreground">{formatDateTime(a.due_at)}</dd>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <ClipboardCheck className="mt-0.5 size-4 shrink-0 text-muted-foreground" strokeWidth={1.8} />
+                  <div>
+                    <dt className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                      Format
+                    </dt>
+                    <dd className="font-medium text-foreground">
+                      {category?.name ? `${category.name} · ` : ""}
+                      {typeLabel(a.type)}
+                    </dd>
+                  </div>
+                </div>
+              </dl>
             </div>
 
-            <div className="max-w-2xl rounded-[10px] border border-border bg-background px-4 py-3">
+            <div className="mt-6 rounded-[8px] border border-border bg-background/90 px-4 py-3 shadow-[var(--shadow-sm)] backdrop-blur-sm">
               <AssignmentSteps status={a.review_status} />
             </div>
           </div>
         </header>
 
-        <div className="grid grid-cols-1 divide-y divide-border lg:grid-cols-[1fr_320px] lg:divide-x lg:divide-y-0">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px]">
 
-          <div className="flex flex-col divide-y divide-border p-6 md:p-8">
-            <section className="flex flex-col gap-6 pb-6">
-              {a.description && (
-                <p className="text-base leading-relaxed text-foreground">
-                  {a.description}
-                </p>
-              )}
+          <div className="flex flex-col gap-8 p-5 md:p-8">
+            <section className="flex flex-col gap-5">
+              <SectionHeader
+                icon={Paperclip}
+                title="Problem material"
+                description="Open the prompt, solve it on paper or digitally, then upload your finished work."
+              />
 
-              {a.latex_body && (
-                <div className="rounded-[12px] border border-border bg-surface-muted p-6">
-                  <LatexContent source={a.latex_body} />
-                </div>
-              )}
+              <div className="flex flex-col gap-5">
+                {a.description && (
+                  <div className="rounded-[8px] border border-border bg-background p-5 text-base leading-relaxed text-foreground">
+                    {a.description}
+                  </div>
+                )}
 
-              {attachments.length > 0 && (
-                <div className="pt-2 grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  {attachments.map((f) => {
-                    const isImage = f.mimeType.startsWith("image/");
-                    return (
-                      <div key={f.id} className="flex flex-col gap-3">
-                        {f.url && isImage && (
-                          <div className="overflow-hidden rounded-[12px] border border-border">
+                {a.latex_body && (
+                  <div className="rounded-[8px] border border-border bg-surface-muted p-5 md:p-6">
+                    <LatexContent source={a.latex_body} />
+                  </div>
+                )}
+
+                {attachments.length > 0 && (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {attachments.map((f) => {
+                      const isImage = f.mimeType.startsWith("image/");
+                      return (
+                        <article
+                          key={f.id}
+                          className="group overflow-hidden rounded-[8px] border border-border bg-background shadow-[var(--shadow-sm)] transition-colors hover:border-border-strong"
+                        >
+                          {f.url && isImage && (
                             <FilePreview
                               url={f.url}
                               mimeType={f.mimeType}
                               title={f.name}
+                              className="rounded-none border-0 bg-surface-muted"
                             />
-                          </div>
-                        )}
-                        {f.url && (
-                          <a
-                            href={f.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group flex items-center justify-between transition-opacity duration-200 hover:opacity-70"
-                          >
-                            <div className="flex items-center gap-4">
-                              {isImage ? (
-                                <ImageIcon
-                                  className="size-5 text-foreground"
-                                  strokeWidth={2}
-                                />
-                              ) : (
-                                <FileText
-                                  className="size-5 text-foreground"
-                                  strokeWidth={2}
-                                />
-                              )}
-                              <div className="flex flex-col">
-                                <span className="mb-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-                                  {isImage ? "Attached Image" : "Attached Document"}
+                          )}
+                          {f.url && (
+                            <a
+                              href={f.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-between gap-4 border-t border-border px-4 py-4 transition-colors hover:bg-surface-muted"
+                            >
+                              <div className="flex min-w-0 items-center gap-3">
+                                <span className="flex size-9 shrink-0 items-center justify-center rounded-[8px] border border-border bg-surface-muted text-foreground">
+                                  {isImage ? (
+                                    <ImageIcon className="size-4" strokeWidth={1.8} />
+                                  ) : (
+                                    <FileText className="size-4" strokeWidth={1.8} />
+                                  )}
                                 </span>
-                                <span className="text-sm font-semibold text-foreground tracking-tight">
-                                  {f.name}
-                                </span>
+                                <div className="flex min-w-0 flex-col">
+                                  <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                                    {isImage ? "Attached image" : "Attached document"}
+                                  </span>
+                                  <span className="truncate text-sm font-semibold tracking-tight text-foreground">
+                                    {f.name}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-                            <Download
-                              className="size-5 text-muted-foreground transition-colors"
-                              strokeWidth={2}
-                            />
-                          </a>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                              <Download
+                                className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
+                                strokeWidth={1.8}
+                              />
+                            </a>
+                          )}
+                        </article>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </section>
 
-            <section className="flex flex-col gap-4 py-6">
-              <div className="flex flex-col gap-1">
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">Progress</h2>
-                <p className="text-sm text-muted-foreground">
-                  Track how far you are, then upload your finished work when you are ready.
-                </p>
+            <section className="rounded-[8px] border border-border bg-surface-muted/45 p-5">
+              <div className="flex flex-col gap-5">
+                <SectionHeader
+                  icon={ClipboardCheck}
+                  title="Work status"
+                  description="Set your progress as you work. When it is finished, hand in the file below."
+                />
+                <CompletionControl
+                  assignmentId={id}
+                  initial={a.completion_pct}
+                  hasSubmissions={submissions.length > 0}
+                  uploadTargetId="student-submission"
+                />
               </div>
-              <CompletionControl
-                assignmentId={id}
-                initial={a.completion_pct}
-                hasSubmissions={submissions.length > 0}
-                uploadTargetId="student-submission"
-              />
             </section>
 
             <section
               id="student-submission"
               tabIndex={-1}
-              className="scroll-mt-6 flex flex-col gap-4 pt-6 focus:outline-none"
+              className="scroll-mt-24 flex flex-col gap-4 focus:outline-none"
             >
-              <div className="flex flex-col gap-1">
-                <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">Turn in your work</h2>
-                <p className="text-sm text-muted-foreground">
-                  Upload your completed file so your tutor can review it.
-                </p>
-              </div>
+              <SectionHeader
+                icon={FileText}
+                title="Turn in your work"
+                description="Upload your completed file so your tutor can review it."
+              />
               <StudentSubmitPanel
                 assignmentId={id}
                 studentId={ctx.userId}
@@ -228,40 +262,73 @@ export default async function StudentAssignmentPage({
             </section>
           </div>
 
-          <aside className="flex flex-col divide-y divide-border bg-surface-muted/50 p-6 md:p-8">
-            <section className="flex flex-col gap-4 pb-6">
-              <h3 className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-foreground">
-                <span>Tutor feedback</span>
-                <span className="rounded-full border border-border bg-card px-2 py-0.5 font-mono text-[11px] text-muted-foreground">{comments.length}</span>
-              </h3>
+          <aside className="border-t border-border bg-surface-muted/55 p-5 md:p-8 lg:border-l lg:border-t-0">
+            <div className="sticky top-24 flex flex-col gap-6">
+              <section className="flex flex-col gap-4">
+                <h3 className="flex items-center justify-between gap-3 text-xs font-semibold uppercase tracking-wider text-foreground">
+                  <span className="flex items-center gap-2">
+                    <MessageSquareText className="size-4 text-muted-foreground" strokeWidth={1.8} />
+                    Tutor feedback
+                  </span>
+                  <span className="rounded-full border border-border bg-background px-2 py-0.5 font-mono text-[11px] text-muted-foreground">{comments.length}</span>
+                </h3>
 
-              <div className="flex flex-col gap-6 mt-2">
-                <LiveCommentThread
-                  assignmentId={id}
-                  initial={comments}
-                  participants={participants}
-                />
-                <CommentComposer assignmentId={id} action={addComment} />
-              </div>
-            </section>
+                <div className="flex flex-col gap-5">
+                  <LiveCommentThread
+                    assignmentId={id}
+                    initial={comments}
+                    participants={participants}
+                  />
+                  <CommentComposer assignmentId={id} action={addComment} />
+                </div>
+              </section>
 
-            <section className="flex flex-col gap-3 pt-6">
-              <h3 className="text-base font-semibold text-foreground tracking-tight">
-                Keep the momentum going
-              </h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Ready to push your skills further? Request extra practice to keep improving.
-              </p>
-              <RequestHomeworkButton
-                variant="outline"
-                className="mt-2 w-full"
-                label="Request extra practice"
-              />
-            </section>
+              <section className="rounded-[8px] border border-border bg-background p-4 shadow-[var(--shadow-sm)]">
+                <div className="flex flex-col gap-3">
+                  <h3 className="text-base font-semibold tracking-tight text-foreground">
+                    Keep the momentum going
+                  </h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    Ready to push your skills further? Request extra practice to keep improving.
+                  </p>
+                  <RequestHomeworkButton
+                    variant="outline"
+                    className="w-full"
+                    label="Request extra practice"
+                  />
+                </div>
+              </section>
+            </div>
           </aside>
 
         </div>
       </main>
+    </div>
+  );
+}
+
+function SectionHeader({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: typeof Paperclip;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-[8px] border border-border bg-background text-foreground">
+        <Icon className="size-4" strokeWidth={1.8} />
+      </span>
+      <div className="min-w-0">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-foreground">
+          {title}
+        </h2>
+        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+          {description}
+        </p>
+      </div>
     </div>
   );
 }

@@ -57,7 +57,7 @@ export function CommentComposer({
           {error}
         </div>
       )}
-      <div className="flex items-center gap-2 rounded-md border border-border bg-background pl-3.5 pr-1.5 py-1.5 transition-colors focus-within:border-foreground">
+      <div className="flex items-center gap-2 rounded-[8px] border border-border bg-background py-1.5 pl-3.5 pr-1.5 transition-colors focus-within:border-foreground">
         <textarea
           ref={textareaRef}
           value={value}
@@ -79,9 +79,9 @@ export function CommentComposer({
           aria-label="Post comment"
           size="icon"
           variant="ghost"
-          className="shrink-0 h-[34px] w-[34px] rounded-full text-black hover:bg-neutral-100 hover:text-black dark:text-white dark:hover:bg-neutral-900 dark:hover:text-white"
+          className="size-[34px] shrink-0 rounded-[8px]"
         >
-          <Send className="size-4 translate-x-[-0.5px]" />
+          <Send className="translate-x-[-0.5px]" />
         </Button>
       </div>
     </div>

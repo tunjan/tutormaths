@@ -60,11 +60,14 @@ export function CompletionControl({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-6">
-        <span className="text-[28px] font-semibold tracking-tight tabular-nums w-16 text-foreground">
-          {pct}%
-        </span>
-        <div className="flex-1 min-w-[150px] max-w-[280px]">
+      <div className="grid gap-4 md:grid-cols-[72px_minmax(180px,1fr)_auto] md:items-center">
+        <div className="flex items-baseline gap-2 md:block">
+          <span className="text-[32px] font-semibold leading-none tracking-tight tabular-nums text-foreground">
+            {pct}%
+          </span>
+          <span className="text-sm text-muted-foreground md:sr-only">complete</span>
+        </div>
+        <div className="min-w-0">
           <Slider
             value={[pct]}
             min={0}
@@ -80,7 +83,7 @@ export function CompletionControl({
             needsToSubmit ? focusUpload() : save(100, { focusUpload: !hasSubmissions })
           }
           disabled={doneWithSubmission || pending}
-          className="ml-auto"
+          className="w-full md:w-auto"
         >
           {needsToSubmit && <UploadCloud data-icon="inline-start" />}
           {needsToSubmit ? "Upload work" : doneWithSubmission ? "Done" : "Mark as done"}
@@ -92,7 +95,7 @@ export function CompletionControl({
           className="text-[13px] text-muted-foreground"
           role="status"
         >
-          <span className="block p-3 bg-secondary/30 rounded-md border border-border/40">
+          <span className="block rounded-[8px] border border-border bg-background p-3">
             You&rsquo;ve marked this done. Upload your work below to hand it in for review.
           </span>
         </div>

@@ -42,9 +42,9 @@ export function StudentSubmitPanel({
   const [adding, setAdding] = useState(false);
 
   return (
-    <div className="flex flex-col gap-4 rounded-[10px] border border-border bg-surface-muted/45 p-4">
+    <div className="flex flex-col gap-5 rounded-[8px] border border-border bg-background p-5 shadow-[var(--shadow-sm)]">
       <div className="flex items-start gap-3">
-        <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-background text-foreground">
+        <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-[8px] border border-border bg-surface-muted text-foreground">
           {hasWork ? (
             <CheckCircle2 className="size-4" strokeWidth={1.8} />
           ) : (
@@ -64,7 +64,7 @@ export function StudentSubmitPanel({
       </div>
 
       {hasWork && (
-        <ul className="flex flex-col gap-1 border-y border-border/60 py-2">
+        <ul className="flex flex-col gap-1 rounded-[8px] border border-border bg-surface-muted/45 p-2">
           {submissions.map((s) => (
             <SubmissionRow key={s.id} submission={s} />
           ))}
@@ -106,14 +106,14 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
     <li className="flex flex-col gap-2">
       {error && (
         <div
-          className="rounded-md bg-destructive/10 px-3 py-2 text-[13px] text-destructive border border-destructive/20"
+          className="rounded-[8px] border border-destructive/20 bg-destructive/10 px-3 py-2 text-[13px] text-destructive"
           role="alert"
         >
           {error}
         </div>
       )}
-      <div className="-mx-3 flex items-center justify-between rounded-md px-3 py-3 transition-colors hover:bg-accent/30">
-        <div className="flex items-center gap-4 min-w-0 pr-4">
+      <div className="flex items-center justify-between rounded-[8px] bg-background px-3 py-3 transition-colors hover:bg-surface-hover">
+        <div className="flex min-w-0 items-center gap-3 pr-4">
           <FileText className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.5} />
           <div className="min-w-0 flex flex-col justify-center gap-0.5">
             <p className="truncate text-[14px] font-medium text-foreground">{s.name}</p>
