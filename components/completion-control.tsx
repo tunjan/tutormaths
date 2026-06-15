@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { updateCompletion } from "@/app/student/actions";
 import { Slider } from "@/components/ui/slider";
@@ -10,10 +11,12 @@ export function CompletionControl({
   assignmentId,
   initial,
   hasSubmissions,
+  uploadTargetId,
 }: {
   assignmentId: string;
   initial: number;
   hasSubmissions: boolean;
+  uploadTargetId?: string;
 }) {
   const [pct, setPct] = useState(initial);
   const [saved, setSaved] = useState(initial);
@@ -24,10 +27,21 @@ export function CompletionControl({
     return Math.max(0, Math.min(100, Math.round(n)));
   }
 
-  function save(next: number) {
+  function focusUpload() {
+    if (!uploadTargetId) return;
+    const target = document.getElementById(uploadTargetId);
+    if (!target) return;
+    target.scrollIntoView({ block: "start", behavior: "smooth" });
+    target.focus({ preventScroll: true });
+  }
+
+  function save(next: number, options?: { focusUpload?: boolean }) {
     const value = clamp(next);
     setPct(value);
-    if (value === saved) return;
+    if (value === saved) {
+      if (options?.focusUpload) focusUpload();
+      return;
+    }
     startTransition(async () => {
       const fd = new FormData();
       fd.set("assignment_id", assignmentId);
@@ -37,10 +51,12 @@ export function CompletionControl({
       toast.success(
         value >= 100 ? "Marked as done" : `Progress saved — ${value}%`,
       );
+      if (options?.focusUpload) focusUpload();
     });
   }
 
   const needsToSubmit = pct >= 100 && !hasSubmissions;
+  const doneWithSubmission = pct === 100 && hasSubmissions;
 
   return (
     <div className="flex flex-col gap-4">
@@ -60,11 +76,14 @@ export function CompletionControl({
           />
         </div>
         <Button
-          onClick={() => save(100)}
-          disabled={pct === 100 || pending}
-          className="ml-auto rounded-lg h-9 px-4 text-[13px] font-medium bg-foreground text-background hover:bg-foreground/90 transition-colors"
+          onClick={() =>
+            needsToSubmit ? focusUpload() : save(100, { focusUpload: !hasSubmissions })
+          }
+          disabled={doneWithSubmission || pending}
+          className="ml-auto"
         >
-          Mark as done
+          {needsToSubmit && <UploadCloud data-icon="inline-start" />}
+          {needsToSubmit ? "Upload work" : doneWithSubmission ? "Done" : "Mark as done"}
         </Button>
       </div>
 
@@ -74,7 +93,7 @@ export function CompletionControl({
           role="status"
         >
           <span className="block p-3 bg-secondary/30 rounded-md border border-border/40">
-            You&rsquo;ve marked this done. Don&rsquo;t forget to upload your work below to hand it in.
+            You&rsquo;ve marked this done. Upload your work below to hand it in for review.
           </span>
         </div>
       )}

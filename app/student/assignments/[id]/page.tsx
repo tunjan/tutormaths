@@ -6,6 +6,7 @@ import { signedUrl } from "@/lib/storage";
 import { loadComments } from "@/lib/queries";
 import { addComment } from "@/lib/actions/comments";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
+import { AssignmentSteps } from "@/components/assignment-steps";
 import { CompletionControl } from "@/components/completion-control";
 import { FilePreview } from "@/components/ui/file-preview";
 import { LatexContent } from "@/components/ui/latex-content";
@@ -87,14 +88,13 @@ export default async function StudentAssignmentPage({
   };
 
   return (
-    <div className="w-full bg-background text-foreground flex flex-col selection:bg-primary selection:text-primary-foreground mb-12 border border-[#e5e5e5] dark:border-[#262626] rounded-[12px] overflow-hidden shadow-[var(--shadow-sm)] animate-rise">
+    <div className="mb-12 flex w-full flex-col overflow-hidden rounded-[12px] border border-border bg-background text-foreground shadow-[var(--shadow-sm)] selection:bg-primary selection:text-primary-foreground animate-rise">
       <MarkAssignmentRead assignmentId={id} />
       <MarkAssignmentOpened assignmentId={id} />
 
-      <main className="w-full flex flex-col divide-y divide-[#e5e5e5] dark:divide-[#262626]">
-        {/* HERO SECTION */}
-        <header className="flex flex-col gap-6 pt-6 pb-8 bg-[#fafafa] dark:bg-[#0a0a0a] px-6 md:px-8">
-          <BackLink href="/student" className="text-xs tracking-wider text-[#737373] dark:text-[#a3a3a3] hover:text-[#0a0a0a] dark:hover:text-[#fafafa] mt-2 font-mono uppercase">
+      <main className="flex w-full flex-col divide-y divide-border">
+        <header className="flex flex-col gap-6 bg-surface-muted px-6 pb-8 pt-6 md:px-8">
+          <BackLink href="/student" className="mt-2 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground">
             Back to dashboard
           </BackLink>
 
@@ -103,26 +103,28 @@ export default async function StudentAssignmentPage({
               {a.title}
             </h1>
 
-            <div className="flex flex-wrap items-center gap-3 text-sm text-[#525252] dark:text-[#a3a3a3]">
+            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
               <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
               <span>{formatDateTime(a.due_at)}</span>
               {category?.name && (
                 <>
-                  <span className="opacity-30">·</span>
+                  <span className="text-border-strong">·</span>
                   <span>{category.name}</span>
                 </>
               )}
-              <span className="opacity-30">·</span>
+              <span className="text-border-strong">·</span>
               <span>{typeLabel(a.type)}</span>
+            </div>
+
+            <div className="max-w-2xl rounded-[10px] border border-border bg-background px-4 py-3">
+              <AssignmentSteps status={a.review_status} />
             </div>
           </div>
         </header>
 
-        {/* CONTENT & SUBMISSION SPLIT */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] divide-y lg:divide-y-0 lg:divide-x divide-[#e5e5e5] dark:divide-[#262626]">
+        <div className="grid grid-cols-1 divide-y divide-border lg:grid-cols-[1fr_320px] lg:divide-x lg:divide-y-0">
 
-          <div className="flex flex-col divide-y divide-[#e5e5e5] dark:divide-[#262626] p-6 md:p-8">
-            {/* THE BRIEF */}
+          <div className="flex flex-col divide-y divide-border p-6 md:p-8">
             <section className="flex flex-col gap-6 pb-6">
               {a.description && (
                 <p className="text-base leading-relaxed text-foreground">
@@ -131,7 +133,7 @@ export default async function StudentAssignmentPage({
               )}
 
               {a.latex_body && (
-                <div className="rounded-[12px] border border-[#e5e5e5] dark:border-[#262626] bg-[#fafafa] dark:bg-[#0a0a0a] p-6">
+                <div className="rounded-[12px] border border-border bg-surface-muted p-6">
                   <LatexContent source={a.latex_body} />
                 </div>
               )}
@@ -143,7 +145,7 @@ export default async function StudentAssignmentPage({
                     return (
                       <div key={f.id} className="flex flex-col gap-3">
                         {f.url && isImage && (
-                          <div className="rounded-[12px] overflow-hidden border border-[#e5e5e5] dark:border-[#262626]">
+                          <div className="overflow-hidden rounded-[12px] border border-border">
                             <FilePreview
                               url={f.url}
                               mimeType={f.mimeType}
@@ -171,7 +173,7 @@ export default async function StudentAssignmentPage({
                                 />
                               )}
                               <div className="flex flex-col">
-                                <span className="text-[11px] font-mono uppercase tracking-widest text-[#737373] dark:text-[#a3a3a3] mb-1">
+                                <span className="mb-1 font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
                                   {isImage ? "Attached Image" : "Attached Document"}
                                 </span>
                                 <span className="text-sm font-semibold text-foreground tracking-tight">
@@ -192,19 +194,32 @@ export default async function StudentAssignmentPage({
               )}
             </section>
 
-            {/* PROGRESS */}
             <section className="flex flex-col gap-4 py-6">
-              <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">Completion Status</h2>
+              <div className="flex flex-col gap-1">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">Progress</h2>
+                <p className="text-sm text-muted-foreground">
+                  Track how far you are, then upload your finished work when you are ready.
+                </p>
+              </div>
               <CompletionControl
                 assignmentId={id}
                 initial={a.completion_pct}
                 hasSubmissions={submissions.length > 0}
+                uploadTargetId="student-submission"
               />
             </section>
 
-            {/* SUBMISSION */}
-            <section className="flex flex-col gap-4 pt-6">
-              <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">Submission</h2>
+            <section
+              id="student-submission"
+              tabIndex={-1}
+              className="scroll-mt-6 flex flex-col gap-4 pt-6 focus:outline-none"
+            >
+              <div className="flex flex-col gap-1">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground">Turn in your work</h2>
+                <p className="text-sm text-muted-foreground">
+                  Upload your completed file so your tutor can review it.
+                </p>
+              </div>
               <StudentSubmitPanel
                 assignmentId={id}
                 studentId={ctx.userId}
@@ -213,12 +228,11 @@ export default async function StudentAssignmentPage({
             </section>
           </div>
 
-          {/* EDITORIAL COLUMN: COMMENTS & ACTIONS */}
-          <aside className="flex flex-col divide-y divide-[#e5e5e5] dark:divide-[#262626] bg-[#fafafa]/50 dark:bg-[#0a0a0a]/50 p-6 md:p-8">
+          <aside className="flex flex-col divide-y divide-border bg-surface-muted/50 p-6 md:p-8">
             <section className="flex flex-col gap-4 pb-6">
-              <h3 className="text-xs font-semibold text-foreground flex items-center justify-between uppercase tracking-wider">
-                <span>Comments</span>
-                <span className="text-[#737373] dark:text-[#a3a3a3] bg-card border border-[#e5e5e5] dark:border-[#262626] px-2 py-0.5 rounded-full text-[11px] font-mono">{comments.length}</span>
+              <h3 className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-foreground">
+                <span>Tutor feedback</span>
+                <span className="rounded-full border border-border bg-card px-2 py-0.5 font-mono text-[11px] text-muted-foreground">{comments.length}</span>
               </h3>
 
               <div className="flex flex-col gap-6 mt-2">
@@ -235,12 +249,12 @@ export default async function StudentAssignmentPage({
               <h3 className="text-base font-semibold text-foreground tracking-tight">
                 Keep the momentum going
               </h3>
-              <p className="text-sm leading-relaxed text-[#525252] dark:text-[#a3a3a3]">
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 Ready to push your skills further? Request extra practice to keep improving.
               </p>
               <RequestHomeworkButton
                 variant="outline"
-                className="w-full mt-2 border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-600"
+                className="mt-2 w-full"
                 label="Request extra practice"
               />
             </section>

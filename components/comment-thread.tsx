@@ -20,16 +20,35 @@ function initials(name: string): string {
 
 export function CommentThread({ comments }: { comments: CommentView[] }) {
   if (comments.length === 0) {
-    return <p className="text-sm text-muted-foreground">No comments yet.</p>;
+    return (
+      <div className="rounded-[8px] border border-dashed border-border bg-background px-3 py-4">
+        <p className="text-sm font-medium text-foreground">No tutor feedback yet</p>
+        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+          Comments from you and your tutor will appear here.
+        </p>
+      </div>
+    );
   }
   return (
     <ul className="flex flex-col gap-5">
       {comments.map((c) => {
+        const isTutor = c.authorRole === "tutor";
         return (
-          <li key={c.id} className="flex gap-3">
+          <li
+            key={c.id}
+            className={cn(
+              "flex gap-3 rounded-[8px] p-3",
+              isTutor
+                ? "border border-status-review-border bg-status-review-bg"
+                : "border border-transparent bg-background/60",
+            )}
+          >
             <span
               className={cn(
-                "flex size-8 shrink-0 items-center justify-center rounded-full text-[12px] font-medium text-foreground bg-secondary",
+                "flex size-8 shrink-0 items-center justify-center rounded-full text-[12px] font-medium",
+                isTutor
+                  ? "bg-background text-status-review"
+                  : "bg-secondary text-foreground",
               )}
               aria-hidden
             >
@@ -38,6 +57,11 @@ export function CommentThread({ comments }: { comments: CommentView[] }) {
             <div className="min-w-0 flex-1">
               <div className="flex items-baseline gap-3">
                 <span className="text-[14px] font-medium text-foreground">{c.authorName}</span>
+                {isTutor && (
+                  <span className="rounded-full bg-background px-2 py-0.5 text-[11px] font-medium text-status-review">
+                    Tutor
+                  </span>
+                )}
                 <span className="text-[12px] text-muted-foreground">
                   {formatDate(c.created_at)}
                 </span>

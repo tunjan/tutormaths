@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { UploadCloud } from "lucide-react";
+import { CheckCircle2, Loader2, UploadCloud } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -47,29 +47,37 @@ export function FileDropzone({
       aria-disabled={!interactive}
       aria-live="polite"
       className={cn(
-        "flex flex-col items-center justify-center gap-2 rounded-[8px] border border-dashed px-6 py-8 text-center text-sm transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#0a0a0a] dark:focus-within:ring-white",
+        "flex flex-col items-center justify-center gap-3 rounded-[8px] border border-dashed px-6 py-8 text-center text-sm transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
         interactive ? "cursor-pointer" : "cursor-default opacity-80",
         dragging
-          ? "border-black dark:border-white bg-[#fafafa] dark:bg-[#0a0a0a] text-foreground"
-          : "border-[#e5e5e5] dark:border-[#262626] bg-transparent text-[#737373] dark:text-[#a3a3a3] hover:border-[#a3a3a3] dark:hover:border-[#737373]",
+          ? "border-foreground bg-surface-muted text-foreground"
+          : "border-border-strong bg-background text-muted-foreground hover:border-text-subtle",
       )}
     >
       {busy ? (
-        <span className="text-sm font-medium">{busyLabel}</span>
+        <>
+          <Loader2 className="size-5 animate-spin text-foreground" aria-hidden />
+          <span className="text-sm font-medium text-foreground">{busyLabel}</span>
+          <span className="text-xs text-muted-foreground">Keep this page open until the upload finishes.</span>
+        </>
       ) : selectedName ? (
         <>
+          <CheckCircle2 className="size-5 text-foreground" aria-hidden />
           <span className="max-w-full truncate font-semibold text-foreground">
             {selectedName}
           </span>
-          <span className="text-xs text-[#525252] dark:text-[#a3a3a3]">Click or drop a file to replace</span>
+          <span className="text-xs text-muted-foreground">Click or drop a file to replace</span>
         </>
       ) : (
         <>
-          <UploadCloud className="mb-1 size-5 text-[#737373] dark:text-[#a3a3a3]" />
-          <span className="font-semibold text-foreground">
-            Drag a file here, or click to choose
+          <UploadCloud className="size-5 text-foreground" aria-hidden />
+          <span className="font-semibold text-foreground">Upload completed work</span>
+          <span className="max-w-[18rem] text-xs leading-5 text-muted-foreground">
+            Drag a file here, or click to choose. {hint}.
           </span>
-          <span className="text-xs text-[#737373] dark:text-[#a3a3a3]">{hint}</span>
+          <span className="rounded-md border border-border bg-surface-muted px-3 py-1 text-xs font-medium text-foreground">
+            Choose file
+          </span>
         </>
       )}
       <input

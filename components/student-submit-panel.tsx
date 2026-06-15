@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ExternalLink, FileText, Plus, X } from "lucide-react";
+import { CheckCircle2, ExternalLink, FileText, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteSubmission } from "@/app/student/actions";
 import { SubmissionUploader } from "@/components/submission-uploader";
@@ -42,9 +42,29 @@ export function StudentSubmitPanel({
   const [adding, setAdding] = useState(false);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 rounded-[10px] border border-border bg-surface-muted/45 p-4">
+      <div className="flex items-start gap-3">
+        <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-background text-foreground">
+          {hasWork ? (
+            <CheckCircle2 className="size-4" strokeWidth={1.8} />
+          ) : (
+            <FileText className="size-4" strokeWidth={1.8} />
+          )}
+        </span>
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <p className="text-sm font-medium text-foreground">
+            {hasWork ? "Submitted for tutor review" : "Upload your completed work"}
+          </p>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {hasWork
+              ? "Your tutor can see these files. Upload a revision if you need to replace or add work."
+              : "Submit a PDF or JPG once you are ready for feedback."}
+          </p>
+        </div>
+      </div>
+
       {hasWork && (
-        <ul className="flex flex-col gap-1 border-y border-border/40 py-2">
+        <ul className="flex flex-col gap-1 border-y border-border/60 py-2">
           {submissions.map((s) => (
             <SubmissionRow key={s.id} submission={s} />
           ))}
@@ -57,18 +77,17 @@ export function StudentSubmitPanel({
 
       {hasWork && (
         <div className="flex items-center justify-between gap-4">
-          <p className="flex items-center gap-2 text-[14px] text-muted-foreground">
-            Submitted for review
+          <p className="text-[13px] text-muted-foreground">
+            {submissions.length} {submissions.length === 1 ? "file" : "files"} uploaded
           </p>
           {!adding && (
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className="text-[13px] font-medium rounded-lg text-muted-foreground hover:text-foreground -mr-3 shadow-none"
               onClick={() => setAdding(true)}
             >
-              <Plus className="size-4 mr-1.5" />
+              <Plus data-icon="inline-start" />
               Upload revision
             </Button>
           )}
@@ -93,7 +112,7 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
           {error}
         </div>
       )}
-      <div className="group flex items-center justify-between py-3 px-3 -mx-3 rounded-md transition-colors hover:bg-accent/30">
+      <div className="-mx-3 flex items-center justify-between rounded-md px-3 py-3 transition-colors hover:bg-accent/30">
         <div className="flex items-center gap-4 min-w-0 pr-4">
           <FileText className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.5} />
           <div className="min-w-0 flex flex-col justify-center gap-0.5">
@@ -103,8 +122,8 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
             </p>
           </div>
         </div>
-        
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+
+        <div className="flex shrink-0 items-center gap-1">
           {s.url && (
             <a
               href={s.url}
@@ -116,7 +135,7 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
               )}
               aria-label="Open submission in a new tab"
             >
-              <ExternalLink className="size-4" />
+              <ExternalLink data-icon="inline-start" />
             </a>
           )}
           <AlertDialog>
@@ -130,7 +149,7 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
                   aria-label="Remove submission"
                   className="text-muted-foreground hover:text-destructive rounded-md shadow-none"
                 >
-                  <X className="size-4" />
+                  <Trash2 />
                 </Button>
               }
             />
