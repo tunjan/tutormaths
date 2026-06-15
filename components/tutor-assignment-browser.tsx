@@ -48,7 +48,7 @@ export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[];
   return (
     <div className="flex flex-col gap-10">
       <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-[#737373] dark:text-[#a3a3a3]" />
+        <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-text-subtle" />
         <Input
           type="search"
           value={query}
@@ -128,23 +128,23 @@ function SectionHead({
   muted?: boolean;
   }) {
   return (
-    <div className="mb-4 flex items-baseline justify-between border-b border-[#f0f0f0] dark:border-[#171717] pb-3">
+    <div className="mb-4 flex items-baseline justify-between border-b border-border-soft pb-3">
       <div className="flex items-center gap-2">
         {icon && (
-          <span className="flex size-5 items-center justify-center text-[#737373] dark:text-[#a3a3a3]">
+          <span className="flex size-5 items-center justify-center text-text-subtle">
             {icon}
           </span>
         )}
         <h2
           className={cn(
             "text-h4 font-semibold tracking-tight",
-            muted ? "text-[#737373] dark:text-[#a3a3a3]" : "text-[#0a0a0a] dark:text-[#fafafa]"
+            muted ? "text-text-subtle" : "text-text-heading"
           )}
         >
           {title}
         </h2>
       </div>
-      <span className="font-mono text-xs uppercase tracking-wider text-[#737373] dark:text-[#a3a3a3]">
+      <span className="font-mono text-xs uppercase tracking-wider text-text-subtle">
         {count} assignment{count === 1 ? "" : "s"}
       </span>
     </div>
@@ -153,7 +153,7 @@ function SectionHead({
 
 function List({ items }: { items: BrowserItem[] }) {
   return (
-    <div className="flex flex-col stagger-children border border-[#e5e5e5] dark:border-[#262626] rounded-[12px] divide-y divide-[#e5e5e5] dark:divide-[#262626] bg-card overflow-hidden shadow-[var(--shadow-sm)]">
+    <div className="flex flex-col stagger-children overflow-hidden rounded-[12px] border border-border-strong bg-surface-raised shadow-[var(--shadow-sm)] divide-y divide-border-strong">
       {items.map((a) => (
         <div key={a.id} className="animate-fade-in">
           <AssignmentRow
@@ -174,7 +174,7 @@ function List({ items }: { items: BrowserItem[] }) {
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="px-6 py-12 text-center text-[16px] text-[#737373] dark:text-[#a3a3a3]">
+    <p className="px-6 py-12 text-center text-[16px] text-text-subtle">
       {children}
     </p>
   );

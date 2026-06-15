@@ -117,12 +117,12 @@ export function AssignmentCalendar({
       </div>
 
       {/* Grid */}
-      <div className="overflow-hidden rounded-[12px] border border-[#e5e5e5] dark:border-[#262626] bg-card shadow-[var(--shadow-sm)]">
-        <div className="grid grid-cols-7 border-b border-[#e5e5e5] dark:border-[#262626] bg-secondary/35">
+      <div className="overflow-hidden rounded-[12px] border border-border-strong bg-surface-raised shadow-[var(--shadow-sm)]">
+        <div className="grid grid-cols-7 border-b border-border-strong bg-surface-muted">
           {WEEKDAYS.map((d) => (
             <div
               key={d}
-              className="px-2 py-2 text-center font-mono text-[11px] uppercase tracking-[0.05em] text-[#737373] dark:text-[#a3a3a3] font-semibold"
+              className="px-2 py-2 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-text-subtle"
             >
               <span className="hidden sm:inline">{d}</span>
               <span className="sm:hidden">{d[0]}</span>
@@ -130,7 +130,7 @@ export function AssignmentCalendar({
           ))}
         </div>
 
-        <div className="grid grid-cols-7 divide-x divide-[#e5e5e5] dark:divide-[#262626] border-b border-transparent">
+        <div className="grid grid-cols-7 divide-x divide-border-strong border-b border-transparent">
           {cells.map((date, i) => {
             const key = dayKey(date);
             const inMonth = date.getMonth() === cursor.getMonth();
@@ -145,12 +145,12 @@ export function AssignmentCalendar({
                 aria-pressed={isSelected}
                 aria-label={`${formatDate(date.toISOString())}, ${items.length} due`}
                 className={cn(
-                  "group/cell relative flex min-h-[68px] flex-col gap-1 border-b border-[#e5e5e5] dark:border-[#262626] p-2 text-left transition-colors sm:min-h-[104px] outline-none",
+                  "group/cell relative flex min-h-[68px] flex-col gap-1 border-b border-border-strong p-2 text-left transition-colors sm:min-h-[104px] outline-none",
                   (i + 1) % 7 === 0 && "border-r-0",
                   i >= 35 && "border-b-0",
-                  inMonth ? "bg-card" : "bg-[#fafafa]/50 dark:bg-[#0a0a0a]/50",
-                  "hover:bg-[#f5f5f5] dark:hover:bg-[#171717]/60",
-                  isSelected && "bg-[#fafafa] dark:bg-[#171717] ring-1 ring-inset ring-black dark:ring-white",
+                  inMonth ? "bg-surface-raised" : "bg-surface-muted/55",
+                  "hover:bg-surface-hover",
+                  isSelected && "bg-surface-selected ring-1 ring-inset ring-primary",
                 )}
               >
                 <span
@@ -159,8 +159,8 @@ export function AssignmentCalendar({
                     isToday
                       ? "bg-foreground font-semibold text-background"
                       : inMonth
-                        ? "text-[#0a0a0a] dark:text-[#fafafa]"
-                        : "text-[#737373]/50 dark:text-[#525252]/50",
+                        ? "text-text-heading"
+                        : "text-text-subtle/55",
                   )}
                 >
                   {date.getDate()}
@@ -173,7 +173,7 @@ export function AssignmentCalendar({
                         <CalendarChip key={a.id} a={a} unread={unreadSet.has(a.id)} />
                       ))}
                       {items.length > 3 && (
-                        <span className="px-1 text-[11px] text-[#737373] dark:text-[#a3a3a3]">
+                        <span className="px-1 text-[11px] text-text-subtle">
                           +{items.length - 3} more
                         </span>
                       )}
@@ -201,32 +201,32 @@ export function AssignmentCalendar({
 
       {/* Selected-day agenda */}
       <div className="flex flex-col gap-3">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-[#737373] dark:text-[#a3a3a3]">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-text-subtle">
           {formatDate(new Date(selectedKey + "T00:00:00").toISOString())}
         </h3>
         {selected.length === 0 ? (
-          <p className="card border border-border p-6 text-center text-sm text-[#737373] dark:text-[#a3a3a3] shadow-[var(--shadow-sm)]">
+          <p className="card border border-border-soft p-6 text-center text-sm text-text-subtle shadow-[var(--shadow-sm)]">
             Nothing due this day.
           </p>
         ) : (
-          <div className="flex flex-col divide-y divide-[#e5e5e5] dark:divide-[#262626] overflow-hidden rounded-[12px] border border-[#e5e5e5] dark:border-[#262626] bg-card shadow-[var(--shadow-sm)]">
+          <div className="flex flex-col overflow-hidden rounded-[12px] border border-border-strong bg-surface-raised shadow-[var(--shadow-sm)] divide-y divide-border-strong">
             {selected.map((a) => {
               const TypeIcon = a.type === "reading_notes" ? BookOpen : FileText;
               return (
                 <Link
                   key={a.id}
                   href={`/student/assignments/${a.id}`}
-                  className="group flex items-center justify-between gap-4 px-5 py-3 transition-colors hover:bg-[#f5f5f5] dark:hover:bg-[#171717]"
+                  className="group flex items-center justify-between gap-4 px-5 py-3 transition-colors hover:bg-surface-hover"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#fafafa] dark:bg-[#171717] border border-[#e5e5e5] dark:border-[#262626] text-muted-foreground group-hover:text-foreground">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-full border border-border-strong bg-surface-muted text-muted-foreground group-hover:text-foreground">
                       <TypeIcon className="size-4" strokeWidth={1.5} />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-[#0a0a0a] dark:text-[#fafafa]">
+                      <p className="truncate text-sm font-semibold text-text-heading">
                         {a.title}
                       </p>
-                      <p className="truncate text-xs text-[#737373] dark:text-[#a3a3a3]">
+                      <p className="truncate text-xs text-text-subtle">
                         {typeLabel(a.type)}
                       </p>
                     </div>
@@ -270,14 +270,14 @@ function CalendarChip({
       className={cn(
         "flex items-center gap-1.5 rounded-[4px] px-1.5 py-0.5 text-[11px] leading-tight transition-colors w-full border border-transparent",
         done
-          ? "bg-[#f5f5f5] text-[#a3a3a3] line-through hover:bg-[#eaeaea] dark:bg-[#171717] dark:hover:bg-[#262626]"
-          : "bg-[#000000]/[0.04] text-[#0a0a0a] hover:bg-[#000000]/[0.08] dark:bg-white/[0.06] dark:text-[#fafafa] dark:hover:bg-white/10",
+          ? "bg-surface-hover text-text-subtle line-through hover:bg-surface-selected"
+          : "bg-primary/[0.04] text-text-heading hover:bg-primary/[0.08] dark:bg-white/[0.06] dark:hover:bg-white/10",
       )}
     >
       <span
         className={cn(
           "size-1.5 shrink-0 rounded-full",
-          done ? "bg-[#a3a3a3]" : "bg-black dark:bg-white",
+          done ? "bg-text-subtle" : "bg-primary",
         )}
       />
       <span className="truncate">{a.title}</span>

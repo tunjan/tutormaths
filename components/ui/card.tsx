@@ -16,8 +16,8 @@ function Card({
       data-slot="card"
       data-size={size}
       className={cn(
-        "group/card flex flex-col gap-4 overflow-hidden rounded-[12px] bg-card p-6 text-sm text-card-foreground border border-border shadow-[var(--shadow-sm)] transition-all duration-200",
-        "hover:border-[#d4d4d4] hover:shadow-[var(--shadow-md)]",
+        "group/card flex flex-col gap-4 overflow-hidden rounded-[12px] bg-surface-raised p-6 text-sm text-card-foreground border border-border-strong shadow-[var(--shadow-sm)] transition-all duration-200",
+        "hover:border-text-subtle hover:shadow-[var(--shadow-md)]",
         "has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:p-4",
         interactive &&
           "card-interactive cursor-pointer hover:-translate-y-[2px] hover:shadow-[var(--shadow-lg)] hover:border-black dark:hover:border-white",
@@ -46,7 +46,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-title"
       className={cn(
-        "font-heading text-base leading-snug font-semibold group-data-[size=sm]/card:text-sm text-[#0a0a0a] dark:text-[#fafafa]",
+        "font-heading text-base leading-snug font-semibold group-data-[size=sm]/card:text-sm text-text-heading",
         className
       )}
       {...props}
@@ -58,7 +58,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-description"
-      className={cn("text-sm text-[#525252] dark:text-[#a3a3a3]", className)}
+      className={cn("text-sm text-text-muted", className)}
       {...props}
     />
   )

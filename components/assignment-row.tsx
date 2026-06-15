@@ -49,33 +49,33 @@ export function AssignmentRow({
   return (
     <Link
       href={href}
-      className="group relative flex items-center justify-between gap-4 py-4 px-5 transition-colors duration-200 hover:bg-[#f5f5f5] dark:hover:bg-[#171717]"
+      className="group relative flex items-center justify-between gap-4 px-5 py-4 transition-colors duration-200 hover:bg-surface-hover"
     >
       <div className="flex items-center gap-4 min-w-0 flex-1">
         <div className="shrink-0 relative">
           {student ? (
-            <span className="grid size-9 place-items-center rounded-full bg-[#fafafa] dark:bg-[#171717] border border-[#e5e5e5] dark:border-[#262626] text-xs font-semibold text-foreground">
+            <span className="grid size-9 place-items-center rounded-full bg-surface-muted border border-border-strong text-xs font-semibold text-foreground">
               {initials(student)}
             </span>
           ) : (
-            <span className="grid size-9 place-items-center rounded-full bg-[#fafafa] dark:bg-[#171717] border border-[#e5e5e5] dark:border-[#262626] text-muted-foreground group-hover:text-foreground transition-colors">
+            <span className="grid size-9 place-items-center rounded-full bg-surface-muted border border-border-strong text-muted-foreground transition-colors group-hover:text-foreground">
               <TypeIcon className="size-4" strokeWidth={1.5} />
             </span>
           )}
 
           {unread && (
             <span
-              className="absolute -top-0.5 -right-0.5 size-2.5 rounded-full bg-[#ef4444] border-2 border-white dark:border-[#0a0a0a]"
+              className="absolute -top-0.5 -right-0.5 size-2.5 rounded-full bg-status-overdue border-2 border-surface-raised"
               aria-label="Unread activity"
             />
           )}
         </div>
 
         <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-          <h3 className="text-sm font-semibold text-[#0a0a0a] dark:text-[#fafafa] truncate">
+          <h3 className="truncate text-sm font-semibold text-text-heading">
             {title}
           </h3>
-          <span className="text-[13px] text-[#525252] dark:text-[#a3a3a3] truncate">
+          <span className="truncate text-[13px] text-text-muted">
             {meta}
           </span>
         </div>
@@ -86,11 +86,11 @@ export function AssignmentRow({
           <div className="hidden sm:flex items-center gap-2">
             <span className="h-[4px] w-12 overflow-hidden rounded-full bg-border">
               <span
-                className="block h-full bg-[#000000] dark:bg-[#ffffff] transition-all duration-500"
+                className="block h-full bg-primary transition-all duration-500"
                 style={{ width: `${pct}%` }}
               />
             </span>
-            <span className="font-mono text-[11px] text-[#525252] dark:text-[#a3a3a3]">
+            <span className="font-mono text-[11px] text-text-muted">
               {pct}%
             </span>
           </div>

@@ -1,9 +1,15 @@
+import { Link } from "next-view-transitions";
+import { ArrowRight, CalendarClock } from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { unreadAssignmentIds } from "@/lib/queries";
 import { PageHeader } from "@/components/ui/page-header";
 import { RequestHomeworkButton } from "@/components/request-homework-button";
 import { AssignmentRow } from "@/components/assignment-row";
+import { AssignmentStatusBadge } from "@/components/ui/status-badge";
+import { buttonVariants } from "@/components/ui/button";
+import { formatDateTime, relativeTime, typeLabel } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 export default async function StudentDashboard() {
   await requireStudent();
@@ -20,6 +26,13 @@ export default async function StudentDashboard() {
   const all = assignments ?? [];
   const active = all.filter((a) => a.review_status !== "approved");
   const completed = all.filter((a) => a.review_status === "approved");
+  const actionable = active.filter(
+    (a) => a.review_status === "assigned" || a.review_status === "needs_work",
+  );
+  const nextAssignment = actionable[0] ?? active[0];
+  const remainingActive = nextAssignment
+    ? active.filter((a) => a.id !== nextAssignment.id)
+    : [];
 
   return (
     <div className="w-full py-2 animate-rise">
@@ -29,51 +42,69 @@ export default async function StudentDashboard() {
         actions={<RequestHomeworkButton />}
       />
 
-      <div className="mb-4 mt-10 flex items-baseline justify-between border-b border-[#e5e5e5] dark:border-[#262626] pb-3">
-        <h2 className="text-h4 font-semibold tracking-tight text-foreground">Active Tasks</h2>
-        <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-          {active.length} task{active.length === 1 ? "" : "s"}
-        </span>
-      </div>
-
-      {active.length === 0 ? (
-        <div className="card flex flex-col items-center justify-center gap-4 py-16 text-center animate-fade-in bg-card border border-border shadow-[var(--shadow-sm)]">
-          <div className="space-y-2 max-w-md">
-            <h3 className="text-lg font-semibold text-foreground">Nothing due right now</h3>
-            <p className="text-sm text-[#525252] dark:text-[#a3a3a3]">
-              {completed.length > 0
-                ? "You're all caught up. Want a head start? Ask for more."
-                : "Use “Request more practice” above when you’re ready for work."}
-            </p>
+      {nextAssignment ? (
+        <UpNextCard
+          assignment={nextAssignment}
+          unread={unread.has(nextAssignment.id)}
+        />
+      ) : (
+        <div className="rounded-[12px] border border-border-soft bg-surface-paper p-6 text-center shadow-[var(--shadow-sm)]">
+          <h2 className="text-xl font-semibold tracking-tight text-text-heading">
+            Nothing due right now
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-text-muted">
+            {completed.length > 0
+              ? "You are caught up. Request more practice when you are ready."
+              : "Request practice from your tutor when you are ready for work."}
+          </p>
+          <div className="mt-5 flex justify-center">
+            <RequestHomeworkButton />
           </div>
         </div>
-      ) : (
-        <div className="flex flex-col stagger-children mb-10 border border-[#e5e5e5] dark:border-[#262626] rounded-[12px] divide-y divide-[#e5e5e5] dark:divide-[#262626] bg-card overflow-hidden shadow-[var(--shadow-sm)]">
-          {active.map((a) => (
-            <div key={a.id} className="animate-fade-in">
-              <AssignmentRow
-                href={`/student/assignments/${a.id}`}
-                title={a.title}
-                type={a.type}
-                dueAt={a.due_at}
-                pct={a.completion_pct}
-                reviewStatus={a.review_status}
-                unread={unread.has(a.id)}
-              />
+      )}
+
+      {nextAssignment && (
+        <>
+          <div className="mb-4 mt-10 flex items-baseline justify-between border-b border-border-strong pb-3">
+            <h2 className="text-h4 font-semibold tracking-tight text-foreground">Active Tasks</h2>
+            <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+              {remainingActive.length} more
+            </span>
+          </div>
+
+          {remainingActive.length > 0 ? (
+            <div className="mb-10 flex flex-col overflow-hidden rounded-[12px] border border-border-strong bg-surface-raised shadow-[var(--shadow-sm)] divide-y divide-border-strong stagger-children">
+              {remainingActive.map((a) => (
+                <div key={a.id} className="animate-fade-in">
+                  <AssignmentRow
+                    href={`/student/assignments/${a.id}`}
+                    title={a.title}
+                    type={a.type}
+                    dueAt={a.due_at}
+                    pct={a.completion_pct}
+                    reviewStatus={a.review_status}
+                    unread={unread.has(a.id)}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          ) : (
+            <p className="mb-10 rounded-[12px] border border-border-soft bg-surface-muted p-5 text-center text-sm text-text-muted">
+              That is your only active task.
+            </p>
+          )}
+        </>
       )}
 
       {completed.length > 0 && (
         <div className="animate-fade-in mt-10" style={{ animationDelay: '100ms' }}>
-          <div className="mb-4 flex items-baseline justify-between border-b border-[#e5e5e5] dark:border-[#262626] pb-3">
+          <div className="mb-4 flex items-baseline justify-between border-b border-border-strong pb-3">
             <h2 className="text-h4 font-semibold tracking-tight text-foreground">Completed</h2>
             <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
               {completed.length} task{completed.length === 1 ? "" : "s"}
             </span>
           </div>
-          <div className="flex flex-col stagger-children border border-[#e5e5e5] dark:border-[#262626] rounded-[12px] divide-y divide-[#e5e5e5] dark:divide-[#262626] bg-card overflow-hidden shadow-[var(--shadow-sm)]">
+          <div className="flex flex-col overflow-hidden rounded-[12px] border border-border-strong bg-surface-raised shadow-[var(--shadow-sm)] divide-y divide-border-strong stagger-children">
             {completed.map((a) => (
               <div key={a.id} className="animate-fade-in">
                 <AssignmentRow
@@ -91,5 +122,76 @@ export default async function StudentDashboard() {
         </div>
       )}
     </div>
+  );
+}
+
+function UpNextCard({
+  assignment,
+  unread,
+}: {
+  assignment: {
+    id: string;
+    title: string;
+    type: "problem_set" | "reading_notes";
+    due_at: string;
+    completion_pct: number;
+    review_status: "assigned" | "submitted" | "approved" | "needs_work";
+  };
+  unread: boolean;
+}) {
+  return (
+    <section className="overflow-hidden rounded-[12px] border border-border-strong bg-surface-paper shadow-[var(--shadow-sm)]">
+      <div className="grid gap-0 lg:grid-cols-[1fr_auto]">
+        <div className="p-6 md:p-7">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border-soft bg-surface-raised px-3 py-1 text-xs font-semibold uppercase tracking-wider text-text-subtle">
+              <CalendarClock className="size-3.5" />
+              Up next
+            </span>
+            {unread && (
+              <span className="rounded-full bg-status-overdue-bg px-2.5 py-1 text-xs font-medium text-status-overdue">
+                New activity
+              </span>
+            )}
+            <AssignmentStatusBadge
+              reviewStatus={assignment.review_status}
+              dueAt={assignment.due_at}
+            />
+          </div>
+
+          <h2 className="mt-5 max-w-3xl text-2xl font-semibold leading-tight tracking-tight text-text-heading sm:text-3xl">
+            {assignment.title}
+          </h2>
+          <p className="mt-3 text-sm text-text-muted">
+            {typeLabel(assignment.type)} · due {relativeTime(assignment.due_at)} ·{" "}
+            {formatDateTime(assignment.due_at)}
+          </p>
+
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0 flex-1">
+              <div className="mb-2 flex items-center justify-between text-xs font-medium uppercase tracking-wider text-text-subtle">
+                <span>Progress</span>
+                <span className="font-mono">{assignment.completion_pct}%</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-border-soft">
+                <span
+                  className="block h-full rounded-full bg-primary transition-all duration-500"
+                  style={{ width: `${assignment.completion_pct}%` }}
+                />
+              </div>
+            </div>
+            <Link
+              href={`/student/assignments/${assignment.id}`}
+              className={cn(buttonVariants({ variant: "default", size: "md" }), "shrink-0")}
+            >
+              Open task
+              <ArrowRight />
+            </Link>
+          </div>
+        </div>
+
+        <div className="hidden w-48 border-l border-border-soft bg-[linear-gradient(135deg,var(--surface-muted)_25%,transparent_25%),linear-gradient(225deg,var(--surface-muted)_25%,transparent_25%),linear-gradient(45deg,var(--surface-muted)_25%,transparent_25%),linear-gradient(315deg,var(--surface-muted)_25%,var(--surface-paper)_25%)] bg-[length:18px_18px] bg-[position:9px_0,9px_0,0_0,0_0] lg:block" />
+      </div>
+    </section>
   );
 }

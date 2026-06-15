@@ -17,11 +17,11 @@ import {
  */
 function AwaitingReviewChip() {
   return (
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 px-2.5 py-[3px] text-[12px] font-medium tracking-wide text-blue-700 dark:border-blue-800 dark:from-blue-950 dark:to-blue-900 dark:text-blue-300">
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-status-review-border bg-status-review-bg px-2.5 py-[3px] text-[12px] font-medium tracking-wide text-status-review">
       {/* pulsing indicator */}
       <span className="relative flex size-[6px] shrink-0" aria-hidden>
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-60 dark:bg-blue-500 [animation-duration:1.8s]" />
-        <span className="relative inline-flex size-[6px] rounded-full bg-blue-500 dark:bg-blue-400" />
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-status-review opacity-60 [animation-duration:1.8s]" />
+        <span className="relative inline-flex size-[6px] rounded-full bg-status-review" />
       </span>
       Awaiting review
     </span>
@@ -34,9 +34,9 @@ function AwaitingReviewChip() {
  */
 function DueSoonChip() {
   return (
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-amber-200 bg-gradient-to-br from-amber-50 to-yellow-100 px-2.5 py-[3px] text-[12px] font-medium tracking-wide text-amber-800 dark:border-amber-700 dark:from-amber-950 dark:to-yellow-950 dark:text-amber-300">
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-status-due-border bg-status-due-bg px-2.5 py-[3px] text-[12px] font-medium tracking-wide text-status-due">
       <span
-        className="size-[6px] shrink-0 rounded-full bg-amber-400 dark:bg-amber-500"
+        className="size-[6px] shrink-0 rounded-full bg-status-due"
         aria-hidden
       />
       Due soon
@@ -50,9 +50,9 @@ function DueSoonChip() {
  */
 function UpcomingChip() {
   return (
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-slate-200 bg-slate-50 px-2.5 py-[3px] text-[12px] font-medium tracking-wide text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-border-strong bg-surface-muted px-2.5 py-[3px] text-[12px] font-medium tracking-wide text-text-subtle">
       <span
-        className="size-[6px] shrink-0 rounded-full bg-slate-300 dark:bg-slate-600"
+        className="size-[6px] shrink-0 rounded-full bg-text-subtle/55"
         aria-hidden
       />
       Upcoming

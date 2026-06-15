@@ -9,12 +9,12 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground border border-primary hover:bg-[#1a1a1a] dark:hover:bg-[#f5f5f5] hover:-translate-y-[1px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] active:translate-y-0 active:shadow-[0_2px_6px_rgba(0,0,0,0.1)]",
+          "bg-primary text-primary-foreground border border-primary hover:bg-primary/90 hover:-translate-y-[1px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] active:translate-y-0 active:shadow-[0_2px_6px_rgba(0,0,0,0.1)]",
         outline:
-          "border border-[#e5e5e5] bg-white text-foreground hover:bg-[#fafafa] hover:border-[#d4d4d4] hover:-translate-y-[1px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:bg-black dark:border-[#262626] dark:hover:bg-[#0a0a0a]",
+          "border border-border-strong bg-surface-raised text-foreground hover:bg-surface-muted hover:border-text-subtle hover:-translate-y-[1px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]",
         secondary:
-          "bg-[#fafafa] text-[#0a0a0a] border border-[#e5e5e5] hover:bg-[#f5f5f5] hover:-translate-y-[1px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] dark:bg-[#0a0a0a] dark:text-[#fafafa] dark:border-[#262626] dark:hover:bg-[#171717]",
-        ghost: "bg-transparent text-[#525252] hover:bg-[#f5f5f5] hover:text-[#0a0a0a] dark:text-[#a3a3a3] dark:hover:bg-[#171717] dark:hover:text-[#fafafa]",
+          "bg-surface-muted text-text-heading border border-border-strong hover:bg-surface-hover hover:-translate-y-[1px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]",
+        ghost: "bg-transparent text-text-muted hover:bg-surface-hover hover:text-text-heading",
         soft: "bg-[#f3f0ff] text-[#7c3aed] hover:bg-[#a78bfa]/20 dark:bg-[#7c3aed]/10 dark:text-[#a78bfa] dark:hover:bg-[#7c3aed]/20",
         destructive:
           "bg-[#ef4444] text-white hover:bg-[#ea580c] hover:-translate-y-[1px] hover:shadow-[0_4px_12px_rgba(239,68,68,0.2)] dark:bg-[#ef4444] dark:hover:bg-[#ea580c]",
