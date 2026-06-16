@@ -360,6 +360,7 @@
   --color-brand-hover: var(--accent);
 
   /* Sharper Radii */
+  --radius-panel: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-2xl: 20px;
@@ -735,10 +736,10 @@
 .modal {
   position: relative;
   background: var(--bg-primary);
-  border-radius: 20px;
+  border-radius: 28px;
   border: 1px solid var(--border-secondary);
-  padding: 28px 28px 24px;
-  max-width: 440px;
+  padding: 36px;
+  max-width: 460px;
   width: 100%;
   max-height: 85vh;
   overflow-y: auto;
@@ -761,39 +762,79 @@
 }
 .modal-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-secondary);
+  gap: 16px;
 }
 .modal-title {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.modal-subtitle {
+  font-size: 15px;
+  color: var(--text-tertiary);
+  line-height: 1.5;
+  margin: 8px 0 0;
+}
+.modal-divider {
+  height: 1px;
+  background: var(--border-secondary);
+  margin: 24px -36px 28px;
 }
 .modal-close {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.15s ease;
-  color: var(--text-quaternary);
-  border: 1px solid transparent;
+  color: var(--text-tertiary, #737373);
+  background: var(--bg-tertiary);
+  border: none;
 }
 .modal-close:hover {
-  background: var(--bg-tertiary);
+  background: var(--border-secondary);
   color: var(--text-primary);
-  border-color: var(--border-primary);
 }
 .modal-section-divider {
   height: 1px;
   background: var(--border-secondary);
   margin: 16px 0;
+}
+
+/* Match reference: taller, rounded inputs & buttons inside dialogs */
+.modal [data-slot="input"],
+.modal [data-slot="textarea"],
+[data-slot="alert-dialog-content"] [data-slot="input"],
+[data-slot="alert-dialog-content"] [data-slot="textarea"] {
+  height: auto;
+  min-height: 52px;
+  padding: 14px 16px;
+  font-size: 15px;
+  border-radius: 14px;
+}
+.modal [data-slot="button"],
+[data-slot="alert-dialog-content"] [data-slot="button"] {
+  border-radius: 14px;
+}
+.modal [data-slot="button"]:not([data-size="sm"]):not([data-size="icon"]),
+[data-slot="alert-dialog-content"] [data-slot="button"] {
+  height: 48px;
+  font-size: 15px;
+  font-weight: 600;
+}
+/* Reference labels: bold, near-black */
+.modal [data-slot="label"],
+[data-slot="alert-dialog-content"] [data-slot="label"] {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 /* Dropdowns */

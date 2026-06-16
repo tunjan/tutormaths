@@ -59,27 +59,26 @@ export function Modal({
         )}
       >
         <div className="modal-header">
-          <h2 className="modal-title font-heading tracking-tight">
-            {title}
-          </h2>
+          <div className="min-w-0">
+            <h2 className="modal-title font-heading">{title}</h2>
+            {description && <p className="modal-subtitle">{description}</p>}
+          </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
             className="modal-close"
           >
-            <X className="size-3.5" />
+            <X className="size-4" />
           </button>
         </div>
 
-        {description && (
-          <p className="text-[13px] text-[#737373] dark:text-[#a3a3a3] -mt-3 mb-5 leading-relaxed">{description}</p>
-        )}
+        <div className="modal-divider" />
 
         <div>{children}</div>
 
         {footer && (
-          <div className="mt-5 flex items-center justify-end gap-3 border-t border-[#f0f0f0] dark:border-[#262626] pt-4">
+          <div className="mt-7 flex items-center justify-end gap-3">
             {footer}
           </div>
         )}

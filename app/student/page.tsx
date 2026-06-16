@@ -1,5 +1,5 @@
 import { Link } from "next-view-transitions";
-import { ArrowRight, CalendarClock } from "lucide-react";
+import { ArrowUpRight, CalendarClock } from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { unreadAssignmentIds } from "@/lib/queries";
@@ -7,9 +7,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { RequestHomeworkButton } from "@/components/request-homework-button";
 import { AssignmentRow } from "@/components/assignment-row";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
-import { buttonVariants } from "@/components/ui/button";
 import { formatDateTime, relativeTime, typeLabel } from "@/lib/format";
-import { cn } from "@/lib/utils";
 
 export default async function StudentDashboard() {
   await requireStudent();
@@ -125,6 +123,37 @@ export default async function StudentDashboard() {
   );
 }
 
+/**
+ * Calm, monochrome backdrop patterns for the "Up next" card's side panel.
+ * One is picked at random per render so the hero feels alive without adding
+ * colour or noise — every variant stays within the paper/gray palette.
+ */
+const CARD_PATTERNS: React.CSSProperties[] = [
+  {
+    backgroundImage:
+      "linear-gradient(135deg, var(--surface-muted) 25%, transparent 25%), linear-gradient(225deg, var(--surface-muted) 25%, transparent 25%), linear-gradient(45deg, var(--surface-muted) 25%, transparent 25%), linear-gradient(315deg, var(--surface-muted) 25%, var(--surface-paper) 25%)",
+    backgroundSize: "18px 18px",
+    backgroundPosition: "9px 0, 9px 0, 0 0, 0 0",
+  },
+  {
+    backgroundImage: "radial-gradient(var(--border-strong) 1.4px, transparent 1.5px)",
+    backgroundSize: "16px 16px",
+  },
+  {
+    backgroundImage:
+      "repeating-linear-gradient(45deg, var(--surface-muted) 0, var(--surface-muted) 1.5px, transparent 1.5px, transparent 11px)",
+  },
+  {
+    backgroundImage:
+      "linear-gradient(var(--surface-muted) 1px, transparent 1px), linear-gradient(90deg, var(--surface-muted) 1px, transparent 1px)",
+    backgroundSize: "16px 16px",
+  },
+  {
+    backgroundImage:
+      "repeating-linear-gradient(0deg, var(--border-soft) 0 1px, transparent 1px 13px), repeating-linear-gradient(90deg, var(--border-soft) 0 1px, transparent 1px 13px)",
+  },
+];
+
 function UpNextCard({
   assignment,
   unread,
@@ -139,8 +168,16 @@ function UpNextCard({
   };
   unread: boolean;
 }) {
+  // Pick a backdrop from the id so each task keeps its own pattern across
+  // renders (stable, no hydration drift) while the set still feels varied.
+  const patternSeed = Array.from(assignment.id).reduce(
+    (acc, ch) => acc + ch.charCodeAt(0),
+    0,
+  );
+  const pattern = CARD_PATTERNS[patternSeed % CARD_PATTERNS.length];
+
   return (
-    <section className="overflow-hidden rounded-[12px] border border-border-strong bg-surface-paper shadow-[var(--shadow-sm)]">
+    <section className="relative overflow-hidden rounded-[16px] border border-border-strong bg-surface-paper shadow-[var(--shadow-sm)]">
       <div className="grid gap-0 lg:grid-cols-[1fr_auto]">
         <div className="p-6 md:p-7">
           <div className="flex flex-wrap items-center gap-3">
@@ -167,31 +204,33 @@ function UpNextCard({
             {formatDateTime(assignment.due_at)}
           </p>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0 flex-1">
-              <div className="mb-2 flex items-center justify-between text-xs font-medium uppercase tracking-wider text-text-subtle">
-                <span>Progress</span>
-                <span className="font-mono">{assignment.completion_pct}%</span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-border-soft">
-                <span
-                  className="block h-full rounded-full bg-primary transition-all duration-500"
-                  style={{ width: `${assignment.completion_pct}%` }}
-                />
-              </div>
+          <div className="mt-6 w-full max-w-[220px]">
+            <div className="mb-2 flex items-center justify-between text-xs font-medium uppercase tracking-wider text-text-subtle">
+              <span>Progress</span>
+              <span className="font-mono">{assignment.completion_pct}%</span>
             </div>
-            <Link
-              href={`/student/assignments/${assignment.id}`}
-              className={cn(buttonVariants({ variant: "default", size: "md" }), "shrink-0")}
-            >
-              Open task
-              <ArrowRight />
-            </Link>
+            <div className="h-2 overflow-hidden rounded-full bg-border-soft">
+              <span
+                className="block h-full rounded-full bg-primary transition-all duration-500"
+                style={{ width: `${assignment.completion_pct}%` }}
+              />
+            </div>
           </div>
         </div>
 
-        <div className="hidden w-48 border-l border-border-soft bg-[linear-gradient(135deg,var(--surface-muted)_25%,transparent_25%),linear-gradient(225deg,var(--surface-muted)_25%,transparent_25%),linear-gradient(45deg,var(--surface-muted)_25%,transparent_25%),linear-gradient(315deg,var(--surface-muted)_25%,var(--surface-paper)_25%)] bg-[length:18px_18px] bg-[position:9px_0,9px_0,0_0,0_0] lg:block" />
+        <div
+          className="hidden w-48 border-l border-border-soft bg-surface-paper lg:block"
+          style={pattern}
+        />
       </div>
+
+      <Link
+        href={`/student/assignments/${assignment.id}`}
+        aria-label={`Open task: ${assignment.title}`}
+        className="group absolute bottom-5 right-5 z-10 inline-flex size-12 items-center justify-center rounded-full border border-border-strong bg-primary text-primary-foreground shadow-[var(--shadow-md)] transition-all duration-200 hover:scale-105 hover:shadow-[var(--shadow-lg)] focus-visible:scale-105"
+      >
+        <ArrowUpRight className="size-5 transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+      </Link>
     </section>
   );
 }

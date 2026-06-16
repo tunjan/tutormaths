@@ -95,7 +95,7 @@ export function CompletionControl({
           className="text-[13px] text-muted-foreground"
           role="status"
         >
-          <span className="block rounded-[8px] border border-border bg-background p-3">
+          <span className="block rounded-panel border border-border bg-background p-3">
             You&rsquo;ve marked this done. Upload your work below to hand it in for review.
           </span>
         </div>
