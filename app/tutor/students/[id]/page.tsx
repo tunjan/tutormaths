@@ -53,7 +53,7 @@ export default async function StudentDetailPage({
             <h1 className="text-3xl font-semibold tracking-tight text-foreground">
               {student.full_name || student.email}
             </h1>
-            <p className="mt-1 text-sm text-[#525252] dark:text-[#a3a3a3]">
+            <p className="mt-1 text-sm text-[#5b564d] dark:text-[#b3ac9f]">
               {student.email} · joined {formatDate(student.created_at)}
             </p>
           </div>
@@ -105,7 +105,7 @@ type AssignmentItem = {
 
 function AssignmentList({ items }: { items: AssignmentItem[] }) {
   return (
-    <div className="flex flex-col stagger-children border border-[#e5e5e5] dark:border-[#262626] rounded-[12px] divide-y divide-[#e5e5e5] dark:divide-[#262626] bg-card overflow-hidden shadow-[var(--shadow-sm)]">
+    <div className="flex flex-col stagger-children border border-[#e4dfd4] dark:border-[#322f29] rounded-[12px] divide-y divide-[#e4dfd4] dark:divide-[#322f29] bg-card overflow-hidden shadow-[var(--shadow-sm)]">
       {items.map((a) => (
         <AssignmentRow
           key={a.id}
@@ -124,8 +124,8 @@ function AssignmentList({ items }: { items: AssignmentItem[] }) {
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
     <div className="card card-interactive flex flex-col gap-1 p-6 select-none shadow-[var(--shadow-sm)]">
-      <span className="text-xs font-semibold text-[#737373] dark:text-[#a3a3a3] uppercase tracking-wider">{label}</span>
-      <span className="font-metric text-3xl font-bold text-[#0a0a0a] dark:text-[#fafafa] leading-none mt-1">
+      <span className="text-xs font-semibold text-[#8a8478] dark:text-[#b3ac9f] uppercase tracking-wider">{label}</span>
+      <span className="font-metric text-3xl font-bold text-[#1a1a1a] dark:text-[#f4f1ea] leading-none mt-1">
         {value}
       </span>
     </div>
@@ -149,7 +149,7 @@ function Section({
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="card border border-border p-6 text-center text-sm text-[#737373] dark:text-[#a3a3a3] shadow-[var(--shadow-sm)] bg-card rounded-[12px]">
+    <p className="card border border-border p-6 text-center text-sm text-[#8a8478] dark:text-[#b3ac9f] shadow-[var(--shadow-sm)] bg-card rounded-[12px]">
       {children}
     </p>
   );

@@ -361,7 +361,7 @@ export function NewAssignmentForm({
 
       <div className="flex flex-col gap-1.5">
         <Label>Assignment content</Label>
-        <div className="inline-flex rounded-[10px] border border-[#e5e5e5] dark:border-[#262626] bg-[#fafafa] dark:bg-[#171717] p-1 self-start">
+        <div className="inline-flex rounded-[10px] border border-[#e4dfd4] dark:border-[#322f29] bg-[#f4f1ea] dark:bg-[#1d1b16] p-1 self-start">
           <button
             type="button"
             onClick={() => setSource("file")}
@@ -370,7 +370,7 @@ export function NewAssignmentForm({
               "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors",
               source === "file"
                 ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
-                : "text-[#737373] dark:text-[#a3a3a3] hover:text-foreground",
+                : "text-[#8a8478] dark:text-[#b3ac9f] hover:text-foreground",
             )}
           >
             Upload files
@@ -383,7 +383,7 @@ export function NewAssignmentForm({
               "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors",
               source === "latex"
                 ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
-                : "text-[#737373] dark:text-[#a3a3a3] hover:text-foreground",
+                : "text-[#8a8478] dark:text-[#b3ac9f] hover:text-foreground",
             )}
           >
             Write LaTeX
@@ -420,7 +420,7 @@ export function NewAssignmentForm({
                 setErrors((er) => ({ ...er, latex: undefined }));
               }}
             />
-            <p className="text-xs text-[#737373] dark:text-[#a3a3a3]">
+            <p className="text-xs text-[#8a8478] dark:text-[#b3ac9f]">
               Markdown with inline <code>$…$</code> and display{" "}
               <code>$$…$$</code> maths.
             </p>
@@ -433,12 +433,12 @@ export function NewAssignmentForm({
         {/* RIGHT COLUMN — live preview */}
         <div className="flex flex-col gap-1.5">
           <Label>Preview</Label>
-          <div className="flex-1 min-h-[18rem] rounded-[12px] border border-[#e5e5e5] dark:border-[#262626] bg-[#fafafa] dark:bg-[#0a0a0a] p-5 overflow-auto">
+          <div className="flex-1 min-h-[18rem] rounded-[12px] border border-[#e4dfd4] dark:border-[#322f29] bg-[#f4f1ea] dark:bg-[#1a1a1a] p-5 overflow-auto">
             {source === "latex" ? (
               latexBody.trim() ? (
                 <LatexContent source={latexBody} />
               ) : (
-                <p className="text-sm text-[#737373] dark:text-[#a3a3a3]">
+                <p className="text-sm text-[#8a8478] dark:text-[#b3ac9f]">
                   Start typing LaTeX on the left to see it rendered here.
                 </p>
               )
@@ -460,13 +460,13 @@ export function NewAssignmentForm({
                       key={`${f.name}-${i}`}
                       className="flex items-center gap-3 text-sm text-foreground"
                     >
-                      <FileText className="size-5 shrink-0 text-[#737373] dark:text-[#a3a3a3]" />
+                      <FileText className="size-5 shrink-0 text-[#8a8478] dark:text-[#b3ac9f]" />
                       <span className="truncate">{f.name}</span>
                     </div>
                   ))}
               </div>
             ) : (
-              <p className="text-sm text-[#737373] dark:text-[#a3a3a3]">
+              <p className="text-sm text-[#8a8478] dark:text-[#b3ac9f]">
                 Choose files on the left to preview them here.
               </p>
             )}
@@ -474,9 +474,9 @@ export function NewAssignmentForm({
         </div>
       </div>
 
-      <div className="flex flex-col-reverse gap-3 border-t border-[#f0f0f0] dark:border-[#262626] pt-5 sm:flex-row sm:items-center sm:justify-end">
+      <div className="flex flex-col-reverse gap-3 border-t border-[#efebe1] dark:border-[#322f29] pt-5 sm:flex-row sm:items-center sm:justify-end">
         {globalError && (
-          <div className="sm:mr-auto rounded-[8px] border border-destructive/30 bg-[#fef2f2] dark:bg-[#ef4444]/10 dark:text-[#fca5a5] px-3 py-2 text-sm text-destructive" role="alert">
+          <div className="sm:mr-auto rounded-[8px] border border-destructive/30 bg-[#f6ece9] dark:bg-[#b3463a]/10 dark:text-[#cf8a7e] px-3 py-2 text-sm text-destructive" role="alert">
             {globalError}
           </div>
         )}

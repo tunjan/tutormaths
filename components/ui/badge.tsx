@@ -9,23 +9,23 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-[#000000] text-[#ffffff] dark:bg-[#ffffff] dark:text-[#000000] [a]:hover:bg-primary/80",
+        default: "bg-[#1a1a1a] text-[#faf8f3] dark:bg-[#faf8f3] dark:text-[#1a1a1a] [a]:hover:bg-primary/80",
         secondary:
-          "bg-[#fafafa] text-[#0a0a0a] border border-[#e5e5e5] dark:bg-[#0a0a0a] dark:text-[#fafafa] dark:border-[#262626] [a]:hover:bg-secondary/80",
+          "bg-[#f4f1ea] text-[#1a1a1a] border border-[#e4dfd4] dark:bg-[#1a1a1a] dark:text-[#f4f1ea] dark:border-[#322f29] [a]:hover:bg-secondary/80",
         destructive:
-          "bg-[#fef2f2] text-[#991b1b] dark:bg-[#991b1b]/10 dark:text-[#fca5a5] [a]:hover:bg-destructive/20",
+          "bg-[#f6ece9] text-[#8a2e22] dark:bg-[#8a2e22]/10 dark:text-[#cf8a7e] [a]:hover:bg-destructive/20",
         outline:
-          "border border-[#e5e5e5] bg-transparent text-[#525252] dark:border-[#262626] dark:text-[#a3a3a3] [a]:hover:bg-muted",
+          "border border-[#e4dfd4] bg-transparent text-[#5b564d] dark:border-[#322f29] dark:text-[#b3ac9f] [a]:hover:bg-muted",
         ghost:
-          "hover:bg-[#f5f5f5] text-[#737373] hover:text-[#0a0a0a] dark:hover:bg-[#171717] dark:hover:text-[#fafafa]",
-        link: "text-[#3b82f6] underline-offset-4 hover:underline",
+          "hover:bg-[#efebe1] text-[#8a8478] hover:text-[#1a1a1a] dark:hover:bg-[#1d1b16] dark:hover:text-[#f4f1ea]",
+        link: "text-[#3a5a8c] underline-offset-4 hover:underline",
         accent:
-          "bg-[#f3f0ff] text-[#7c3aed] dark:bg-[#7c3aed]/10 dark:text-[#a78bfa]",
+          "bg-[#ebeef4] text-[#3a5a8c] dark:bg-[#3a5a8c]/10 dark:text-[#6e89b5]",
         "accent-alt":
-          "bg-[#eff6ff] text-[#1e40af] dark:bg-[#1e40af]/10 dark:text-[#93c5fd]",
-        success: "bg-[#f0fdf4] text-[#166534] dark:bg-[#166534]/15 dark:text-[#86efac]",
-        warning: "bg-[#fffbeb] text-[#92400e] dark:bg-[#92400e]/15 dark:text-[#fcd34d]",
-        info: "bg-[#eff6ff] text-[#1e40af] dark:bg-[#1e40af]/15 dark:text-[#93c5fd]",
+          "bg-[#ebeef4] text-[#2e4a75] dark:bg-[#2e4a75]/10 dark:text-[#6e89b5]",
+        success: "bg-[#eef3ee] text-[#3a6347] dark:bg-[#3a6347]/15 dark:text-[#9bbca5]",
+        warning: "bg-[#f6efe2] text-[#8f6326] dark:bg-[#8f6326]/15 dark:text-[#d8b783]",
+        info: "bg-[#ebeef4] text-[#2e4a75] dark:bg-[#2e4a75]/15 dark:text-[#6e89b5]",
       },
     },
     defaultVariants: {

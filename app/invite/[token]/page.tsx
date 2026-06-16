@@ -58,7 +58,7 @@ export default async function InvitePage({
         ) : (
           <>
             <CardHeader className="gap-2 text-center">
-              <CardTitle className="text-xl font-semibold text-[#ef4444]">
+              <CardTitle className="text-xl font-semibold text-[#b3463a]">
                 This link is no longer valid
               </CardTitle>
               <CardDescription>

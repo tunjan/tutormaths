@@ -243,10 +243,10 @@ export function AssignmentActions({
 
       <dialog
         ref={dialogRef}
-        className="fixed left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-[440px] -translate-x-1/2 -translate-y-1/2 rounded-[20px] border border-[#f0f0f0] dark:border-[#262626] bg-card p-7 text-foreground shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.04),0_12px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_2px_4px_rgba(0,0,0,0.2),0_12px_40px_rgba(0,0,0,0.4)] backdrop:bg-black/35 backdrop:backdrop-blur-[6px] max-h-[85vh] overflow-y-auto outline-none"
+        className="fixed left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-[440px] -translate-x-1/2 -translate-y-1/2 rounded-[20px] border border-[#efebe1] dark:border-[#322f29] bg-card p-7 text-foreground shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.04),0_12px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_2px_4px_rgba(0,0,0,0.2),0_12px_40px_rgba(0,0,0,0.4)] backdrop:bg-black/35 backdrop:backdrop-blur-[6px] max-h-[85vh] overflow-y-auto outline-none"
       >
         {globalError && (
-          <div className="mb-4 rounded-[8px] border border-destructive/30 bg-[#fef2f2] dark:bg-[#ef4444]/10 dark:text-[#fca5a5] px-3 py-2 text-sm text-destructive" role="alert">
+          <div className="mb-4 rounded-[8px] border border-destructive/30 bg-[#f6ece9] dark:bg-[#b3463a]/10 dark:text-[#cf8a7e] px-3 py-2 text-sm text-destructive" role="alert">
             {globalError}
           </div>
         )}
@@ -329,7 +329,7 @@ export function AssignmentActions({
           </div>
           <div className="flex flex-col gap-2">
             <Label>Content</Label>
-            <div className="inline-flex rounded-[10px] border border-[#e5e5e5] dark:border-[#262626] bg-[#fafafa] dark:bg-[#171717] p-1 self-start">
+            <div className="inline-flex rounded-[10px] border border-[#e4dfd4] dark:border-[#322f29] bg-[#f4f1ea] dark:bg-[#1d1b16] p-1 self-start">
               <button
                 type="button"
                 onClick={() => setSource("file")}
@@ -338,7 +338,7 @@ export function AssignmentActions({
                   "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors",
                   source === "file"
                     ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
-                    : "text-[#737373] dark:text-[#a3a3a3] hover:text-foreground",
+                    : "text-[#8a8478] dark:text-[#b3ac9f] hover:text-foreground",
                 )}
               >
                 Files
@@ -351,7 +351,7 @@ export function AssignmentActions({
                   "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors",
                   source === "latex"
                     ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
-                    : "text-[#737373] dark:text-[#a3a3a3] hover:text-foreground",
+                    : "text-[#8a8478] dark:text-[#b3ac9f] hover:text-foreground",
                 )}
               >
                 LaTeX

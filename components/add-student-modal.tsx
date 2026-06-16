@@ -73,7 +73,7 @@ export function AddStudentModal({
           <p className="text-sm font-semibold text-foreground">
             Share this link with {created.fullName}
           </p>
-          <p className="text-sm text-[#525252] dark:text-[#a3a3a3]">
+          <p className="text-sm text-[#5b564d] dark:text-[#b3ac9f]">
             When they open it, they&rsquo;ll choose their email and a password.
             You can copy it again later from the students list.
           </p>
@@ -114,7 +114,7 @@ export function AddStudentModal({
 
           {error && (
             <p
-              className="rounded-[8px] border border-destructive/30 bg-[#fef2f2] dark:bg-[#ef4444]/10 dark:text-[#fca5a5] px-3 py-2 text-sm text-destructive"
+              className="rounded-[8px] border border-destructive/30 bg-[#f6ece9] dark:bg-[#b3463a]/10 dark:text-[#cf8a7e] px-3 py-2 text-sm text-destructive"
               role="alert"
             >
               {error}

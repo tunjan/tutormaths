@@ -59,11 +59,11 @@ export default async function StudentsPage() {
 
       {!hasAnyone ? (
         <div className="card flex flex-col items-center gap-3 px-6 py-16 text-center shadow-[var(--shadow-sm)]">
-          <span className="grid size-14 place-items-center rounded-full bg-[#f3f0ff] dark:bg-[#7c3aed]/10 text-[#7c3aed] dark:text-[#a78bfa]">
+          <span className="grid size-14 place-items-center rounded-full bg-[#ebeef4] dark:bg-[#3a5a8c]/10 text-[#3a5a8c] dark:text-[#6e89b5]">
             <ChevronRight className="size-6" />
           </span>
           <h3 className="text-xl font-semibold text-foreground">No students yet</h3>
-          <p className="max-w-sm text-sm text-[#525252] dark:text-[#a3a3a3]">
+          <p className="max-w-sm text-sm text-[#5b564d] dark:text-[#b3ac9f]">
             Add your first student to start assigning homework and tracking
             progress.
           </p>
@@ -82,7 +82,7 @@ export default async function StudentsPage() {
                   className="group flex items-start gap-3"
                 >
                   <span
-                    className="grid size-11 shrink-0 place-items-center rounded-full text-sm font-semibold text-foreground bg-[#fafafa] dark:bg-[#171717] border border-[#e5e5e5] dark:border-[#262626] ring-2 ring-card"
+                    className="grid size-11 shrink-0 place-items-center rounded-full text-sm font-semibold text-foreground bg-[#f4f1ea] dark:bg-[#1d1b16] border border-[#e4dfd4] dark:border-[#322f29] ring-2 ring-card"
                   >
                     {initials(name)}
                   </span>
@@ -90,14 +90,14 @@ export default async function StudentsPage() {
                     <p className="truncate font-semibold text-foreground group-hover:underline">
                       {s.full_name || "—"}
                     </p>
-                    <p className="truncate text-xs text-[#737373] dark:text-[#a3a3a3]">
+                    <p className="truncate text-xs text-[#8a8478] dark:text-[#b3ac9f]">
                       {s.email}
                     </p>
                   </div>
                   <Badge variant="success">Active</Badge>
                 </Link>
 
-                <p className="mt-4 text-xs text-[#737373] dark:text-[#a3a3a3] font-mono">
+                <p className="mt-4 text-xs text-[#8a8478] dark:text-[#b3ac9f] font-mono">
                   Joined {formatDate(s.created_at)}
                 </p>
 
@@ -123,21 +123,21 @@ export default async function StudentsPage() {
                 className="card flex flex-col p-6 shadow-[var(--shadow-sm)]"
               >
                 <div className="flex items-start gap-3">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[#fafafa] dark:bg-[#171717] border border-[#e5e5e5] dark:border-[#262626] text-sm font-semibold text-muted-foreground ring-2 ring-card">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[#f4f1ea] dark:bg-[#1d1b16] border border-[#e4dfd4] dark:border-[#322f29] text-sm font-semibold text-muted-foreground ring-2 ring-card">
                     {initials(name)}
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-foreground">
                       {inv.full_name || "—"}
                     </p>
-                    <p className="flex items-center gap-1 text-xs text-[#737373] dark:text-[#a3a3a3] mt-0.5">
+                    <p className="flex items-center gap-1 text-xs text-[#8a8478] dark:text-[#b3ac9f] mt-0.5">
                       <Clock className="size-3.5 text-warning-orange" /> Awaiting sign-up
                     </p>
                   </div>
                   <Badge variant="outline">Invited</Badge>
                 </div>
 
-                <p className="mt-4 text-xs text-[#737373] dark:text-[#a3a3a3] font-mono">
+                <p className="mt-4 text-xs text-[#8a8478] dark:text-[#b3ac9f] font-mono">
                   Invited {formatDate(inv.created_at)}
                 </p>
 
@@ -157,7 +157,7 @@ export default async function StudentsPage() {
 
 function AddStudentTile() {
   return (
-    <div className="flex min-h-[13rem] items-center justify-center rounded-[12px] border border-dashed border-[#d4d4d4] dark:border-[#262626] hover:border-black dark:hover:border-white transition-colors duration-200">
+    <div className="flex min-h-[13rem] items-center justify-center rounded-[12px] border border-dashed border-[#cfc9bc] dark:border-[#322f29] hover:border-black dark:hover:border-white transition-colors duration-200">
       <AddStudentButton variant="ghost" />
     </div>
   );

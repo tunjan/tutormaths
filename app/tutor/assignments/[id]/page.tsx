@@ -92,13 +92,13 @@ export default async function TutorAssignmentPage({
   const comments = await loadComments(id);
 
   return (
-    <div className="w-full bg-background text-foreground flex flex-col selection:bg-primary selection:text-primary-foreground mb-12 border border-[#e5e5e5] dark:border-[#262626] rounded-[12px] overflow-hidden shadow-[var(--shadow-sm)] animate-rise">
+    <div className="w-full bg-background text-foreground flex flex-col selection:bg-primary selection:text-primary-foreground mb-12 border border-[#e4dfd4] dark:border-[#322f29] rounded-[12px] overflow-hidden shadow-[var(--shadow-sm)] animate-rise">
       <MarkAssignmentRead assignmentId={id} />
 
-      <main className="w-full flex flex-col divide-y divide-[#e5e5e5] dark:divide-[#262626]">
+      <main className="w-full flex flex-col divide-y divide-[#e4dfd4] dark:divide-[#322f29]">
         {/* HERO SECTION */}
-        <header className="flex flex-col gap-6 pt-6 pb-8 bg-[#fafafa] dark:bg-[#0a0a0a] px-6 md:px-8">
-          <BackLink href="/tutor" className="text-xs tracking-wider text-[#737373] dark:text-[#a3a3a3] hover:text-[#0a0a0a] dark:hover:text-[#fafafa] mt-2 font-mono uppercase">
+        <header className="flex flex-col gap-6 pt-6 pb-8 bg-[#f4f1ea] dark:bg-[#1a1a1a] px-6 md:px-8">
+          <BackLink href="/tutor" className="text-xs tracking-wider text-[#8a8478] dark:text-[#b3ac9f] hover:text-[#1a1a1a] dark:hover:text-[#f4f1ea] mt-2 font-mono uppercase">
             Back to dashboard
           </BackLink>
 
@@ -107,7 +107,7 @@ export default async function TutorAssignmentPage({
               {a.title}
             </h1>
 
-            <div className="flex flex-wrap items-center gap-3 text-sm text-[#525252] dark:text-[#a3a3a3]">
+            <div className="flex flex-wrap items-center gap-3 text-sm text-[#5b564d] dark:text-[#b3ac9f]">
               <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
               <span className="flex items-center gap-1.5 font-semibold text-foreground">
                 <span>{student?.full_name || student?.email}</span>
@@ -124,9 +124,9 @@ export default async function TutorAssignmentPage({
               <span>Due {formatDateTime(a.due_at)}</span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-6 text-xs text-[#737373] dark:text-[#a3a3a3] mt-2 font-mono">
+            <div className="flex flex-wrap items-center gap-6 text-xs text-[#8a8478] dark:text-[#b3ac9f] mt-2 font-mono">
               {a.student_opened_at ? (
-                <span className="flex items-center gap-1.5 text-success-green dark:text-[#86efac]">
+                <span className="flex items-center gap-1.5 text-success-green dark:text-[#9bbca5]">
                   <Eye className="size-4 shrink-0" />
                   Opened by student · {formatDateTime(a.student_opened_at)}
                 </span>
@@ -164,10 +164,10 @@ export default async function TutorAssignmentPage({
         </header>
 
         {/* CONTENT SPLIT */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] divide-y lg:divide-y-0 lg:divide-x divide-[#e5e5e5] dark:divide-[#262626]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] divide-y lg:divide-y-0 lg:divide-x divide-[#e4dfd4] dark:divide-[#322f29]">
 
           {/* LEFT COLUMN: ASSIGNMENT DETAILS & FILE PREVIEW */}
-          <div className="flex flex-col divide-y divide-[#e5e5e5] dark:divide-[#262626] p-6 md:p-8">
+          <div className="flex flex-col divide-y divide-[#e4dfd4] dark:divide-[#322f29] p-6 md:p-8">
             {a.description && (
               <section className="flex flex-col gap-4 pb-6">
                 <p className="text-base leading-relaxed text-foreground">
@@ -185,14 +185,14 @@ export default async function TutorAssignmentPage({
                     : "Assignment Files"}
               </h2>
               {a.latex_body ? (
-                <div className="rounded-[12px] border border-[#e5e5e5] dark:border-[#262626] bg-[#fafafa] dark:bg-[#0a0a0a] p-6">
+                <div className="rounded-[12px] border border-[#e4dfd4] dark:border-[#322f29] bg-[#f4f1ea] dark:bg-[#1a1a1a] p-6">
                   <LatexContent source={a.latex_body} />
                 </div>
               ) : attachments.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {attachments.map((f) => (
                     <div key={f.id} className="flex flex-col gap-2">
-                      <div className="rounded-[12px] overflow-hidden border border-[#e5e5e5] dark:border-[#262626]">
+                      <div className="rounded-[12px] overflow-hidden border border-[#e4dfd4] dark:border-[#322f29]">
                         {f.url ? (
                           <FilePreview
                             url={f.url}
@@ -200,7 +200,7 @@ export default async function TutorAssignmentPage({
                             title={f.name}
                           />
                         ) : (
-                          <div className="p-8 text-center text-[#737373] dark:text-[#a3a3a3] text-sm">
+                          <div className="p-8 text-center text-[#8a8478] dark:text-[#b3ac9f] text-sm">
                             Couldn&rsquo;t load this file.
                           </div>
                         )}
@@ -224,7 +224,7 @@ export default async function TutorAssignmentPage({
                   ))}
                 </div>
               ) : (
-                <div className="card text-center p-8 bg-card border border-border rounded-[12px] text-[#737373] dark:text-[#a3a3a3]">
+                <div className="card text-center p-8 bg-card border border-border rounded-[12px] text-[#8a8478] dark:text-[#b3ac9f]">
                   No files attached.
                 </div>
               )}
@@ -232,14 +232,14 @@ export default async function TutorAssignmentPage({
           </div>
 
           {/* RIGHT COLUMN: WORK, REVIEW & COMMENTS */}
-          <aside className="flex flex-col divide-y divide-[#e5e5e5] dark:divide-[#262626] bg-[#fafafa]/50 dark:bg-[#0a0a0a]/50 p-6 md:p-8">
+          <aside className="flex flex-col divide-y divide-[#e4dfd4] dark:divide-[#322f29] bg-[#f4f1ea]/50 dark:bg-[#1a1a1a]/50 p-6 md:p-8">
             {/* SUBMITTED WORK */}
             <section className="flex flex-col gap-4 pb-6">
               <h3 className="text-xs font-semibold text-foreground uppercase tracking-wider">
                 Submitted work
               </h3>
               {submissions.length === 0 ? (
-                <div className="card text-center p-8 bg-card border border-border rounded-[12px] text-[#737373] dark:text-[#a3a3a3] shadow-none">
+                <div className="card text-center p-8 bg-card border border-border rounded-[12px] text-[#8a8478] dark:text-[#b3ac9f] shadow-none">
                   No work submitted yet.
                 </div>
               ) : (
@@ -259,7 +259,7 @@ export default async function TutorAssignmentPage({
             <section className="flex flex-col gap-4 pt-6">
               <h3 className="text-xs font-semibold text-foreground flex items-center justify-between uppercase tracking-wider">
                 <span>Comments</span>
-                <span className="text-[#737373] dark:text-[#a3a3a3] bg-card border border-[#e5e5e5] dark:border-[#262626] px-2 py-0.5 rounded-full text-[11px] font-mono">{comments.length}</span>
+                <span className="text-[#8a8478] dark:text-[#b3ac9f] bg-card border border-[#e4dfd4] dark:border-[#322f29] px-2 py-0.5 rounded-full text-[11px] font-mono">{comments.length}</span>
               </h3>
 
               <div className="flex flex-col gap-6 mt-2">

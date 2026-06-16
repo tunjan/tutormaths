@@ -15,11 +15,11 @@ export function LibraryView({
   if (!hasAny) {
     return (
       <div className="card flex flex-col items-center justify-center gap-4 py-16 text-center bg-card border border-border shadow-[var(--shadow-sm)] rounded-[12px]">
-        <FolderOpen className="size-8 text-[#737373] dark:text-[#a3a3a3]" strokeWidth={1.5} />
+        <FolderOpen className="size-8 text-[#8a8478] dark:text-[#b3ac9f]" strokeWidth={1.5} />
         <h3 className="text-lg font-semibold text-foreground">
           The Library is empty
         </h3>
-        <p className="max-w-md text-sm text-[#525252] dark:text-[#a3a3a3] leading-relaxed">
+        <p className="max-w-md text-sm text-[#5b564d] dark:text-[#b3ac9f] leading-relaxed">
           {canManage
             ? "Create a topic and upload your first document to share it with your students."
             : "Your tutor hasn’t shared any resources yet. Check back soon."}
@@ -32,12 +32,12 @@ export function LibraryView({
     <div className="flex flex-col gap-10">
       {categories.map((category) => (
         <section key={category.id} className="flex flex-col gap-4">
-          <div className="flex items-baseline justify-between gap-4 border-b border-[#e5e5e5] dark:border-[#262626] pb-3">
+          <div className="flex items-baseline justify-between gap-4 border-b border-[#e4dfd4] dark:border-[#322f29] pb-3">
             <div className="flex items-baseline gap-3">
               <h2 className="text-h4 font-semibold tracking-tight text-foreground">
                 {category.name}
               </h2>
-              <span className="font-mono text-xs uppercase tracking-wider text-[#737373] dark:text-[#a3a3a3]">
+              <span className="font-mono text-xs uppercase tracking-wider text-[#8a8478] dark:text-[#b3ac9f]">
                 {category.documents.length} doc
                 {category.documents.length === 1 ? "" : "s"}
               </span>
@@ -52,7 +52,7 @@ export function LibraryView({
           </div>
 
           {category.documents.length === 0 ? (
-            <p className="px-1 text-sm text-[#737373] dark:text-[#a3a3a3]">
+            <p className="px-1 text-sm text-[#8a8478] dark:text-[#b3ac9f]">
               No documents in this topic yet.
             </p>
           ) : (
@@ -62,7 +62,7 @@ export function LibraryView({
                   key={doc.id}
                   className="card card-interactive group flex items-start gap-3 p-4 shadow-[var(--shadow-sm)]"
                 >
-                  <span className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-[#fafafa] dark:bg-[#171717] border border-[#e5e5e5] dark:border-[#262626] text-muted-foreground">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-[#f4f1ea] dark:bg-[#1d1b16] border border-[#e4dfd4] dark:border-[#322f29] text-muted-foreground">
                     <FileText className="size-5" strokeWidth={1.5} />
                   </span>
 
@@ -78,11 +78,11 @@ export function LibraryView({
                         <Download className="size-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-75" />
                       </a>
                     ) : (
-                      <span className="text-sm font-semibold text-[#737373] dark:text-[#a3a3a3]">
+                      <span className="text-sm font-semibold text-[#8a8478] dark:text-[#b3ac9f]">
                         {doc.title}
                       </span>
                     )}
-                    <p className="mt-0.5 truncate text-xs text-[#737373] dark:text-[#a3a3a3] font-mono">
+                    <p className="mt-0.5 truncate text-xs text-[#8a8478] dark:text-[#b3ac9f] font-mono">
                       {[
                         formatDate(doc.createdAt),
                         humanFileSize(doc.sizeBytes),

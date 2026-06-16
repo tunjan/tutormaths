@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import { Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ViewTransitions } from "next-view-transitions";
 
-/* Body & Headings: a clean modern grotesque. */
-const inter = Inter({
+/* Body & Headings: a refined grotesque. */
+const hankenGrotesk = Hanken_Grotesk({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-hanken",
   display: "swap",
 });
 
-/* Mono: numerals, progress %, dates, file sizes. */
-const geistMono = Geist_Mono({
+/* Mono: numerals, XP, levels, difficulty indices, dates, file sizes — lab instrumentation. */
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-geist-mono",
+  variable: "--font-jetbrains-mono",
   display: "swap",
 });
 
@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${geistMono.variable} font-sans`}
+      className={`${hankenGrotesk.variable} ${jetbrainsMono.variable} font-sans`}
       suppressHydrationWarning
     >
       <body className="bg-background text-foreground antialiased">

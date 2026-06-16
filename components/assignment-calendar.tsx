@@ -282,7 +282,7 @@ function CalendarChip({
       />
       <span className="truncate">{a.title}</span>
       {unread && !done && (
-        <span className="ml-auto size-1.5 shrink-0 rounded-full bg-[#ef4444]" />
+        <span className="ml-auto size-1.5 shrink-0 rounded-full bg-[#b3463a]" />
       )}
     </Link>
   );

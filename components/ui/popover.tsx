@@ -37,7 +37,7 @@ function PopoverContent({
         <PopoverPrimitive.Popup
           data-slot="popover-content"
           className={cn(
-            "z-[2100] flex w-72 origin-(--transform-origin) flex-col rounded-[10px] bg-card p-3 text-sm text-foreground shadow-[var(--shadow-lg)] border border-[#e5e5e5] dark:border-[#262626] outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+            "z-[2100] flex w-72 origin-(--transform-origin) flex-col rounded-[10px] bg-card p-3 text-sm text-foreground shadow-[var(--shadow-lg)] border border-[#e4dfd4] dark:border-[#322f29] outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
             className
           )}
           {...props}
@@ -61,7 +61,7 @@ function PopoverTitle({ className, ...props }: PopoverPrimitive.Title.Props) {
   return (
     <PopoverPrimitive.Title
       data-slot="popover-title"
-      className={cn("font-medium text-[#0a0a0a] dark:text-[#fafafa]", className)}
+      className={cn("font-medium text-[#1a1a1a] dark:text-[#f4f1ea]", className)}
       {...props}
     />
   )
@@ -74,7 +74,7 @@ function PopoverDescription({
   return (
     <PopoverPrimitive.Description
       data-slot="popover-description"
-      className={cn("text-xs text-[#525252] dark:text-[#a3a3a3]", className)}
+      className={cn("text-xs text-[#5b564d] dark:text-[#b3ac9f]", className)}
       {...props}
     />
   )

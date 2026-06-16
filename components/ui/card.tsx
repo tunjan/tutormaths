@@ -16,11 +16,11 @@ function Card({
       data-slot="card"
       data-size={size}
       className={cn(
-        "group/card flex flex-col gap-4 overflow-hidden rounded-[12px] bg-surface-raised p-6 text-sm text-card-foreground border border-border-strong shadow-[var(--shadow-sm)] transition-all duration-200",
-        "hover:border-text-subtle hover:shadow-[var(--shadow-md)]",
+        "group/card flex flex-col gap-4 overflow-hidden rounded-[6px] bg-surface-raised p-6 text-sm text-card-foreground border border-border-strong transition-colors duration-200",
+        "hover:border-text-subtle",
         "has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:p-4",
         interactive &&
-          "card-interactive cursor-pointer hover:-translate-y-[2px] hover:shadow-[var(--shadow-lg)] hover:border-black dark:hover:border-white",
+          "cursor-pointer hover:border-foreground",
         className
       )}
       {...props}
@@ -33,7 +33,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-header"
       className={cn(
-        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-[12px] group-data-[size=sm]/card:px-0 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-4",
+        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-[6px] group-data-[size=sm]/card:px-0 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-4",
         className
       )}
       {...props}
@@ -92,7 +92,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-footer"
       className={cn(
-        "flex items-center rounded-b-[12px] border-t border-border bg-transparent pt-4 group-data-[size=sm]/card:pt-3",
+        "flex items-center rounded-b-[6px] border-t border-border bg-transparent pt-4 group-data-[size=sm]/card:pt-3",
         className
       )}
       {...props}

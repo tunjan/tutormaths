@@ -37,8 +37,8 @@ export function TutorNav() {
               className={cn(
                 "navbar-link text-sm font-medium transition-colors",
                 active
-                  ? "text-[#0a0a0a] dark:text-[#fafafa] font-semibold"
-                  : "text-[#525252] hover:text-[#0a0a0a] dark:text-[#a3a3a3] dark:hover:text-[#fafafa]",
+                  ? "text-[#1a1a1a] dark:text-[#f4f1ea] font-semibold"
+                  : "text-[#5b564d] hover:text-[#1a1a1a] dark:text-[#b3ac9f] dark:hover:text-[#f4f1ea]",
               )}
             >
               {l.label}
@@ -69,8 +69,8 @@ export function TutorNav() {
                       className={cn(
                         "relative block rounded-[6px] px-3 py-2 text-sm transition-colors",
                         active
-                          ? "bg-[#f0f0f0] dark:bg-[#171717] font-semibold text-[#0a0a0a] dark:text-[#fafafa]"
-                          : "text-[#525252] hover:bg-[#fafafa] dark:text-[#a3a3a3] dark:hover:bg-[#0a0a0a]",
+                          ? "bg-[#efebe1] dark:bg-[#1d1b16] font-semibold text-[#1a1a1a] dark:text-[#f4f1ea]"
+                          : "text-[#5b564d] hover:bg-[#f4f1ea] dark:text-[#b3ac9f] dark:hover:bg-[#1a1a1a]",
                       )}
                     >
                       {l.label}

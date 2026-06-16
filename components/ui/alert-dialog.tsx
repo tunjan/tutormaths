@@ -25,7 +25,7 @@ function AlertDialogContent({
       <AlertDialogPrimitive.Popup
         data-slot="alert-dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 flex w-full max-w-[420px] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-[28px] bg-card p-9 text-card-foreground border border-[#f0f0f0] dark:border-[#262626] duration-150 outline-hidden",
+          "fixed top-1/2 left-1/2 z-50 flex w-full max-w-[420px] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-[28px] bg-card p-9 text-card-foreground border border-[#efebe1] dark:border-[#322f29] duration-150 outline-hidden",
           "shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.04),0_12px_40px_rgba(0,0,0,0.08)]",
           "dark:shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_2px_4px_rgba(0,0,0,0.2),0_12px_40px_rgba(0,0,0,0.4)]",
           className,
@@ -76,7 +76,7 @@ function AlertDialogDescription({
   return (
     <AlertDialogPrimitive.Description
       data-slot="alert-dialog-description"
-      className={cn("text-[15px] text-[#737373] dark:text-[#a3a3a3] leading-relaxed", className)}
+      className={cn("text-[15px] text-[#8a8478] dark:text-[#b3ac9f] leading-relaxed", className)}
       {...props}
     />
   );
@@ -91,7 +91,7 @@ function AlertDialogAction({
       data-slot="alert-dialog-action"
       className={cn(
         "inline-flex items-center justify-center h-12 px-5 text-[15px] font-semibold rounded-[14px] transition-all duration-150 cursor-pointer",
-        "bg-[#0a0a0a] text-white hover:bg-[#1a1a1a] dark:bg-white dark:text-black dark:hover:bg-[#f0f0f0]",
+        "bg-[#1a1a1a] text-white hover:bg-[#1a1a1a] dark:bg-white dark:text-black dark:hover:bg-[#efebe1]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         className
       )}
@@ -109,8 +109,8 @@ function AlertDialogCancel({
       data-slot="alert-dialog-cancel"
       className={cn(
         "inline-flex items-center justify-center h-12 px-5 text-[15px] font-semibold rounded-[14px] transition-all duration-150 cursor-pointer",
-        "bg-white text-[#525252] border border-[#e5e5e5] hover:bg-[#fafafa] hover:text-[#0a0a0a] hover:border-[#d4d4d4]",
-        "dark:bg-transparent dark:text-[#a3a3a3] dark:border-[#333] dark:hover:bg-[#171717] dark:hover:text-white",
+        "bg-white text-[#5b564d] border border-[#e4dfd4] hover:bg-[#f4f1ea] hover:text-[#1a1a1a] hover:border-[#cfc9bc]",
+        "dark:bg-transparent dark:text-[#b3ac9f] dark:border-[#333] dark:hover:bg-[#1d1b16] dark:hover:text-white",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         className
       )}
