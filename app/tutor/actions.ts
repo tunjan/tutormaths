@@ -46,6 +46,7 @@ export async function createAssignment(
   if (input.files.length === 0 && !latexBody) {
     throw new Error("Attach a file or write the assignment in LaTeX.");
   }
+  const primaryFilePath = input.files[0]?.filePath ?? null;
 
   const supabase = await createClient();
 
@@ -56,6 +57,10 @@ export async function createAssignment(
     type: input.type,
     title: input.title.trim(),
     description: input.description?.trim() || null,
+    // Legacy mirror used by the assignments_has_content check constraint.
+    // Attachments live in assignment_files; this keeps file-backed creates
+    // compatible with existing databases and older rows.
+    file_path: primaryFilePath,
     due_at: input.dueAt,
     latex_body: latexBody,
     category_id: input.categoryId || null,
@@ -164,15 +169,19 @@ export async function updateAssignment(
   }
 
   const supabase = await createClient();
+  const added = input.addedFiles ?? [];
 
   // Switching to LaTeX clears any attachments; switching to file clears LaTeX.
-  let contentUpdate: { latex_body?: string | null } = {};
+  let contentUpdate: { latex_body?: string | null; file_path?: string | null } = {};
   if (source === "latex") {
     const latexBody = input.latexBody?.trim();
     if (!latexBody) throw new Error("Write the assignment in LaTeX.");
-    contentUpdate = { latex_body: latexBody };
+    contentUpdate = { latex_body: latexBody, file_path: null };
   } else if (source === "file") {
-    contentUpdate = { latex_body: null };
+    contentUpdate = {
+      latex_body: null,
+      ...(added[0] ? { file_path: added[0].filePath } : {}),
+    };
   }
 
   const { error } = await supabase
@@ -224,7 +233,6 @@ export async function updateAssignment(
   }
 
   // Append new attachments after the current highest sort_order.
-  const added = input.addedFiles ?? [];
   if (added.length > 0) {
     const { data: rows } = await supabase
       .from("assignment_files")
