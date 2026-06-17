@@ -474,6 +474,16 @@
   }
 }
 
+@layer utilities {
+  .assignment-guidance-grid {
+    background-color: var(--surface-paper);
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--border-soft) 72%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--border-soft) 72%, transparent) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+}
+
 /* ============================================================================
    COMPONENT LIBRARY UTILITIES (Vanilla CSS drop-ins)
    ========================================================================== */
@@ -759,7 +769,7 @@
 .modal {
   position: relative;
   background: var(--bg-primary);
-  border-radius: 28px;
+  border-radius: var(--modal-radius);
   border: 1px solid var(--border-secondary);
   padding: 36px;
   max-width: 460px;

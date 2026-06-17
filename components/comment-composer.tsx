@@ -57,7 +57,7 @@ export function CommentComposer({
           {error}
         </div>
       )}
-      <div className="flex items-center gap-2 rounded-[8px] border border-border bg-background py-1.5 pl-3.5 pr-1.5 transition-colors focus-within:border-foreground">
+      <div className="flex items-center gap-2 rounded-panel border border-border-soft bg-background/80 py-1.5 pl-3.5 pr-1.5 transition-colors focus-within:border-primary">
         <textarea
           ref={textareaRef}
           value={value}

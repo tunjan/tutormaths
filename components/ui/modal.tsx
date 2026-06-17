@@ -16,6 +16,8 @@ export function Modal({
   children,
   footer,
   className,
+  style,
+  titleClassName,
 }: {
   open: boolean;
   onClose: () => void;
@@ -24,6 +26,8 @@ export function Modal({
   children: ReactNode;
   footer?: ReactNode;
   className?: string;
+  style?: React.CSSProperties;
+  titleClassName?: string;
 }) {
   const [mounted, setMounted] = useState(false);
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -57,10 +61,11 @@ export function Modal({
           "modal",
           className
         )}
+        style={style}
       >
         <div className="modal-header">
           <div className="min-w-0">
-            <h2 className="modal-title font-heading">{title}</h2>
+            <h2 className={cn("modal-title font-heading", titleClassName)}>{title}</h2>
             {description && <p className="modal-subtitle">{description}</p>}
           </div>
           <button

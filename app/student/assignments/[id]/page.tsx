@@ -7,22 +7,51 @@ import { addComment } from "@/lib/actions/comments";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import { AssignmentSteps } from "@/components/assignment-steps";
 import { CompletionControl } from "@/components/completion-control";
-import { FilePreview } from "@/components/ui/file-preview";
-import { LatexContent } from "@/components/ui/latex-content";
+import { ProblemMaterialCard } from "@/components/problem-material-card";
 import { StudentSubmitPanel } from "@/components/student-submit-panel";
 import { LiveCommentThread, type Participant } from "@/components/live-comment-thread";
 import { CommentComposer } from "@/components/comment-composer";
 import { MarkAssignmentRead } from "@/components/mark-assignment-read";
 import { MarkAssignmentOpened } from "@/components/mark-assignment-opened";
 import { RequestHomeworkButton } from "@/components/request-homework-button";
-import { BackLink } from "@/components/ui/back-link";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Download } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { BUCKET_ASSIGNMENTS, BUCKET_SUBMISSIONS } from "@/lib/constants";
 import {
   formatDateTime,
   typeLabel,
-  mimeFromPath,
   fileLabel,
 } from "@/lib/format";
+
+function SectionHeader({
+  eyebrow,
+  title,
+  aside,
+}: {
+  eyebrow: string;
+  title: string;
+  aside?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <div className="flex min-w-0 flex-col gap-1">
+        <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+          {eyebrow}
+        </span>
+        <h2 className="text-base font-semibold leading-tight tracking-tight text-foreground">
+          {title}
+        </h2>
+      </div>
+      {aside}
+    </div>
+  );
+}
 
 export default async function StudentAssignmentPage({
   params,
@@ -50,8 +79,6 @@ export default async function StudentAssignmentPage({
   const attachments = await Promise.all(
     (files ?? []).map(async (f) => ({
       id: f.id,
-      name: fileLabel(f.file_path),
-      mimeType: f.mime_type || mimeFromPath(f.file_path),
       url: await signedUrl(BUCKET_ASSIGNMENTS, f.file_path),
     })),
   );
@@ -86,165 +113,159 @@ export default async function StudentAssignmentPage({
     [a.tutor_id]: { name: "Your tutor", role: "tutor" },
   };
 
-  const isImageOnly = (mimeType: string) => mimeType.startsWith("image/");
-  const hasPrompt = Boolean(a.description || a.latex_body || attachments.length);
-
   return (
     <div className="flex flex-col gap-12 animate-rise">
       <MarkAssignmentRead assignmentId={id} />
       <MarkAssignmentOpened assignmentId={id} />
 
       {/* ── Header ───────────────────────────────────────────── */}
-      <header className="flex flex-col gap-6">
-        <BackLink href="/student">Back to dashboard</BackLink>
-
-        <div className="flex flex-col gap-4">
-          <div>
-            <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
+      <header className="flex flex-col gap-6 border-b border-border-soft pb-8">
+        <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-4">
+          <div className="flex min-w-0 flex-col gap-3">
+            <h1 className="max-w-3xl text-2xl font-semibold leading-tight tracking-tight text-foreground md:text-3xl">
+              {a.title}
+            </h1>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+              <span>Due {formatDateTime(a.due_at)}</span>
+              <span aria-hidden className="text-border-strong">
+                /
+              </span>
+              <span>
+                {category?.name ? `${category.name} · ` : ""}
+                {typeLabel(a.type)}
+              </span>
+            </div>
           </div>
 
-          <h1 className="text-3xl font-semibold leading-tight tracking-tight text-foreground md:text-4xl">
-            {a.title}
-          </h1>
-
-          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-muted-foreground">
-            <span>Due {formatDateTime(a.due_at)}</span>
-            <span aria-hidden className="text-border-strong">·</span>
-            <span>
-              {category?.name ? `${category.name} · ` : ""}
-              {typeLabel(a.type)}
-            </span>
-          </div>
+          <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
         </div>
 
-        <div className="rounded-panel border border-border bg-surface-muted px-5 py-4">
-          <AssignmentSteps status={a.review_status} />
-        </div>
+        <AssignmentSteps status={a.review_status} />
       </header>
 
-      {/* ── Problem material ─────────────────────────────────── */}
-      <section className="flex flex-col gap-5">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold tracking-tight text-foreground">
-            Problem material
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Open the prompt, solve it on paper or digitally, then upload your finished work.
-          </p>
-        </div>
+      {/* ── Two-column grid workspace ────────────────────────── */}
+      <div className="assignment-guidance-grid overflow-hidden rounded-panel border border-border-soft">
+        <div className="grid grid-cols-1 divide-y divide-border-soft lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)] lg:divide-x lg:divide-y-0">
+          {/* Left: work on the problem and hand it in */}
+          <div className="flex flex-col divide-y divide-border-soft bg-background/80">
+            {/* ── Problem material ─────────────────────────────────── */}
+            <section className="flex flex-col gap-6 p-6 md:p-8">
+              <SectionHeader eyebrow="01" title="Problem material" />
 
-        {hasPrompt ? (
-          <div className="flex flex-col gap-4 rounded-panel border border-border bg-surface-paper p-6">
-            {a.description && (
-              <p className="text-base leading-relaxed text-foreground">
-                {a.description}
-              </p>
-            )}
-
-            {a.latex_body && (
-              <div className="text-foreground">
-                <LatexContent source={a.latex_body} />
-              </div>
-            )}
-
-            {attachments.length > 0 && (
-              <div className="flex flex-col gap-4">
-                {attachments.map((f) => {
-                  const isImage = isImageOnly(f.mimeType);
-                  return (
-                    <div key={f.id} className="flex flex-col gap-2">
-                      {f.url && isImage && (
-                        <div className="overflow-hidden rounded-panel border border-border bg-background">
-                          <FilePreview
-                            url={f.url}
-                            mimeType={f.mimeType}
-                            title={f.name}
-                          />
-                        </div>
-                      )}
+              {attachments.length > 0 ? (
+                <div className="grid gap-3">
+                  {attachments.map((f) => (
+                    <div
+                      key={f.id}
+                      className="flex items-center justify-between gap-4 rounded-panel border border-border-soft bg-surface-paper/90 p-5"
+                    >
+                      <div className="flex min-w-0 flex-col gap-1">
+                        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                          Document
+                        </span>
+                        <span className="text-sm font-medium text-foreground">
+                          Assignment material
+                        </span>
+                      </div>
                       {f.url && (
-                        <a
-                          href={f.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-foreground underline-offset-4 transition-colors hover:underline"
-                        >
-                          {isImage ? "Attached image" : "Attached document"}: {f.name}
-                        </a>
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <a
+                                href={f.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                download
+                                aria-label="Download assignment material"
+                                className={cn(
+                                  buttonVariants({
+                                    variant: "outline",
+                                    size: "icon-sm",
+                                  }),
+                                  "shrink-0",
+                                )}
+                              />
+                            }
+                          >
+                            <Download data-icon="inline-start" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Download material</p>
+                          </TooltipContent>
+                        </Tooltip>
                       )}
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
+              ) : a.latex_body || a.description ? (
+                <ProblemMaterialCard
+                  title={a.title}
+                  description={a.description}
+                  latexBody={a.latex_body}
+                />
+              ) : (
+                <div className="rounded-panel border border-dashed border-border-soft bg-background/70 px-6 py-10 text-center text-sm text-muted-foreground">
+                  No problem material yet.
+                </div>
+              )}
+            </section>
+
+            {/* ── Hand in your work ────────────────────────────────── */}
+            <section className="flex flex-col gap-6 p-6 md:p-8">
+              <SectionHeader eyebrow="02" title="Hand in your work" />
+
+              <div className="flex flex-col gap-4 rounded-panel border border-border-soft bg-surface-paper/90 p-5">
+                <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                  Your progress
+                </span>
+                <CompletionControl
+                  assignmentId={id}
+                  initial={a.completion_pct}
+                  hasSubmissions={submissions.length > 0}
+                  uploadTargetId="student-submission"
+                />
               </div>
-            )}
+
+              <StudentSubmitPanel
+                assignmentId={id}
+                studentId={ctx.userId}
+                submissions={submissions}
+              />
+            </section>
           </div>
-        ) : (
-          <div className="rounded-panel border border-dashed border-border bg-surface-muted px-6 py-8 text-center text-sm text-muted-foreground">
-            No prompt has been attached yet. Check back soon or ask your tutor.
+
+          {/* Right: feedback and next steps */}
+          <div className="flex flex-col divide-y divide-border-soft bg-surface-paper/70">
+            {/* ── Tutor feedback ───────────────────────────────────── */}
+            <section className="flex flex-col gap-6 p-6 md:p-8">
+              <SectionHeader
+                eyebrow="03"
+                title="Tutor feedback"
+                aside={
+                  <span className="inline-flex min-w-7 items-center justify-center rounded-panel border border-border-soft bg-background/80 px-2 py-1 text-xs font-medium tabular-nums text-muted-foreground">
+                    {comments.length}
+                  </span>
+                }
+              />
+
+              <div className="flex flex-col gap-6">
+                <LiveCommentThread
+                  assignmentId={id}
+                  initial={comments}
+                  participants={participants}
+                />
+                <CommentComposer assignmentId={id} action={addComment} />
+              </div>
+            </section>
+
+            {/* ── Keep the momentum going (promo) ──────────────────── */}
+            <section className="flex flex-col items-start gap-4 p-6 md:p-8">
+              <SectionHeader eyebrow="04" title="Keep the momentum going" />
+              <RequestHomeworkButton label="Request extra practice" />
+            </section>
           </div>
-        )}
-      </section>
-
-      {/* ── Hand in your work ────────────────────────────────── */}
-      <section className="flex flex-col gap-5">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold tracking-tight text-foreground">
-            Hand in your work
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Track your progress, then upload your finished file so your tutor can review it.
-          </p>
         </div>
-
-        <div className="flex flex-col gap-3 rounded-panel border border-border bg-background p-5 shadow-[var(--shadow-sm)]">
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Your progress
-          </span>
-          <CompletionControl
-            assignmentId={id}
-            initial={a.completion_pct}
-            hasSubmissions={submissions.length > 0}
-            uploadTargetId="student-submission"
-          />
-        </div>
-
-        <StudentSubmitPanel
-          assignmentId={id}
-          studentId={ctx.userId}
-          submissions={submissions}
-        />
-      </section>
-
-      {/* ── Tutor feedback ───────────────────────────────────── */}
-      <section className="flex flex-col gap-5">
-        <h2 className="flex items-center gap-2 text-lg font-semibold tracking-tight text-foreground">
-          Tutor feedback
-          <span className="inline-flex min-w-6 items-center justify-center rounded-full border border-border bg-surface-muted px-2 text-xs font-medium tabular-nums text-muted-foreground">
-            {comments.length}
-          </span>
-        </h2>
-
-        <div className="flex flex-col gap-6">
-          <LiveCommentThread
-            assignmentId={id}
-            initial={comments}
-            participants={participants}
-          />
-          <CommentComposer assignmentId={id} action={addComment} />
-        </div>
-      </section>
-
-      {/* ── Keep the momentum going (promo) ──────────────────── */}
-      <section className="flex flex-col items-start gap-3 rounded-panel border border-border bg-surface-paper p-6">
-        <h3 className="text-base font-semibold tracking-tight text-foreground">
-          Keep the momentum going
-        </h3>
-        <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
-          Ready to push your skills further? Request extra practice to keep improving.
-        </p>
-        <RequestHomeworkButton label="Request extra practice" />
-      </section>
+      </div>
     </div>
   );
 }
-

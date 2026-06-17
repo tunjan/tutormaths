@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, ExternalLink, FileText, Plus, Trash2 } from "lucide-react";
+import { ExternalLink, FileText, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteSubmission } from "@/app/student/actions";
 import { SubmissionUploader } from "@/components/submission-uploader";
@@ -42,29 +42,20 @@ export function StudentSubmitPanel({
   const [adding, setAdding] = useState(false);
 
   return (
-    <div className="flex flex-col gap-5 rounded-panel border border-border bg-background p-5 shadow-[var(--shadow-sm)]">
-      <div className="flex items-start gap-3">
-        <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-panel border border-border bg-surface-muted text-foreground">
-          {hasWork ? (
-            <CheckCircle2 className="size-4" strokeWidth={1.8} />
-          ) : (
-            <FileText className="size-4" strokeWidth={1.8} />
-          )}
-        </span>
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <p className="text-sm font-medium text-foreground">
-            {hasWork ? "Submitted for tutor review" : "Upload your completed work"}
-          </p>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            {hasWork
-              ? "Your tutor can see these files. Upload a revision if you need to replace or add work."
-              : "Submit a PDF or JPG once you are ready for feedback."}
-          </p>
-        </div>
+    <div className="flex flex-col gap-5 rounded-panel border border-border-soft bg-surface-paper/90 p-5">
+      <div className="flex min-w-0 flex-col gap-1">
+        <p className="text-sm font-medium text-foreground">
+          {hasWork ? "Submitted for tutor review" : "Upload your completed work"}
+        </p>
+        <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
+          {hasWork
+            ? "Your tutor can see these files. Upload a revision if needed."
+            : "Submit a PDF or JPG when you are ready for feedback."}
+        </p>
       </div>
 
       {hasWork && (
-        <ul className="flex flex-col gap-1 rounded-panel border border-border bg-surface-muted p-2">
+        <ul className="flex flex-col gap-1 rounded-panel border border-border-soft bg-background/70 p-2">
           {submissions.map((s) => (
             <SubmissionRow key={s.id} submission={s} />
           ))}
@@ -77,7 +68,7 @@ export function StudentSubmitPanel({
 
       {hasWork && (
         <div className="flex items-center justify-between gap-4">
-          <p className="text-[13px] text-muted-foreground">
+          <p className="text-[13px] tabular-nums text-muted-foreground">
             {submissions.length} {submissions.length === 1 ? "file" : "files"} uploaded
           </p>
           {!adding && (
@@ -112,7 +103,7 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
           {error}
         </div>
       )}
-      <div className="flex items-center justify-between rounded-panel bg-background px-3 py-3 transition-colors hover:bg-surface-hover">
+      <div className="flex items-center justify-between rounded-panel bg-surface-paper px-3 py-3 transition-colors hover:bg-surface-hover">
         <div className="flex min-w-0 items-center gap-3 pr-4">
           <FileText className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.5} />
           <div className="min-w-0 flex flex-col justify-center gap-0.5">

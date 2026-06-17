@@ -43,13 +43,13 @@ export function AssignmentSteps({ status }: { status: ReviewStatus }) {
               <span
                 aria-hidden
                 className={cn(
-                  "flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold tabular-nums transition-colors",
+                  "flex size-6 shrink-0 items-center justify-center rounded-panel border text-xs font-medium tabular-nums transition-colors",
                   state === "done" &&
                     "border-transparent bg-primary text-primary-foreground",
                   state === "current" &&
-                    "border-info bg-info-muted text-info",
+                    "border-primary bg-accent-ink-subtle text-primary",
                   state === "todo" &&
-                    "border-border bg-transparent text-muted-foreground",
+                    "border-border-soft bg-transparent text-muted-foreground",
                 )}
               >
                 {state === "done" ? <Check className="size-3.5" /> : i + 1}
@@ -70,7 +70,7 @@ export function AssignmentSteps({ status }: { status: ReviewStatus }) {
                 aria-hidden
                 className={cn(
                   "h-px flex-1",
-                  states[i + 1] === "todo" ? "bg-border" : "bg-primary",
+                  states[i + 1] === "todo" ? "bg-border-soft" : "bg-primary",
                 )}
               />
             )}

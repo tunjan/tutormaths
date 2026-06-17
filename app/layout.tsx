@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ViewTransitions } from "next-view-transitions";
 
@@ -40,7 +41,7 @@ export default function RootLayout({
             defaultTheme="system"
             enableSystem
           >
-            {children}
+            <TooltipProvider>{children}</TooltipProvider>
             <Toaster />
           </ThemeProvider>
         </ViewTransitions>
