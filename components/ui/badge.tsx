@@ -18,11 +18,11 @@ const badgeVariants = cva(
           "border border-[#e4dfd4] bg-transparent text-[#5b564d] dark:border-[#322f29] dark:text-[#b3ac9f] [a]:hover:bg-muted",
         ghost:
           "hover:bg-[#efebe1] text-[#8a8478] hover:text-[#1a1a1a] dark:hover:bg-[#1d1b16] dark:hover:text-[#f4f1ea]",
-        link: "text-[#3a5a8c] underline-offset-4 hover:underline",
+        link: "text-[#e75d2d] underline-offset-4 hover:underline",
         accent:
-          "bg-[#ebeef4] text-[#3a5a8c] dark:bg-[#3a5a8c]/10 dark:text-[#6e89b5]",
+          "bg-[#fbece4] text-[#e75d2d] dark:bg-[#e75d2d]/10 dark:text-[#f0824a]",
         "accent-alt":
-          "bg-[#ebeef4] text-[#2e4a75] dark:bg-[#2e4a75]/10 dark:text-[#6e89b5]",
+          "bg-[#fbece4] text-[#cf4d22] dark:bg-[#cf4d22]/10 dark:text-[#f0824a]",
         success: "bg-[#eef3ee] text-[#3a6347] dark:bg-[#3a6347]/15 dark:text-[#9bbca5]",
         warning: "bg-[#f6efe2] text-[#8f6326] dark:bg-[#8f6326]/15 dark:text-[#d8b783]",
         info: "bg-[#ebeef4] text-[#2e4a75] dark:bg-[#2e4a75]/15 dark:text-[#6e89b5]",

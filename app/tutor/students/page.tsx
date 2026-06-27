@@ -59,7 +59,7 @@ export default async function StudentsPage() {
 
       {!hasAnyone ? (
         <div className="card flex flex-col items-center gap-3 px-6 py-16 text-center shadow-[var(--shadow-sm)]">
-          <span className="grid size-14 place-items-center rounded-full bg-[#ebeef4] dark:bg-[#3a5a8c]/10 text-[#3a5a8c] dark:text-[#6e89b5]">
+          <span className="grid size-14 place-items-center rounded-full bg-[#fbece4] dark:bg-[#e75d2d]/10 text-[#e75d2d] dark:text-[#f0824a]">
             <ChevronRight className="size-6" />
           </span>
           <h3 className="text-xl font-semibold text-foreground">No students yet</h3>

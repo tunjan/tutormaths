@@ -6,57 +6,62 @@
 
 /* ============================================================================
    DESIGN SYSTEM - CORE VARIABLES
-   Swiss Typographic — warm paper, near-black ink, hairline rules,
-   one restrained accent (ink blue). Scientific instrument meets editorial.
+   Warm minimalism ("Mistral Vibe") — off-white paper, warm near-black ink,
+   taupe grays, one confident warm-orange accent used sparingly.
+   White means "elevated"; soft edges, soft light.
    ========================================================================== */
 :root {
-  /* 1. Primary Palette — warm paper & near-black ink */
-  --color-black: #1a1a1a;
-  --color-black-900: #232220;
-  --color-black-800: #2e2c29;
-  --color-black-700: #3a3833;
+  /* 1. Primary Palette — off-white paper & warm near-black ink */
+  --color-black: #13110f;
+  --color-black-900: #232020;
+  --color-black-800: #2e2b27;
+  --color-black-700: #3a3631;
 
-  --color-white: #faf8f3;
-  --color-white-900: #f4f1ea;
-  --color-white-800: #efebe1;
+  --color-white: #ffffff;
+  --color-white-900: #fafaf9;
+  --color-white-800: #f4f2ee;
 
-  /* 2. Neutral Grayscale — warm */
-  --text-primary: #1a1a1a;
-  --text-secondary: #5b564d;
-  --text-tertiary: #8a8478;
-  --text-quaternary: #b3ac9f;
+  /* 2. Neutral Grayscale — warm taupe ramp (no pure/cool gray) */
+  --text-primary: #13110f;
+  --text-secondary: #78726c;
+  --text-tertiary: #9a948b;
+  --text-quaternary: #b8b2a8;
 
-  --border-primary: #e4dfd4;
-  --border-secondary: #ece8de;
-  --border-tertiary: #f4f1ea;
-  --divider: #e8e3d8;
+  --border-primary: #ddd9d1;
+  --border-secondary: #e6e3dc;
+  --border-tertiary: #efece6;
+  --divider: #ddd9d1;
 
-  --bg-primary: #faf8f3;
-  --bg-secondary: #f4f1ea;
-  --bg-tertiary: #efebe1;
-  --bg-quaternary: #e8e3d8;
+  --bg-primary: #fafaf9;
+  --bg-secondary: #f4f2ee;
+  --bg-tertiary: #efece6;
+  --bg-quaternary: #e8e4dc;
 
-  /* 2b. Product Surfaces */
+  /* 2b. Product Surfaces — pure white is reserved for elevated surfaces */
   --surface-base: var(--bg-primary);
   --surface-muted: var(--bg-secondary);
-  --surface-raised: #fdfcf8;
-  --surface-inset: #f4f1ea;
+  --surface-raised: #ffffff;
+  --surface-inset: #f4f2ee;
   --surface-hover: var(--bg-tertiary);
-  --surface-selected: #eee9de;
-  --surface-paper: #faf8f3;
+  --surface-selected: #efece6;
+  --surface-paper: #fafaf9;
 
   --border-soft: var(--border-secondary);
-  --border-strong: var(--border-primary);
+  --border-strong: #d2cdc4;
 
   --text-heading: var(--text-primary);
   --text-muted: var(--text-secondary);
   --text-subtle: var(--text-tertiary);
 
-  /* 3. Accent — single restrained ink blue */
-  --accent-ink: #3a5a8c;
-  --accent-ink-light: #6e89b5;
-  --accent-ink-dark: #2e4a75;
-  --accent-ink-subtle: #ebeef4;
+  /* 3. Accent — single confident warm orange, used sparingly */
+  --accent-ink: #e75d2d;
+  --accent-ink-light: #ef8934;
+  --accent-ink-dark: #cf4d22;
+  --accent-ink-subtle: #fbece4;
+
+  /* Brand flourish — warm gradient (logo / small accents only) */
+  --color-accent-amber: #ef8934;
+  --gradient-brand: linear-gradient(135deg, #e75d2d 0%, #ef8934 55%, #f7c948 100%);
 
   /* Back-compat aliases (legacy purple tokens now resolve to the ink accent) */
   --accent-purple: var(--accent-ink);
@@ -78,13 +83,13 @@
   --interactive-blue-dark: var(--accent-ink-dark);
 
   /* 4. Semantic Colors — muted, legible against paper */
-  --status-verified: #4a7c59;
-  --status-pending: #b07d3a;
-  --status-error: #b3463a;
-  --status-info: var(--accent-ink);
-  --status-review: var(--accent-ink-dark);
-  --status-review-bg: #ebeef4;
-  --status-review-border: #c4d0e2;
+  --status-verified: #22a06b;
+  --status-pending: #e0a21b;
+  --status-error: #dc2626;
+  --status-info: #3b82f6;
+  --status-review: #2f63a8;
+  --status-review-bg: #eff5ff;
+  --status-review-border: #c7dbf5;
   --status-overdue: #a83c30;
   --status-overdue-bg: #f6ece9;
   --status-overdue-border: #e2c4be;
@@ -98,11 +103,11 @@
   --chart-grid: #ece8de;
 
   /* 5. Gradient System — flattened to warm paper tones (Swiss: minimal gradients) */
-  --gradient-hero: linear-gradient(180deg, #faf8f3 0%, #f4f1ea 100%);
-  --gradient-card: linear-gradient(180deg, #fdfcf8 0%, #f4f1ea 100%);
-  --gradient-button: linear-gradient(180deg, #3a5a8c 0%, #2e4a75 100%);
-  --gradient-bg-subtle: linear-gradient(135deg, #f4f1ea 0%, #efebe1 100%);
-  --gradient-section: linear-gradient(180deg, #faf8f3 0%, #f4f1ea 50%, #efebe1 100%);
+  --gradient-hero: linear-gradient(180deg, #fafaf9 0%, #f2f2f2 100%);
+  --gradient-card: linear-gradient(180deg, #ffffff 0%, #fafaf9 100%);
+  --gradient-button: linear-gradient(180deg, #e75d2d 0%, #cf4d22 100%);
+  --gradient-bg-subtle: linear-gradient(135deg, #f2f2f2 0%, #ededeb 100%);
+  --gradient-section: linear-gradient(180deg, #fafaf9 0%, #f2f2f2 50%, #ededeb 100%);
 
   /* 6. Spacing Scale */
   --space-0: 0px;
@@ -125,33 +130,34 @@
   --space-28: 112px;
   --space-32: 128px;
 
-  /* 7. Corner Radius */
+  /* 7. Corner Radius — soft edges; small controls fully rounded */
   --radius-none: 0px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 10px;
-  --radius-2xl: 12px;
-  --radius-3xl: 16px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
   --radius-full: 9999px;
 
-  --btn-radius: 6px;
-  --btn-radius-sm: 4px;
-  --btn-radius-lg: 6px;
-  --card-radius: 6px;
-  --card-radius-lg: 8px;
-  --input-radius: 6px;
-  --badge-radius: 4px;
-  --dropdown-radius: 6px;
-  --modal-radius: 8px;
+  --btn-radius: 12px;
+  --btn-radius-sm: 8px;
+  --btn-radius-lg: 12px;
+  --card-radius: 16px;
+  --card-radius-lg: 16px;
+  --input-radius: 12px;
+  --badge-radius: 8px;
+  --dropdown-radius: 12px;
+  --modal-radius: 16px;
 
-  /* 8. Shadows & Depth — hairline-first, shadows barely there */
+  /* 8. Shadows & Depth — soft, diffuse, warm-ink tinted (gentle overhead light) */
   --shadow-none: none;
-  --shadow-sm: 0 1px 1px 0 rgba(26, 24, 20, 0.02);
-  --shadow-md: 0 1px 2px 0 rgba(26, 24, 20, 0.03);
-  --shadow-lg: 0 4px 16px rgba(26, 24, 20, 0.05);
-  --shadow-xl: 0 8px 28px rgba(26, 24, 20, 0.07);
-  --shadow-2xl: 0 14px 44px rgba(26, 24, 20, 0.1);
+  --shadow-xs: 0 1px 2px rgba(19, 17, 15, 0.04);
+  --shadow-sm: 0 1px 3px rgba(19, 17, 15, 0.06), 0 1px 2px rgba(19, 17, 15, 0.04);
+  --shadow-md: 0 4px 12px rgba(19, 17, 15, 0.06);
+  --shadow-lg: 0 12px 32px rgba(19, 17, 15, 0.12);
+  --shadow-xl: 0 16px 40px rgba(19, 17, 15, 0.12);
+  --shadow-2xl: 0 24px 56px rgba(19, 17, 15, 0.14);
 
   --shadow-calm: var(--shadow-sm);
 
@@ -185,7 +191,7 @@
   --popover: var(--surface-raised);
   --popover-foreground: var(--text-primary);
   --primary: var(--accent-ink);
-  --primary-foreground: #faf8f3;
+  --primary-foreground: #ffffff;
   --secondary: var(--bg-secondary);
   --secondary-foreground: var(--text-primary);
   --muted: var(--bg-tertiary);
@@ -216,7 +222,7 @@
   --sidebar-ring: var(--accent-ink);
 
   --line-strong: var(--color-black);
-  --overlay: rgba(26, 24, 20, 0.4);
+  --overlay: rgba(19, 17, 15, 0.25);
 
   --ink-faint: var(--text-tertiary);
 }
@@ -258,15 +264,18 @@
   --text-muted: var(--text-secondary);
   --text-subtle: var(--text-tertiary);
 
-  /* Accent — lighter ink blue for contrast on dark paper */
-  --accent-ink: #7b9aca;
-  --accent-ink-light: #9db4d8;
-  --accent-ink-dark: #5a7aac;
-  --accent-ink-subtle: rgba(58, 90, 140, 0.18);
+  /* Accent — lighter warm orange for contrast on dark paper */
+  --accent-ink: #f0824a;
+  --accent-ink-light: #f4a574;
+  --accent-ink-dark: #d96a35;
+  --accent-ink-subtle: rgba(231, 93, 45, 0.18);
 
-  --status-review: #9db4d8;
-  --status-review-bg: rgba(58, 90, 140, 0.2);
-  --status-review-border: rgba(123, 154, 202, 0.4);
+  --color-accent-amber: #f4a574;
+  --gradient-brand: linear-gradient(135deg, #f0824a 0%, #f4a574 55%, #f7c948 100%);
+
+  --status-review: #8fb2e6;
+  --status-review-bg: rgba(59, 111, 168, 0.22);
+  --status-review-border: rgba(143, 178, 230, 0.4);
   --status-overdue: #d99a8f;
   --status-overdue-bg: rgba(150, 60, 48, 0.2);
   --status-overdue-border: rgba(179, 70, 58, 0.4);
@@ -301,7 +310,7 @@
   /* 3. Gradients (kept flat per Swiss aesthetic) */
   --gradient-hero: linear-gradient(180deg, #161410 0%, #1d1b16 100%);
   --gradient-card: linear-gradient(180deg, #1d1b16 0%, #26241f 100%);
-  --gradient-button: linear-gradient(180deg, #f4f1ea 0%, #e4dfd4 100%);
+  --gradient-button: linear-gradient(180deg, #f0824a 0%, #d96a35 100%);
   --gradient-bg-subtle: linear-gradient(135deg, #1d1b16 0%, #26241f 100%);
   --gradient-section: linear-gradient(180deg, #161410 0%, #1d1b16 50%, #26241f 100%);
 }
@@ -382,11 +391,11 @@
   --color-brand: var(--primary);
   --color-brand-hover: var(--accent);
 
-  /* Sharper Radii — Swiss structure */
-  --radius-panel: 6px;
-  --radius-lg: 6px;
-  --radius-xl: 8px;
-  --radius-2xl: 10px;
+  /* Soft Radii — gentle, rounded edges */
+  --radius-panel: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 20px;
 
   /* Typography */
   --text-super-display: 56px;
