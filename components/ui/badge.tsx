@@ -5,27 +5,26 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-[20px] px-3 py-1 font-mono text-[12px] uppercase tracking-[0.05em] font-medium whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 [&>svg]:pointer-events-none [&>svg]:size-3.5!",
+  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-all focus-visible:ring-4 focus-visible:ring-border-subtle [&>svg]:pointer-events-none [&>svg]:size-3.5!",
   {
     variants: {
       variant: {
-        default: "bg-[#1a1a1a] text-[#faf8f3] dark:bg-[#faf8f3] dark:text-[#1a1a1a] [a]:hover:bg-primary/80",
+        default:
+          "bg-bg-inverted text-content-inverted [a]:hover:bg-content-default",
         secondary:
-          "bg-[#f4f1ea] text-[#1a1a1a] border border-[#e4dfd4] dark:bg-[#1a1a1a] dark:text-[#f4f1ea] dark:border-[#322f29] [a]:hover:bg-secondary/80",
+          "border border-border-subtle bg-bg-subtle text-content-default [a]:hover:bg-bg-emphasis",
         destructive:
-          "bg-[#f6ece9] text-[#8a2e22] dark:bg-[#8a2e22]/10 dark:text-[#cf8a7e] [a]:hover:bg-destructive/20",
+          "bg-bg-error text-content-error [a]:hover:bg-bg-error",
         outline:
-          "border border-[#e4dfd4] bg-transparent text-[#5b564d] dark:border-[#322f29] dark:text-[#b3ac9f] [a]:hover:bg-muted",
+          "border border-border-subtle bg-transparent text-content-default [a]:hover:bg-bg-muted",
         ghost:
-          "hover:bg-[#efebe1] text-[#8a8478] hover:text-[#1a1a1a] dark:hover:bg-[#1d1b16] dark:hover:text-[#f4f1ea]",
-        link: "text-[#e75d2d] underline-offset-4 hover:underline",
-        accent:
-          "bg-[#fbece4] text-[#e75d2d] dark:bg-[#e75d2d]/10 dark:text-[#f0824a]",
-        "accent-alt":
-          "bg-[#fbece4] text-[#cf4d22] dark:bg-[#cf4d22]/10 dark:text-[#f0824a]",
-        success: "bg-[#eef3ee] text-[#3a6347] dark:bg-[#3a6347]/15 dark:text-[#9bbca5]",
-        warning: "bg-[#f6efe2] text-[#8f6326] dark:bg-[#8f6326]/15 dark:text-[#d8b783]",
-        info: "bg-[#ebeef4] text-[#2e4a75] dark:bg-[#2e4a75]/15 dark:text-[#6e89b5]",
+          "text-content-subtle hover:bg-content-emphasis/5 hover:text-content-emphasis",
+        link: "text-content-info underline-offset-4 hover:underline",
+        accent: "bg-bg-info text-content-info",
+        "accent-alt": "bg-bg-attention text-content-attention",
+        success: "bg-bg-success text-content-success",
+        warning: "bg-bg-warning text-content-warning",
+        info: "bg-bg-info text-content-info",
       },
     },
     defaultVariants: {

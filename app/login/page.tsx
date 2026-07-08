@@ -13,7 +13,7 @@ export default function LoginPage() {
             </h1>
           </div>
         </div>
-        <div className="card shadow-[var(--shadow-md)] p-8 rounded-[12px] bg-card border border-border">
+        <div className="card p-8">
           <LoginForm />
         </div>
       </div>

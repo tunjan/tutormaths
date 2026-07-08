@@ -46,8 +46,8 @@ export default async function StudentDashboard() {
           unread={unread.has(nextAssignment.id)}
         />
       ) : (
-        <div className="rounded-[12px] border border-border-soft bg-surface-paper p-6 text-center shadow-[var(--shadow-sm)]">
-          <h2 className="text-xl font-semibold tracking-tight text-text-heading">
+        <div className="rounded-xl border border-border-subtle bg-card p-6 text-center">
+          <h2 className="text-xl font-semibold text-content-emphasis">
             Nothing due right now
           </h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-text-muted">
@@ -64,14 +64,14 @@ export default async function StudentDashboard() {
       {nextAssignment && (
         <>
           <div className="mb-4 mt-10 flex items-baseline justify-between border-b border-border-strong pb-3">
-            <h2 className="text-h4 font-semibold tracking-tight text-foreground">Active Tasks</h2>
-            <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-h4 font-semibold text-foreground">Active tasks</h2>
+            <span className="font-mono text-xs text-muted-foreground">
               {remainingActive.length} more
             </span>
           </div>
 
           {remainingActive.length > 0 ? (
-            <div className="mb-10 flex flex-col overflow-hidden rounded-[12px] border border-border-strong bg-surface-raised shadow-[var(--shadow-sm)] divide-y divide-border-strong stagger-children">
+            <div className="mb-10 flex flex-col overflow-hidden rounded-xl border border-border-subtle bg-card divide-y divide-border-muted stagger-children">
               {remainingActive.map((a) => (
                 <div key={a.id} className="animate-fade-in">
                   <AssignmentRow
@@ -87,7 +87,7 @@ export default async function StudentDashboard() {
               ))}
             </div>
           ) : (
-            <p className="mb-10 rounded-[12px] border border-border-soft bg-surface-muted p-5 text-center text-sm text-text-muted">
+            <p className="mb-10 rounded-xl border border-border-subtle bg-bg-muted p-5 text-center text-sm text-content-subtle">
               That is your only active task.
             </p>
           )}
@@ -97,12 +97,12 @@ export default async function StudentDashboard() {
       {completed.length > 0 && (
         <div className="animate-fade-in mt-10" style={{ animationDelay: '100ms' }}>
           <div className="mb-4 flex items-baseline justify-between border-b border-border-strong pb-3">
-            <h2 className="text-h4 font-semibold tracking-tight text-foreground">Completed</h2>
-            <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            <h2 className="text-h4 font-semibold text-foreground">Completed</h2>
+            <span className="font-mono text-xs text-muted-foreground">
               {completed.length} task{completed.length === 1 ? "" : "s"}
             </span>
           </div>
-          <div className="flex flex-col overflow-hidden rounded-[12px] border border-border-strong bg-surface-raised shadow-[var(--shadow-sm)] divide-y divide-border-strong stagger-children">
+          <div className="flex flex-col overflow-hidden rounded-xl border border-border-subtle bg-card divide-y divide-border-muted stagger-children">
             {completed.map((a) => (
               <div key={a.id} className="animate-fade-in">
                 <AssignmentRow
@@ -177,11 +177,11 @@ function UpNextCard({
   const pattern = CARD_PATTERNS[patternSeed % CARD_PATTERNS.length];
 
   return (
-    <section className="relative overflow-hidden rounded-[16px] border border-border-strong bg-surface-paper shadow-[var(--shadow-sm)]">
+    <section className="relative overflow-hidden rounded-xl border border-border-subtle bg-card">
       <div className="grid gap-0 lg:grid-cols-[1fr_auto]">
         <div className="p-6 md:p-7">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border-soft bg-surface-raised px-3 py-1 text-xs font-semibold uppercase tracking-wider text-text-subtle">
+            <span className="inline-flex items-center gap-2 rounded-md border border-border-subtle bg-bg-subtle px-2 py-0.5 text-xs font-medium text-content-subtle">
               <CalendarClock className="size-3.5" />
               Up next
             </span>
@@ -196,7 +196,7 @@ function UpNextCard({
             />
           </div>
 
-          <h2 className="mt-5 max-w-3xl text-2xl font-semibold leading-tight tracking-tight text-text-heading sm:text-3xl">
+          <h2 className="mt-5 max-w-3xl text-2xl font-semibold leading-tight text-content-emphasis sm:text-3xl">
             {assignment.title}
           </h2>
           <p className="mt-3 text-sm text-text-muted">
@@ -205,7 +205,7 @@ function UpNextCard({
           </p>
 
           <div className="mt-6 w-full max-w-[220px]">
-            <div className="mb-2 flex items-center justify-between text-xs font-medium uppercase tracking-wider text-text-subtle">
+            <div className="mb-2 flex items-center justify-between text-xs font-medium text-content-subtle">
               <span>Progress</span>
               <span className="font-mono">{assignment.completion_pct}%</span>
             </div>
@@ -227,7 +227,7 @@ function UpNextCard({
       <Link
         href={`/student/assignments/${assignment.id}`}
         aria-label={`Open task: ${assignment.title}`}
-        className="group absolute bottom-5 right-5 z-10 inline-flex size-12 items-center justify-center rounded-full border border-border-strong bg-primary text-primary-foreground shadow-[var(--shadow-md)] transition-all duration-200 hover:scale-105 hover:shadow-[var(--shadow-lg)] focus-visible:scale-105"
+        className="group absolute bottom-5 right-5 z-10 inline-flex size-12 items-center justify-center rounded-full border border-primary bg-primary text-primary-foreground transition-all duration-150 hover:ring-4 hover:ring-border-subtle focus-visible:ring-4 focus-visible:ring-border-subtle"
       >
         <ArrowUpRight className="size-5 transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
       </Link>

@@ -47,11 +47,11 @@ export function FileDropzone({
       aria-disabled={!interactive}
       aria-live="polite"
       className={cn(
-        "flex flex-col items-center justify-center gap-3 rounded-[8px] border border-dashed px-6 py-8 text-center text-sm transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+        "flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed px-6 py-8 text-center text-sm transition-colors focus-within:outline-none focus-within:ring-4 focus-within:ring-border-subtle",
         interactive ? "cursor-pointer" : "cursor-default opacity-80",
         dragging
-          ? "border-foreground bg-surface-muted text-foreground"
-          : "border-border-strong bg-background text-muted-foreground hover:border-text-subtle",
+          ? "border-border-emphasis bg-bg-muted text-foreground"
+          : "border-border-subtle bg-card text-content-subtle hover:border-border-emphasis",
       )}
     >
       {busy ? (
@@ -75,7 +75,7 @@ export function FileDropzone({
           <span className="max-w-[18rem] text-xs leading-5 text-muted-foreground">
             Drag a file here, or click to choose. {hint}.
           </span>
-          <span className="rounded-md border border-border bg-surface-muted px-3 py-1 text-xs font-medium text-foreground">
+          <span className="rounded-md border border-border-subtle bg-bg-subtle px-3 py-1 text-xs font-medium text-content-emphasis">
             Choose file
           </span>
         </>

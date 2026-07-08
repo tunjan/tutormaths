@@ -135,13 +135,13 @@ function AttentionPanel({
 
   if (clean) {
     return (
-      <section className="rounded-[12px] border border-border-soft bg-surface-paper p-5 shadow-[var(--shadow-sm)]">
+      <section className="rounded-xl border border-border-subtle bg-card p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-wider text-text-subtle">
+            <p className="text-xs font-medium text-content-subtle">
               Attention queue
             </p>
-            <h2 className="mt-1 text-xl font-semibold tracking-tight text-text-heading">
+            <h2 className="mt-1 text-xl font-semibold text-content-emphasis">
               Nothing needs review right now
             </h2>
             <p className="mt-1 text-sm text-text-muted">
@@ -217,21 +217,21 @@ function AttentionCard({
   const inner = (
     <div
       className={cn(
-        "flex h-full items-start gap-4 rounded-[12px] border p-5 shadow-[var(--shadow-sm)] transition-all",
+        "flex h-full items-start gap-4 rounded-xl border p-5 transition-all duration-150",
         disabled
           ? "border-border-soft bg-surface-muted text-text-muted"
-          : `${toneClass} hover:-translate-y-[1px] hover:shadow-[var(--shadow-md)]`,
+          : `${toneClass} hover:border-border-emphasis`,
       )}
     >
-      <span className="mt-1 grid size-10 shrink-0 place-items-center rounded-[10px] border border-current/20 bg-surface-raised/70">
+      <span className="mt-1 grid size-10 shrink-0 place-items-center rounded-lg border border-current/20 bg-card/70">
         {icon}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-semibold uppercase tracking-wider opacity-80">
+        <p className="text-xs font-medium opacity-80">
           {label}
         </p>
         <div className="mt-2 flex items-end gap-3">
-          <span className="font-metric text-5xl font-bold leading-none">
+          <span className="font-metric text-5xl font-semibold leading-none">
             {value}
           </span>
           {!disabled && (
@@ -277,16 +277,16 @@ function StatItem({
   const inner = (
     <div
       className={cn(
-        "flex h-full select-none flex-col gap-3 rounded-[12px] border p-5 shadow-[var(--shadow-sm)] transition-all",
-        href && "hover:-translate-y-[1px] hover:shadow-[var(--shadow-md)]",
+        "flex h-full select-none flex-col gap-3 rounded-xl border p-5 transition-all duration-150",
+        href && "hover:border-border-emphasis",
         toneClass,
       )}
     >
-      <span className="flex items-center justify-between gap-3 text-xs font-semibold uppercase tracking-wider text-text-subtle">
+      <span className="flex items-center justify-between gap-3 text-xs font-medium text-content-subtle">
         {label}
         {icon && <span className="text-text-muted">{icon}</span>}
       </span>
-      <span className="font-metric text-4xl font-bold leading-none text-text-heading lg:text-5xl">
+      <span className="font-metric text-4xl font-semibold leading-none text-content-emphasis lg:text-5xl">
         {value}
       </span>
     </div>
@@ -307,7 +307,7 @@ function Onboarding() {
   return (
     <div className="flex flex-col items-center justify-center gap-6 py-24 text-center animate-fade-in">
       <div className="space-y-4 max-w-md mx-auto">
-        <h2 className="text-h3 font-semibold text-foreground tracking-tight">Welcome to Maths Tasks</h2>
+        <h2 className="text-h3 font-semibold text-foreground">Welcome to Maths Tasks</h2>
         <p className="text-body text-text-muted leading-[1.6]">
           Get set up in two steps: invite a student, then send them their first
           assignment. You&rsquo;ll review their work and track progress right

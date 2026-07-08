@@ -76,6 +76,8 @@ export function NotificationBell({
   }, [supabase, userId]);
 
   const unread = items.filter((i) => !i.read_at).length;
+  const triggerLabel =
+    unread > 0 ? `Notifications (${unread} unread)` : "Notifications";
 
   async function markRead(ids: string[]) {
     if (ids.length === 0) return;
@@ -108,9 +110,8 @@ export function NotificationBell({
             variant="ghost"
             size="icon-sm"
             className="relative"
-            aria-label={
-              unread > 0 ? `Notifications (${unread} unread)` : "Notifications"
-            }
+            aria-label={triggerLabel}
+            title={triggerLabel}
           >
             <Bell />
             {unread > 0 && (

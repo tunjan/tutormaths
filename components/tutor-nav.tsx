@@ -2,7 +2,7 @@
 
 import { Link } from "next-view-transitions";
 import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
+import { BookOpen, Home, Menu, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/popover";
 
 const links = [
-  { href: "/tutor", label: "Dashboard", exact: true },
-  { href: "/tutor/students", label: "Students" },
-  { href: "/tutor/library", label: "Library" },
+  { href: "/tutor", label: "Dashboard", exact: true, icon: Home },
+  { href: "/tutor/students", label: "Students", icon: Users },
+  { href: "/tutor/library", label: "Library", icon: BookOpen },
 ];
 
 function isActive(pathname: string, href: string, exact?: boolean) {
@@ -26,53 +26,64 @@ export function TutorNav() {
 
   return (
     <>
-      <nav className="hidden items-center gap-4 md:flex" aria-label="Primary">
+      <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
         {links.map((l) => {
           const active = isActive(pathname, l.href, l.exact);
+          const Icon = l.icon;
           return (
             <Link
               key={l.href}
               href={l.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "navbar-link text-sm font-medium transition-colors",
+                "inline-flex h-9 items-center gap-2 rounded-lg px-3 text-sm font-medium text-content-default transition-all duration-150 hover:bg-content-emphasis/5 hover:text-content-emphasis focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-border-subtle",
                 active
-                  ? "text-[#1a1a1a] dark:text-[#f4f1ea] font-semibold"
-                  : "text-[#5b564d] hover:text-[#1a1a1a] dark:text-[#b3ac9f] dark:hover:text-[#f4f1ea]",
+                  ? "bg-bg-info text-content-info hover:bg-bg-info hover:text-content-info"
+                  : "text-content-default",
               )}
             >
+              <Icon className="size-4 shrink-0" strokeWidth={1.75} />
               {l.label}
             </Link>
           );
         })}
       </nav>
 
-      {/* Mobile: a menu popover. */}
       <div className="md:hidden">
         <Popover>
           <PopoverTrigger
             render={
-              <Button variant="ghost" size="icon-sm" aria-label="Open menu">
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Open menu"
+                title="Open menu"
+              >
                 <Menu />
               </Button>
             }
           />
-          <PopoverContent align="start" className="w-56 p-1.5">
-            <ul className="flex flex-col">
+          <PopoverContent align="start" sideOffset={8} className="w-64 p-1">
+            <div className="px-3 py-2 text-xs font-medium text-content-subtle">
+              Menu
+            </div>
+            <ul className="flex flex-col gap-1">
               {links.map((l) => {
                 const active = isActive(pathname, l.href, l.exact);
+                const Icon = l.icon;
                 return (
                   <li key={l.href}>
                     <Link
                       href={l.href}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "relative block rounded-[6px] px-3 py-2 text-sm transition-colors",
+                        "flex h-9 items-center gap-2 rounded-lg px-3 text-sm font-medium text-content-default transition-all duration-150 hover:bg-content-emphasis/5 hover:text-content-emphasis focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-border-subtle",
                         active
-                          ? "bg-[#efebe1] dark:bg-[#1d1b16] font-semibold text-[#1a1a1a] dark:text-[#f4f1ea]"
-                          : "text-[#5b564d] hover:bg-[#f4f1ea] dark:text-[#b3ac9f] dark:hover:bg-[#1a1a1a]",
+                          ? "bg-bg-info text-content-info hover:bg-bg-info hover:text-content-info"
+                          : "text-content-default",
                       )}
                     >
+                      <Icon className="size-4 shrink-0" strokeWidth={1.75} />
                       {l.label}
                     </Link>
                   </li>

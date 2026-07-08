@@ -16,10 +16,10 @@ export function TutorSettingsDialog({ initialWindows }: { initialWindows: number
         variant="ghost"
         size="icon-sm"
         aria-label="Settings"
+        title="Settings"
         onClick={() => setOpen(true)}
-        className="rounded-full"
       >
-        <Settings className="size-[18px]" strokeWidth={1.5} />
+        <Settings />
       </Button>
 
       <Modal

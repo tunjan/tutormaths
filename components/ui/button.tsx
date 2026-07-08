@@ -4,32 +4,35 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all duration-200 cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap border text-sm font-medium transition-all duration-150 cursor-pointer disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-border-subtle disabled:bg-bg-subtle disabled:text-content-muted [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-border-subtle",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground border border-primary hover:bg-accent-ink-dark",
+          "border-primary bg-primary text-primary-foreground hover:bg-content-default hover:ring-4 hover:ring-border-subtle",
         outline:
-          "border border-border-strong bg-surface-raised text-foreground hover:bg-surface-muted hover:border-text-subtle",
+          "border-border-subtle bg-card text-content-emphasis hover:border-border-emphasis hover:bg-bg-muted hover:ring-4 hover:ring-border-subtle",
         secondary:
-          "bg-surface-muted text-text-heading border border-border-strong hover:bg-surface-hover",
-        ghost: "bg-transparent text-text-muted hover:bg-surface-hover hover:text-text-heading",
-        soft: "bg-accent-ink-subtle text-accent-ink hover:bg-accent-ink-subtle/70",
+          "border-border-subtle bg-bg-subtle text-content-emphasis hover:bg-bg-emphasis hover:ring-4 hover:ring-border-subtle",
+        ghost:
+          "border-transparent bg-transparent text-content-default hover:bg-content-emphasis/5 hover:text-content-emphasis",
+        soft:
+          "border-transparent bg-bg-info text-content-info hover:ring-4 hover:ring-bg-info",
         destructive:
-          "bg-destructive text-white hover:bg-[var(--status-overdue)] dark:bg-destructive",
-        link: "text-accent-ink hover:text-accent-ink-dark underline-offset-4 hover:underline",
+          "border-destructive bg-destructive text-white hover:ring-4 hover:ring-bg-error",
+        link:
+          "border-transparent bg-transparent text-content-info underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-10 px-5 text-sm rounded-[12px]",
-        sm: "h-8 px-4 text-xs rounded-[8px]",
-        md: "h-10 px-5 text-sm rounded-[12px]",
-        lg: "h-12 px-6 text-base rounded-[12px]",
-        xl: "h-14 px-8 text-lg rounded-[12px]",
-        icon: "h-10 w-10 rounded-[12px]",
-        "icon-xs": "h-8 w-8 rounded-[8px] [&_svg]:size-3",
-        "icon-sm": "h-9 w-9 rounded-[12px]",
-        "icon-lg": "h-14 w-14 rounded-[12px] [&_svg]:size-6",
+        default: "h-10 px-3 text-sm rounded-lg",
+        sm: "h-8 px-2.5 text-xs rounded-md",
+        md: "h-10 px-3 text-sm rounded-lg",
+        lg: "h-11 px-4 text-sm rounded-lg",
+        xl: "h-12 px-5 text-base rounded-lg",
+        icon: "size-10 rounded-lg",
+        "icon-xs": "size-8 rounded-md [&_svg]:size-3",
+        "icon-sm": "size-9 rounded-lg",
+        "icon-lg": "size-12 rounded-lg [&_svg]:size-5",
       },
     },
     defaultVariants: {

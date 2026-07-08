@@ -25,9 +25,7 @@ function AlertDialogContent({
       <AlertDialogPrimitive.Popup
         data-slot="alert-dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 flex w-full max-w-[420px] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-[var(--modal-radius)] bg-card p-9 text-card-foreground border border-[#efebe1] dark:border-[#322f29] duration-150 outline-hidden",
-          "shadow-[0_0_0_1px_rgba(0,0,0,0.03),0_2px_4px_rgba(0,0,0,0.04),0_12px_40px_rgba(0,0,0,0.08)]",
-          "dark:shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_2px_4px_rgba(0,0,0,0.2),0_12px_40px_rgba(0,0,0,0.4)]",
+          "fixed top-1/2 left-1/2 z-50 flex w-full max-w-[420px] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-[var(--modal-radius)] border border-border-subtle bg-card p-8 text-card-foreground shadow-[var(--shadow-lg)] duration-150 outline-hidden",
           className,
         )}
         {...props}
@@ -63,7 +61,7 @@ function AlertDialogTitle({
   return (
     <AlertDialogPrimitive.Title
       data-slot="alert-dialog-title"
-      className={cn("font-heading text-[26px] font-bold leading-[1.15] tracking-[-0.02em]", className)}
+      className={cn("font-heading text-h2 font-semibold leading-tight text-content-emphasis", className)}
       {...props}
     />
   );
@@ -76,7 +74,7 @@ function AlertDialogDescription({
   return (
     <AlertDialogPrimitive.Description
       data-slot="alert-dialog-description"
-      className={cn("text-[15px] text-[#8a8478] dark:text-[#b3ac9f] leading-relaxed", className)}
+      className={cn("text-sm leading-relaxed text-content-subtle", className)}
       {...props}
     />
   );
@@ -90,9 +88,7 @@ function AlertDialogAction({
     <AlertDialogPrimitive.Close
       data-slot="alert-dialog-action"
       className={cn(
-        "inline-flex items-center justify-center h-12 px-5 text-[15px] font-semibold rounded-[var(--btn-radius)] transition-all duration-150 cursor-pointer",
-        "bg-[#1a1a1a] text-white hover:bg-[#1a1a1a] dark:bg-white dark:text-black dark:hover:bg-[#efebe1]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "inline-flex h-10 cursor-pointer items-center justify-center rounded-[var(--btn-radius)] border border-primary bg-primary px-3 text-sm font-medium text-primary-foreground transition-all duration-150 hover:ring-4 hover:ring-border-subtle focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-border-subtle",
         className
       )}
       {...props}
@@ -108,10 +104,7 @@ function AlertDialogCancel({
     <AlertDialogPrimitive.Close
       data-slot="alert-dialog-cancel"
       className={cn(
-        "inline-flex items-center justify-center h-12 px-5 text-[15px] font-semibold rounded-[var(--btn-radius)] transition-all duration-150 cursor-pointer",
-        "bg-white text-[#5b564d] border border-[#e4dfd4] hover:bg-[#f4f1ea] hover:text-[#1a1a1a] hover:border-[#cfc9bc]",
-        "dark:bg-transparent dark:text-[#b3ac9f] dark:border-[#333] dark:hover:bg-[#1d1b16] dark:hover:text-white",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "inline-flex h-10 cursor-pointer items-center justify-center rounded-[var(--btn-radius)] border border-border-subtle bg-card px-3 text-sm font-medium text-content-emphasis transition-all duration-150 hover:border-border-emphasis hover:bg-bg-muted hover:ring-4 hover:ring-border-subtle focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-border-subtle",
         className
       )}
       {...props}

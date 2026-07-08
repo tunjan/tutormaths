@@ -117,12 +117,12 @@ export function AssignmentCalendar({
       </div>
 
       {/* Grid */}
-      <div className="overflow-hidden rounded-[12px] border border-border-strong bg-surface-raised shadow-[var(--shadow-sm)]">
-        <div className="grid grid-cols-7 border-b border-border-strong bg-surface-muted">
+      <div className="overflow-hidden rounded-xl border border-border-subtle bg-card">
+        <div className="grid grid-cols-7 border-b border-border-subtle bg-bg-muted">
           {WEEKDAYS.map((d) => (
             <div
               key={d}
-              className="px-2 py-2 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-text-subtle"
+              className="px-2 py-2 text-center font-mono text-[11px] font-medium text-content-subtle"
             >
               <span className="hidden sm:inline">{d}</span>
               <span className="sm:hidden">{d[0]}</span>
@@ -130,7 +130,7 @@ export function AssignmentCalendar({
           ))}
         </div>
 
-        <div className="grid grid-cols-7 divide-x divide-border-strong border-b border-transparent">
+        <div className="grid grid-cols-7 divide-x divide-border-muted border-b border-transparent">
           {cells.map((date, i) => {
             const key = dayKey(date);
             const inMonth = date.getMonth() === cursor.getMonth();
@@ -145,7 +145,7 @@ export function AssignmentCalendar({
                 aria-pressed={isSelected}
                 aria-label={`${formatDate(date.toISOString())}, ${items.length} due`}
                 className={cn(
-                  "group/cell relative flex min-h-[68px] flex-col gap-1 border-b border-border-strong p-2 text-left transition-colors sm:min-h-[104px] outline-none",
+                  "group/cell relative flex min-h-[68px] flex-col gap-1 border-b border-border-muted p-2 text-left transition-colors sm:min-h-[104px] outline-none",
                   (i + 1) % 7 === 0 && "border-r-0",
                   i >= 35 && "border-b-0",
                   inMonth ? "bg-surface-raised" : "bg-surface-muted/55",
@@ -201,15 +201,15 @@ export function AssignmentCalendar({
 
       {/* Selected-day agenda */}
       <div className="flex flex-col gap-3">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-text-subtle">
+        <h3 className="text-xs font-medium text-content-subtle">
           {formatDate(new Date(selectedKey + "T00:00:00").toISOString())}
         </h3>
         {selected.length === 0 ? (
-          <p className="card border border-border-soft p-6 text-center text-sm text-text-subtle shadow-[var(--shadow-sm)]">
+          <p className="card p-6 text-center text-sm text-content-subtle">
             Nothing due this day.
           </p>
         ) : (
-          <div className="flex flex-col overflow-hidden rounded-[12px] border border-border-strong bg-surface-raised shadow-[var(--shadow-sm)] divide-y divide-border-strong">
+          <div className="flex flex-col overflow-hidden rounded-xl border border-border-subtle bg-card divide-y divide-border-muted">
             {selected.map((a) => {
               const TypeIcon = a.type === "reading_notes" ? BookOpen : FileText;
               return (
@@ -268,10 +268,10 @@ function CalendarChip({
       onClick={(e) => e.stopPropagation()}
       title={a.title}
       className={cn(
-        "flex items-center gap-1.5 rounded-[4px] px-1.5 py-0.5 text-[11px] leading-tight transition-colors w-full border border-transparent",
+        "flex items-center gap-1.5 rounded-sm px-1.5 py-0.5 text-[11px] leading-tight transition-colors w-full border border-transparent",
         done
           ? "bg-surface-hover text-text-subtle line-through hover:bg-surface-selected"
-          : "bg-primary/[0.04] text-text-heading hover:bg-primary/[0.08] dark:bg-white/[0.06] dark:hover:bg-white/10",
+          : "bg-bg-muted text-text-heading hover:bg-bg-subtle",
       )}
     >
       <span
@@ -282,7 +282,7 @@ function CalendarChip({
       />
       <span className="truncate">{a.title}</span>
       {unread && !done && (
-        <span className="ml-auto size-1.5 shrink-0 rounded-full bg-[#b3463a]" />
+        <span className="ml-auto size-1.5 shrink-0 rounded-full bg-content-info" />
       )}
     </Link>
   );

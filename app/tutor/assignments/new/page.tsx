@@ -4,7 +4,6 @@ import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { NewAssignmentForm } from "./new-assignment-form";
 import { Card, CardContent } from "@/components/ui/card";
-import { SectionHeading } from "@/components/ui/section-heading";
 import { BackLink } from "@/components/ui/back-link";
 
 const tips = [
@@ -73,7 +72,26 @@ export default async function NewAssignmentPage({
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-8 lg:grid-cols-[1.7fr_1fr] lg:items-start">
+        <div className="flex flex-col gap-6">
+          {/* How it works — a horizontal strip so the form below gets full width
+              for its fields-and-live-preview layout. */}
+          <ul className="grid gap-4 sm:grid-cols-3">
+            {tips.map(({ icon: Icon, title, body }) => (
+              <li
+                key={title}
+                className="flex gap-3 rounded-panel border border-border-soft bg-muted/30 p-4"
+              >
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-card text-primary ring-1 ring-foreground/10">
+                  <Icon className="size-4" />
+                </span>
+                <div className="flex flex-col gap-0.5">
+                  <p className="text-sm font-medium">{title}</p>
+                  <p className="text-sm text-muted-foreground">{body}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+
           <Card>
             <CardContent className="py-2">
               <NewAssignmentForm
@@ -83,27 +101,6 @@ export default async function NewAssignmentPage({
               />
             </CardContent>
           </Card>
-
-          <aside className="lg:sticky lg:top-24">
-            <Card className="bg-muted/30">
-              <CardContent className="flex flex-col gap-5">
-                <SectionHeading>How it works</SectionHeading>
-                <ul className="flex flex-col gap-5">
-                  {tips.map(({ icon: Icon, title, body }) => (
-                    <li key={title} className="flex gap-3">
-                      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-card text-primary ring-1 ring-foreground/10">
-                        <Icon className="size-4" />
-                      </span>
-                      <div className="flex flex-col gap-0.5">
-                        <p className="text-sm font-medium">{title}</p>
-                        <p className="text-sm text-muted-foreground">{body}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          </aside>
         </div>
       )}
     </div>

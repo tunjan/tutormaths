@@ -41,10 +41,9 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex w-fit items-center justify-between gap-1.5 rounded-[8px] border border-[#e4dfd4] bg-white py-2 pr-2.5 pl-3.5 text-sm whitespace-nowrap transition-all duration-200 outline-none select-none",
-        "focus-visible:border-black focus-visible:ring-[3px] focus-visible:ring-black/5 disabled:cursor-not-allowed disabled:opacity-55",
-        "data-placeholder:text-[#b3ac9f] data-[size=default]:h-10 data-[size=sm]:h-8 data-[size=sm]:rounded-[6px]",
-        "dark:bg-black dark:border-[#322f29] dark:focus-visible:border-white dark:focus-visible:ring-white/5",
+        "flex w-fit items-center justify-between gap-1.5 rounded-lg border border-border-subtle bg-card py-2 pr-2.5 pl-3 text-sm whitespace-nowrap transition-all duration-150 outline-none select-none",
+        "focus-visible:border-border-emphasis focus-visible:ring-4 focus-visible:ring-border-subtle disabled:cursor-not-allowed disabled:opacity-55",
+        "data-placeholder:text-content-muted data-[size=default]:h-10 data-[size=sm]:h-8 data-[size=sm]:rounded-md",
         "*:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
@@ -53,7 +52,7 @@ function SelectTrigger({
       {children}
       <SelectPrimitive.Icon
         render={
-          <ChevronDownIcon className="pointer-events-none size-4 text-muted-foreground" />
+          <ChevronDownIcon className="pointer-events-none size-4 text-content-subtle" />
         }
       />
     </SelectPrimitive.Trigger>
@@ -88,7 +87,7 @@ function SelectContent({
           data-slot="select-content"
           data-align-trigger={alignItemWithTrigger}
           className={cn(
-            "relative isolate z-[2100] max-h-(--available-height) w-(--anchor-width) min-w-36 origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-[10px] bg-card p-1 text-foreground shadow-[var(--shadow-lg)] border border-[#e4dfd4] dark:border-[#322f29] duration-100 data-[align-trigger=true]:animate-none data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+            "relative isolate z-[2100] max-h-(--available-height) w-(--anchor-width) min-w-36 origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-lg border border-border-subtle bg-card p-1 text-foreground shadow-[var(--shadow-lg)] duration-150 data-[align-trigger=true]:animate-none data-[side=bottom]:slide-in-from-top-1 data-[side=inline-end]:slide-in-from-left-1 data-[side=inline-start]:slide-in-from-right-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
             className
           )}
           {...props}
@@ -109,7 +108,7 @@ function SelectLabel({
   return (
     <SelectPrimitive.GroupLabel
       data-slot="select-label"
-      className={cn("px-1.5 py-1 text-xs text-[#8a8478] dark:text-[#b3ac9f]", className)}
+      className={cn("px-1.5 py-1 text-xs font-medium text-content-subtle", className)}
       {...props}
     />
   )
@@ -127,7 +126,7 @@ function SelectItem({
       label={resolvedLabel}
       className={cn(
         "relative flex w-full cursor-default items-center gap-1.5 rounded-[6px] py-1.5 pr-8 pl-2.5 text-sm outline-hidden select-none",
-        "focus:bg-[#efebe1] focus:text-[#1a1a1a] dark:focus:bg-[#1d1b16] dark:focus:text-[#f4f1ea]",
+        "focus:bg-bg-muted focus:text-content-emphasis",
         "data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className
       )}

@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { MultiFileDropzone } from "@/components/ui/multi-file-dropzone";
 import { LatexContent } from "@/components/ui/latex-content";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
   Select,
   SelectContent,
@@ -361,34 +362,14 @@ export function NewAssignmentForm({
 
       <div className="flex flex-col gap-1.5">
         <Label>Assignment content</Label>
-        <div className="inline-flex rounded-[10px] border border-[#e4dfd4] dark:border-[#322f29] bg-[#f4f1ea] dark:bg-[#1d1b16] p-1 self-start">
-          <button
-            type="button"
-            onClick={() => setSource("file")}
-            aria-pressed={source === "file"}
-            className={cn(
-              "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors",
-              source === "file"
-                ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
-                : "text-[#8a8478] dark:text-[#b3ac9f] hover:text-foreground",
-            )}
-          >
-            Upload files
-          </button>
-          <button
-            type="button"
-            onClick={() => setSource("latex")}
-            aria-pressed={source === "latex"}
-            className={cn(
-              "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors",
-              source === "latex"
-                ? "bg-card text-foreground shadow-[var(--shadow-sm)]"
-                : "text-[#8a8478] dark:text-[#b3ac9f] hover:text-foreground",
-            )}
-          >
-            Write LaTeX
-          </button>
-        </div>
+        <SegmentedControl
+          value={source}
+          onValueChange={setSource}
+          options={[
+            { value: "file", label: "Upload files" },
+            { value: "latex", label: "Write LaTeX" },
+          ]}
+        />
 
         {source === "file" ? (
           <>
@@ -420,7 +401,7 @@ export function NewAssignmentForm({
                 setErrors((er) => ({ ...er, latex: undefined }));
               }}
             />
-            <p className="text-xs text-[#8a8478] dark:text-[#b3ac9f]">
+            <p className="text-xs text-muted-foreground">
               Markdown with inline <code>$…$</code> and display{" "}
               <code>$$…$$</code> maths.
             </p>
@@ -433,12 +414,12 @@ export function NewAssignmentForm({
         {/* RIGHT COLUMN — live preview */}
         <div className="flex flex-col gap-1.5">
           <Label>Preview</Label>
-          <div className="flex-1 min-h-[18rem] rounded-[12px] border border-[#e4dfd4] dark:border-[#322f29] bg-[#f4f1ea] dark:bg-[#1a1a1a] p-5 overflow-auto">
+          <div className="flex-1 min-h-[18rem] rounded-panel border border-border-soft bg-surface-inset p-5 overflow-auto">
             {source === "latex" ? (
               latexBody.trim() ? (
                 <LatexContent source={latexBody} />
               ) : (
-                <p className="text-sm text-[#8a8478] dark:text-[#b3ac9f]">
+                <p className="text-sm text-muted-foreground">
                   Start typing LaTeX on the left to see it rendered here.
                 </p>
               )
@@ -460,13 +441,13 @@ export function NewAssignmentForm({
                       key={`${f.name}-${i}`}
                       className="flex items-center gap-3 text-sm text-foreground"
                     >
-                      <FileText className="size-5 shrink-0 text-[#8a8478] dark:text-[#b3ac9f]" />
+                      <FileText className="size-5 shrink-0 text-muted-foreground" />
                       <span className="truncate">{f.name}</span>
                     </div>
                   ))}
               </div>
             ) : (
-              <p className="text-sm text-[#8a8478] dark:text-[#b3ac9f]">
+              <p className="text-sm text-muted-foreground">
                 Choose files on the left to preview them here.
               </p>
             )}
@@ -474,9 +455,9 @@ export function NewAssignmentForm({
         </div>
       </div>
 
-      <div className="flex flex-col-reverse gap-3 border-t border-[#efebe1] dark:border-[#322f29] pt-5 sm:flex-row sm:items-center sm:justify-end">
+      <div className="flex flex-col-reverse gap-3 border-t border-border-soft pt-5 sm:flex-row sm:items-center sm:justify-end">
         {globalError && (
-          <div className="sm:mr-auto rounded-[8px] border border-destructive/30 bg-[#f6ece9] dark:bg-[#b3463a]/10 dark:text-[#cf8a7e] px-3 py-2 text-sm text-destructive" role="alert">
+          <div className="sm:mr-auto rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
             {globalError}
           </div>
         )}

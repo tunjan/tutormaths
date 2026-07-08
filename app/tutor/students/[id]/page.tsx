@@ -50,10 +50,10 @@ export default async function StudentDetailPage({
 
         <div className="flex items-start justify-between gap-4 mt-2">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+            <h1 className="text-h1 font-semibold text-foreground">
               {student.full_name || student.email}
             </h1>
-            <p className="mt-1 text-sm text-[#5b564d] dark:text-[#b3ac9f]">
+            <p className="mt-1 text-sm text-content-subtle">
               {student.email} · joined {formatDate(student.created_at)}
             </p>
           </div>
@@ -105,7 +105,7 @@ type AssignmentItem = {
 
 function AssignmentList({ items }: { items: AssignmentItem[] }) {
   return (
-    <div className="flex flex-col stagger-children border border-[#e4dfd4] dark:border-[#322f29] rounded-[12px] divide-y divide-[#e4dfd4] dark:divide-[#322f29] bg-card overflow-hidden shadow-[var(--shadow-sm)]">
+    <div className="flex flex-col stagger-children overflow-hidden rounded-xl border border-border-subtle bg-card divide-y divide-border-muted">
       {items.map((a) => (
         <AssignmentRow
           key={a.id}
@@ -123,9 +123,9 @@ function AssignmentList({ items }: { items: AssignmentItem[] }) {
 
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="card card-interactive flex flex-col gap-1 p-6 select-none shadow-[var(--shadow-sm)]">
-      <span className="text-xs font-semibold text-[#8a8478] dark:text-[#b3ac9f] uppercase tracking-wider">{label}</span>
-      <span className="font-metric text-3xl font-bold text-[#1a1a1a] dark:text-[#f4f1ea] leading-none mt-1">
+    <div className="card card-interactive flex select-none flex-col gap-1 p-6">
+      <span className="text-xs font-medium text-content-subtle">{label}</span>
+      <span className="font-metric mt-1 text-3xl font-semibold leading-none text-content-emphasis">
         {value}
       </span>
     </div>
@@ -149,7 +149,7 @@ function Section({
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="card border border-border p-6 text-center text-sm text-[#8a8478] dark:text-[#b3ac9f] shadow-[var(--shadow-sm)] bg-card rounded-[12px]">
+    <p className="card p-6 text-center text-sm text-content-subtle">
       {children}
     </p>
   );

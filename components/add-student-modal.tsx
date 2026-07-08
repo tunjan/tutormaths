@@ -73,12 +73,12 @@ export function AddStudentModal({
           <p className="text-sm font-semibold text-foreground">
             Share this link with {created.fullName}
           </p>
-          <p className="text-sm text-[#5b564d] dark:text-[#b3ac9f]">
+          <p className="text-sm text-content-subtle">
             When they open it, they&rsquo;ll choose their email and a password.
             You can copy it again later from the students list.
           </p>
           <div className="flex items-center gap-2">
-            <code className="flex-1 truncate rounded-[8px] bg-muted border border-border px-3 py-2.5 text-sm text-foreground">
+            <code className="flex-1 truncate rounded-md border border-border-subtle bg-bg-muted px-3 py-2.5 text-sm text-foreground">
               {created.link}
             </code>
             <Button
@@ -114,7 +114,7 @@ export function AddStudentModal({
 
           {error && (
             <p
-              className="rounded-[8px] border border-destructive/30 bg-[#f6ece9] dark:bg-[#b3463a]/10 dark:text-[#cf8a7e] px-3 py-2 text-sm text-destructive"
+              className="rounded-md border border-content-error/20 bg-bg-error px-3 py-2 text-sm text-content-error"
               role="alert"
             >
               {error}

@@ -88,7 +88,7 @@ export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[];
             <Empty>No active assignments match your search.</Empty>
           ) : (
             <div className="flex flex-col items-center justify-center gap-6 py-24 text-center animate-fade-in mt-4">
-              <p className="text-muted-foreground text-[16px]">No active assignments yet.</p>
+              <p className="text-base text-content-subtle">No active assignments yet.</p>
               <Link
                 href="/tutor/assignments/new"
                 className={cn(buttonVariants({ variant: "default", size: "sm" }))}
@@ -137,14 +137,14 @@ function SectionHead({
         )}
         <h2
           className={cn(
-            "text-h4 font-semibold tracking-tight",
+            "text-h4 font-semibold",
             muted ? "text-text-subtle" : "text-text-heading"
           )}
         >
           {title}
         </h2>
       </div>
-      <span className="font-mono text-xs uppercase tracking-wider text-text-subtle">
+      <span className="font-mono text-xs text-content-subtle">
         {count} assignment{count === 1 ? "" : "s"}
       </span>
     </div>
@@ -153,7 +153,7 @@ function SectionHead({
 
 function List({ items }: { items: BrowserItem[] }) {
   return (
-    <div className="flex flex-col stagger-children overflow-hidden rounded-[12px] border border-border-strong bg-surface-raised shadow-[var(--shadow-sm)] divide-y divide-border-strong">
+    <div className="flex flex-col stagger-children overflow-hidden rounded-xl border border-border-subtle bg-card divide-y divide-border-muted">
       {items.map((a) => (
         <div key={a.id} className="animate-fade-in">
           <AssignmentRow
@@ -174,7 +174,7 @@ function List({ items }: { items: BrowserItem[] }) {
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="px-6 py-12 text-center text-[16px] text-text-subtle">
+    <p className="px-6 py-12 text-center text-base text-content-subtle">
       {children}
     </p>
   );

@@ -287,7 +287,7 @@ function UploadModal({
         </div>
 
         {error && (
-          <p className="rounded-[8px] border border-destructive/30 bg-[#f6ece9] dark:bg-[#b3463a]/10 dark:text-[#cf8a7e] px-3 py-2 text-sm text-destructive" role="alert">
+          <p className="rounded-md border border-content-error/20 bg-bg-error px-3 py-2 text-sm text-content-error" role="alert">
             {error}
           </p>
         )}

@@ -39,7 +39,7 @@ export default async function InvitePage({
         </p>
       </div>
 
-      <Card className="w-full max-w-md gap-6 shadow-[var(--shadow-md)]">
+      <Card className="w-full max-w-md gap-6">
         {valid ? (
           <>
             <CardHeader className="gap-2 text-center">
@@ -58,7 +58,7 @@ export default async function InvitePage({
         ) : (
           <>
             <CardHeader className="gap-2 text-center">
-              <CardTitle className="text-xl font-semibold text-[#b3463a]">
+              <CardTitle className="text-xl font-semibold text-content-error">
                 This link is no longer valid
               </CardTitle>
               <CardDescription>

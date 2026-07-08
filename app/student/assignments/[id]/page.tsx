@@ -15,11 +15,6 @@ import { MarkAssignmentRead } from "@/components/mark-assignment-read";
 import { MarkAssignmentOpened } from "@/components/mark-assignment-opened";
 import { RequestHomeworkButton } from "@/components/request-homework-button";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BUCKET_ASSIGNMENTS, BUCKET_SUBMISSIONS } from "@/lib/constants";
@@ -27,7 +22,9 @@ import {
   formatDateTime,
   typeLabel,
   fileLabel,
+  mimeFromPath,
 } from "@/lib/format";
+import { FilePreview } from "@/components/ui/file-preview";
 
 function SectionHeader({
   eyebrow,
@@ -79,6 +76,8 @@ export default async function StudentAssignmentPage({
   const attachments = await Promise.all(
     (files ?? []).map(async (f) => ({
       id: f.id,
+      name: fileLabel(f.file_path),
+      mimeType: f.mime_type || mimeFromPath(f.file_path),
       url: await signedUrl(BUCKET_ASSIGNMENTS, f.file_path),
     })),
   );
@@ -153,46 +152,38 @@ export default async function StudentAssignmentPage({
               <SectionHeader eyebrow="01" title="Problem material" />
 
               {attachments.length > 0 ? (
-                <div className="grid gap-3">
+                <div className="grid gap-4">
                   {attachments.map((f) => (
-                    <div
-                      key={f.id}
-                      className="flex items-center justify-between gap-4 rounded-panel border border-border-soft bg-surface-paper/90 p-5"
-                    >
-                      <div className="flex min-w-0 flex-col gap-1">
-                        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                          Document
-                        </span>
-                        <span className="text-sm font-medium text-foreground">
-                          Assignment material
-                        </span>
+                    <div key={f.id} className="flex flex-col gap-2">
+                      <div className="overflow-hidden rounded-panel border border-border-soft">
+                        {f.url ? (
+                          <FilePreview
+                            url={f.url}
+                            mimeType={f.mimeType}
+                            title={f.name}
+                          />
+                        ) : (
+                          <div className="p-8 text-center text-sm text-muted-foreground">
+                            Couldn&rsquo;t load this file.
+                          </div>
+                        )}
                       </div>
                       {f.url && (
-                        <Tooltip>
-                          <TooltipTrigger
-                            render={
-                              <a
-                                href={f.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                download
-                                aria-label="Download assignment material"
-                                className={cn(
-                                  buttonVariants({
-                                    variant: "outline",
-                                    size: "icon-sm",
-                                  }),
-                                  "shrink-0",
-                                )}
-                              />
-                            }
-                          >
-                            <Download data-icon="inline-start" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Download material</p>
-                          </TooltipContent>
-                        </Tooltip>
+                        <a
+                          href={f.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download
+                          className={cn(
+                            buttonVariants({ variant: "ghost", size: "default" }),
+                            "self-start",
+                          )}
+                        >
+                          <Download data-icon="inline-start" />
+                          {f.mimeType.startsWith("image/")
+                            ? "Download image"
+                            : "Download PDF"}
+                        </a>
                       )}
                     </div>
                   ))}
@@ -258,9 +249,11 @@ export default async function StudentAssignmentPage({
               </div>
             </section>
 
-            {/* ── Keep the momentum going (promo) ──────────────────── */}
-            <section className="flex flex-col items-start gap-4 p-6 md:p-8">
-              <SectionHeader eyebrow="04" title="Keep the momentum going" />
+            {/* ── Keep the momentum going (quiet promo, not a numbered step) ── */}
+            <section className="flex flex-wrap items-center justify-between gap-3 px-6 py-5 md:px-8">
+              <p className="text-sm text-muted-foreground">
+                Finished early? Ask your tutor for more.
+              </p>
               <RequestHomeworkButton label="Request extra practice" />
             </section>
           </div>

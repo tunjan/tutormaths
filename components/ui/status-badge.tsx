@@ -17,7 +17,7 @@ import {
  */
 function AwaitingReviewChip() {
   return (
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-status-review-border bg-status-review-bg px-2.5 py-[3px] text-[12px] font-medium tracking-wide text-status-review">
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-status-review-border bg-status-review-bg px-2 py-0.5 text-xs font-medium text-status-review">
       {/* pulsing indicator */}
       <span className="relative flex size-[6px] shrink-0" aria-hidden>
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-status-review opacity-60 [animation-duration:1.8s]" />
@@ -29,12 +29,11 @@ function AwaitingReviewChip() {
 }
 
 /**
- * "Due Soon" — warm amber pill. The solid amber dot mirrors a clock ticking.
- * Gradient gives it a subtle warmth without being alarming.
+ * "Due soon" uses the attention pair because the student has something to do.
  */
 function DueSoonChip() {
   return (
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-status-due-border bg-status-due-bg px-2.5 py-[3px] text-[12px] font-medium tracking-wide text-status-due">
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-status-due-border bg-status-due-bg px-2 py-0.5 text-xs font-medium text-status-due">
       <span
         className="size-[6px] shrink-0 rounded-full bg-status-due"
         aria-hidden
@@ -45,14 +44,13 @@ function DueSoonChip() {
 }
 
 /**
- * "Upcoming" — clean slate pill. Quiet confidence: not urgent, not inert.
- * Slate tones keep it neutral and readable in both light and dark modes.
+ * "Upcoming" stays neutral so it does not compete with action states.
  */
 function UpcomingChip() {
   return (
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-border-strong bg-surface-muted px-2.5 py-[3px] text-[12px] font-medium tracking-wide text-text-subtle">
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-border-subtle bg-bg-subtle px-2.5 py-[3px] text-xs font-medium text-content-subtle">
       <span
-        className="size-[6px] shrink-0 rounded-full bg-text-subtle/55"
+        className="size-[6px] shrink-0 rounded-full bg-content-subtle/55"
         aria-hidden
       />
       Upcoming
@@ -66,7 +64,7 @@ function UpcomingChip() {
 
 type GenericContent = {
   label: string;
-  variant: "success" | "warning" | "destructive";
+  variant: "success" | "accent-alt" | "destructive";
   dot: string;
 };
 
@@ -76,14 +74,14 @@ function genericContent(status: AssignmentStatus): GenericContent | null {
       return {
         label: reviewLabel("approved"),
         variant: "success",
-        dot: "bg-green-500 dark:bg-green-400",
+        dot: "bg-content-success",
       };
     }
     if (status.review === "needs_work") {
       return {
         label: reviewLabel("needs_work"),
-        variant: "warning",
-        dot: "bg-orange-400 dark:bg-orange-300",
+        variant: "accent-alt",
+        dot: "bg-content-attention",
       };
     }
     // submitted → handled by bespoke chip above
@@ -94,7 +92,7 @@ function genericContent(status: AssignmentStatus): GenericContent | null {
     return {
       label: dueLabel("overdue"),
       variant: "destructive",
-      dot: "bg-red-500",
+      dot: "bg-content-error",
     };
   }
 
@@ -137,7 +135,7 @@ export function AssignmentStatusBadge({
   return (
     <Badge
       variant={generic.variant}
-      className="gap-1.5 shadow-none rounded-[6px] px-2 py-0.5 text-[13px] font-normal border border-transparent"
+      className="gap-1.5 shadow-none"
     >
       <span className={`size-1.5 rounded-full ${generic.dot}`} aria-hidden />
       {generic.label}

@@ -61,18 +61,18 @@ export function MultiFileDropzone({
         aria-disabled={!interactive}
         aria-live="polite"
         className={cn(
-          "flex flex-col items-center justify-center gap-2 rounded-[8px] border border-dashed px-6 py-8 text-center text-sm transition-colors focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#1a1a1a] dark:focus-within:ring-white",
+          "flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed px-6 py-8 text-center text-sm transition-colors focus-within:outline-none focus-within:ring-4 focus-within:ring-border-subtle",
           interactive ? "cursor-pointer" : "cursor-default opacity-80",
           dragging
-            ? "border-black dark:border-white bg-[#f4f1ea] dark:bg-[#1a1a1a] text-foreground"
-            : "border-[#e4dfd4] dark:border-[#322f29] bg-transparent text-[#8a8478] dark:text-[#b3ac9f] hover:border-[#b3ac9f] dark:hover:border-[#8a8478]",
+            ? "border-border-emphasis bg-bg-muted text-foreground"
+            : "border-border-subtle bg-transparent text-content-subtle hover:border-border-emphasis",
         )}
       >
-        <UploadCloud className="mb-1 size-5 text-[#8a8478] dark:text-[#b3ac9f]" />
+        <UploadCloud className="mb-1 size-5 text-content-subtle" />
         <span className="font-semibold text-foreground">
           Drag files here, or click to choose
         </span>
-        <span className="text-xs text-[#8a8478] dark:text-[#b3ac9f]">{hint}</span>
+        <span className="text-xs text-content-subtle">{hint}</span>
         <input
           ref={inputRef}
           type="file"
@@ -94,12 +94,12 @@ export function MultiFileDropzone({
           {existing.map((f) => (
             <li
               key={f.id}
-              className="flex items-center gap-2 rounded-[8px] border border-[#e4dfd4] dark:border-[#322f29] bg-card px-3 py-2 text-sm"
+              className="flex items-center gap-2 rounded-lg border border-border-subtle bg-card px-3 py-2 text-sm"
             >
               {isImage(f.mimeType) ? (
-                <ImageIcon className="size-4 shrink-0 text-[#8a8478] dark:text-[#b3ac9f]" />
+                <ImageIcon className="size-4 shrink-0 text-content-subtle" />
               ) : (
-                <FileText className="size-4 shrink-0 text-[#8a8478] dark:text-[#b3ac9f]" />
+                <FileText className="size-4 shrink-0 text-content-subtle" />
               )}
               <span className="flex-1 truncate text-foreground">{f.name}</span>
               {onRemoveExisting && (
@@ -108,7 +108,7 @@ export function MultiFileDropzone({
                   aria-label={`Remove ${f.name}`}
                   disabled={!interactive}
                   onClick={() => onRemoveExisting(f.id)}
-                  className="shrink-0 rounded-full p-0.5 text-[#8a8478] hover:bg-[#efebe1] hover:text-foreground dark:text-[#b3ac9f] dark:hover:bg-[#322f29]"
+                  className="shrink-0 rounded-full p-0.5 text-content-subtle hover:bg-content-emphasis/5 hover:text-foreground"
                 >
                   <X className="size-4" />
                 </button>
@@ -118,12 +118,12 @@ export function MultiFileDropzone({
           {files.map((f, i) => (
             <li
               key={`${f.name}-${i}`}
-              className="flex items-center gap-2 rounded-[8px] border border-[#e4dfd4] dark:border-[#322f29] bg-card px-3 py-2 text-sm"
+              className="flex items-center gap-2 rounded-lg border border-border-subtle bg-card px-3 py-2 text-sm"
             >
               {f.type.startsWith("image/") ? (
-                <ImageIcon className="size-4 shrink-0 text-[#8a8478] dark:text-[#b3ac9f]" />
+                <ImageIcon className="size-4 shrink-0 text-content-subtle" />
               ) : (
-                <FileText className="size-4 shrink-0 text-[#8a8478] dark:text-[#b3ac9f]" />
+                <FileText className="size-4 shrink-0 text-content-subtle" />
               )}
               <span className="flex-1 truncate text-foreground">{f.name}</span>
               <button
@@ -131,7 +131,7 @@ export function MultiFileDropzone({
                 aria-label={`Remove ${f.name}`}
                 disabled={!interactive}
                 onClick={() => onRemove(i)}
-                className="shrink-0 rounded-full p-0.5 text-[#8a8478] hover:bg-[#efebe1] hover:text-foreground dark:text-[#b3ac9f] dark:hover:bg-[#322f29]"
+                className="shrink-0 rounded-full p-0.5 text-content-subtle hover:bg-content-emphasis/5 hover:text-foreground"
               >
                 <X className="size-4" />
               </button>

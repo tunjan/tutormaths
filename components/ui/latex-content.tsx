@@ -31,9 +31,9 @@ export function LatexContent({
         "[&_li]:my-1 [&_li]:pl-1",
         "[&_strong]:font-semibold [&_em]:italic",
         "[&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2",
-        "[&_code]:rounded [&_code]:bg-[#f4f1ea] dark:[&_code]:bg-[#322f29] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-[0.875em] [&_code]:font-mono",
-        "[&_pre]:my-3 [&_pre]:overflow-x-auto [&_pre]:rounded-[8px] [&_pre]:bg-[#f4f1ea] dark:[&_pre]:bg-[#1d1b16] [&_pre]:p-4 [&_pre_code]:bg-transparent [&_pre_code]:p-0",
-        "[&_blockquote]:border-l-2 [&_blockquote]:border-[#e4dfd4] dark:[&_blockquote]:border-[#322f29] [&_blockquote]:pl-4 [&_blockquote]:text-[#5b564d] dark:[&_blockquote]:text-[#b3ac9f]",
+        "[&_code]:rounded [&_code]:bg-bg-subtle [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-[0.875em] [&_code]:font-mono",
+        "[&_pre]:my-3 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-bg-muted [&_pre]:p-4 [&_pre_code]:bg-transparent [&_pre_code]:p-0",
+        "[&_blockquote]:border-l-2 [&_blockquote]:border-border-subtle [&_blockquote]:pl-4 [&_blockquote]:text-content-subtle",
         "[&_.katex-display]:my-4 [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden",
         className,
       )}
