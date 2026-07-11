@@ -7,20 +7,38 @@ import { Modal } from "@/components/ui/modal";
 import { ReminderWindowsField } from "@/components/reminder-windows-field";
 import { updateReminderWindows } from "@/app/tutor/actions";
 
-export function TutorSettingsDialog({ initialWindows }: { initialWindows: number[] }) {
+export function TutorSettingsDialog({
+  initialWindows,
+  presentation = "icon",
+}: {
+  initialWindows: number[];
+  presentation?: "icon" | "menu";
+}) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        aria-label="Settings"
-        title="Settings"
-        onClick={() => setOpen(true)}
-      >
-        <Settings />
-      </Button>
+      {presentation === "menu" ? (
+        <Button
+          variant="ghost"
+          size="default"
+          className="w-full justify-start"
+          onClick={() => setOpen(true)}
+        >
+          <Settings data-icon="inline-start" />
+          Settings
+        </Button>
+      ) : (
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Settings"
+          title="Settings"
+          onClick={() => setOpen(true)}
+        >
+          <Settings />
+        </Button>
+      )}
 
       <Modal
         open={open}

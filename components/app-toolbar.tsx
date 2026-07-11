@@ -1,12 +1,8 @@
 import type { ReactNode } from "react";
 import { Link } from "next-view-transitions";
+import { AccountMenu } from "@/components/account-menu";
 import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
-
-function accountInitial(email: string | null | undefined, fallback: string) {
-  const source = email?.trim() || fallback;
-  return source.charAt(0).toUpperCase();
-}
 
 export function AppToolbar({
   homeHref,
@@ -14,7 +10,8 @@ export function AppToolbar({
   roleLabel,
   userEmail,
   nav,
-  controls,
+  notification,
+  accountActions,
   maxWidthClassName,
 }: {
   homeHref: string;
@@ -22,56 +19,43 @@ export function AppToolbar({
   roleLabel: string;
   userEmail?: string | null;
   nav: ReactNode;
-  controls: ReactNode;
+  notification: ReactNode;
+  accountActions: ReactNode;
   maxWidthClassName: string;
 }) {
-  const accountLabel = userEmail ?? roleLabel;
-
   return (
-    <header className="sticky top-0 z-40 border-b border-border-subtle bg-bg-default/95 backdrop-blur supports-[backdrop-filter]:bg-bg-default/85">
+    <header className="sticky top-0 z-40 border-b border-border-subtle bg-bg-default/95 backdrop-blur-md supports-[backdrop-filter]:bg-bg-default/85">
       <div
         className={cn(
-          "mx-auto flex min-h-16 w-full items-center gap-3 px-4 sm:px-6",
+          "mx-auto grid min-h-16 w-full grid-cols-[auto_1fr_auto] items-center gap-2 px-4 sm:px-6 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]",
           maxWidthClassName,
         )}
       >
         <Link
           href={homeHref}
           aria-label={homeLabel}
-          className="group flex min-w-0 items-center gap-2 rounded-lg py-1 pr-2 text-content-emphasis transition-all duration-150 hover:text-content-emphasis focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-border-subtle"
+          className="flex h-10 min-w-0 items-center gap-2.5 rounded-lg text-content-emphasis focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-border-subtle"
         >
-          <span className="grid size-8 shrink-0 place-items-center rounded-lg border border-border-subtle bg-bg-default transition-all duration-150 group-hover:bg-bg-muted group-hover:ring-4 group-hover:ring-border-subtle">
-            <Logo className="size-3" />
+          <Logo />
+          <span className="hidden truncate text-sm font-semibold tracking-[-0.01em] min-[380px]:inline">
+            Maths Tasks
           </span>
-          <span className="hidden min-w-0 flex-col sm:flex">
-            <span className="truncate text-sm font-semibold leading-5 text-content-emphasis">
-              Maths Tasks
-            </span>
-            <span className="truncate text-xs font-medium leading-4 text-content-subtle">
-              {roleLabel}
-            </span>
+          <span className="hidden truncate text-xs font-normal text-content-muted lg:inline">
+            {roleLabel}
           </span>
         </Link>
 
-        <span
-          className="hidden h-6 w-px shrink-0 bg-border-subtle md:block"
-          aria-hidden="true"
-        />
+        <div className="flex min-w-0 items-center justify-end md:justify-center">
+          {nav}
+        </div>
 
-        <div className="min-w-0 flex-1">{nav}</div>
-
-        <div className="ml-auto flex shrink-0 items-center gap-2">
-          <div className="flex items-center gap-1 rounded-lg border border-border-subtle bg-bg-default p-1">
-            {controls}
-          </div>
-          <span
-            className="hidden size-8 shrink-0 place-items-center rounded-full border border-border-subtle bg-bg-muted text-xs font-medium tabular-nums text-content-default sm:grid"
-            role="img"
-            aria-label={`${accountLabel} account`}
-            title={accountLabel}
-          >
-            {accountInitial(userEmail, roleLabel)}
-          </span>
+        <div className="flex min-w-0 items-center justify-end gap-0.5">
+          {notification}
+          <AccountMenu
+            roleLabel={roleLabel}
+            userEmail={userEmail}
+            actions={accountActions}
+          />
         </div>
       </div>
     </header>

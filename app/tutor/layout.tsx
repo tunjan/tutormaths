@@ -32,12 +32,12 @@ export default async function TutorLayout({
         userEmail={ctx.email}
         maxWidthClassName="max-w-6xl"
         nav={<TutorNav />}
-        controls={
+        notification={<NotificationBell userId={ctx.userId} role="tutor" />}
+        accountActions={
           <>
-            <NotificationBell userId={ctx.userId} role="tutor" />
-            <TutorSettingsDialog initialWindows={initialWindows} />
-            <ThemeToggle />
-            <SignOutButton />
+            <TutorSettingsDialog initialWindows={initialWindows} presentation="menu" />
+            <ThemeToggle presentation="menu" />
+            <SignOutButton presentation="menu" />
           </>
         }
       />

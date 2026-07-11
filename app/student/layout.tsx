@@ -21,11 +21,11 @@ export default async function StudentLayout({
         userEmail={ctx.email}
         maxWidthClassName="max-w-5xl"
         nav={<StudentNav />}
-        controls={
+        notification={<NotificationBell userId={ctx.userId} role="student" />}
+        accountActions={
           <>
-            <NotificationBell userId={ctx.userId} role="student" />
-            <ThemeToggle />
-            <SignOutButton />
+            <ThemeToggle presentation="menu" />
+            <SignOutButton presentation="menu" />
           </>
         }
       />
