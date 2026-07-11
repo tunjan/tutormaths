@@ -8,6 +8,7 @@ interface StudentOption {
   id: string;
   full_name: string;
   email: string | null;
+  pending?: boolean;
 }
 
 /** Dialog wrapper around the new-assignment form. On success the form

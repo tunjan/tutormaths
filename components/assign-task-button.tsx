@@ -10,6 +10,7 @@ interface StudentOption {
   id: string;
   full_name: string;
   email: string | null;
+  pending?: boolean;
 }
 
 /** "Assign task" button that opens the new-assignment dialog. */

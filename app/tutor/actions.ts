@@ -17,6 +17,8 @@ export interface AssignmentFileInput {
 export interface CreateAssignmentInput {
   id: string; // pre-generated UUID (also used as the storage folder)
   studentId: string;
+  /** True when studentId is a student_invites id rather than a profile id. */
+  pendingInvite?: boolean;
   type: "problem_set" | "reading_notes";
   title: string;
   description: string | null;
@@ -49,6 +51,46 @@ export async function createAssignment(
   const primaryFilePath = input.files[0]?.filePath ?? null;
 
   const supabase = await createClient();
+
+  if (input.pendingInvite) {
+    const { error: pendingError } = await supabase
+      .from("pending_assignments")
+      .insert({
+        id: input.id,
+        invite_id: input.studentId,
+        tutor_id: ctx.userId,
+        type: input.type,
+        title: input.title.trim(),
+        description: input.description?.trim() || null,
+        file_path: primaryFilePath,
+        due_at: input.dueAt,
+        latex_body: latexBody,
+        category_id: input.categoryId || null,
+      });
+    if (pendingError) throw new Error(pendingError.message);
+
+    if (input.files.length > 0) {
+      const { error: filesError } = await supabase
+        .from("pending_assignment_files")
+        .insert(
+          input.files.map((f, i) => ({
+            pending_assignment_id: input.id,
+            file_path: f.filePath,
+            mime_type: f.mimeType,
+            size_bytes: f.sizeBytes,
+            sort_order: i,
+          })),
+        );
+      if (filesError) {
+        await supabase.from("pending_assignments").delete().eq("id", input.id);
+        throw new Error(filesError.message);
+      }
+    }
+
+    revalidatePath("/tutor");
+    revalidatePath("/tutor/students");
+    redirect("/tutor/students");
+  }
 
   const { error } = await supabase.from("assignments").insert({
     id: input.id,
@@ -97,12 +139,31 @@ export async function revokeInvite(id: string): Promise<void> {
   await requireTutor();
   const supabase = await createClient();
 
+  // The invite cascade removes queued database rows, but Storage objects are
+  // not database-managed, so collect and remove those explicitly.
+  const { data: pending } = await supabase
+    .from("pending_assignments")
+    .select("id")
+    .eq("invite_id", id);
+  const pendingIds = (pending ?? []).map((row) => row.id);
+  let queuedPaths: string[] = [];
+  if (pendingIds.length > 0) {
+    const { data: files } = await supabase
+      .from("pending_assignment_files")
+      .select("file_path")
+      .in("pending_assignment_id", pendingIds);
+    queuedPaths = (files ?? []).map((file) => file.file_path);
+  }
+
   const { error } = await supabase
     .from("student_invites")
     .delete()
     .eq("id", id)
     .is("accepted_at", null);
   if (error) throw new Error(error.message);
+  if (queuedPaths.length > 0) {
+    await supabase.storage.from(BUCKET_ASSIGNMENTS).remove(queuedPaths);
+  }
 
   revalidatePath("/tutor/students");
 }
@@ -290,17 +351,26 @@ export async function reviewSubmission(
  * for the file removal.
  */
 export async function deleteAssignment(id: string): Promise<void> {
+  await deleteAssignments([id]);
+  redirect("/tutor");
+}
+
+/** Deletes one or more dashboard assignments and all associated storage. */
+export async function deleteAssignments(ids: string[]): Promise<void> {
   await requireTutor();
+  const uniqueIds = Array.from(new Set(ids.filter(Boolean))).slice(0, 100);
+  if (uniqueIds.length === 0) return;
+
   const supabase = await createClient();
 
   const { data: files } = await supabase
     .from("assignment_files")
     .select("file_path")
-    .eq("assignment_id", id);
+    .in("assignment_id", uniqueIds);
   const { data: subs } = await supabase
     .from("submissions")
     .select("file_path")
-    .eq("assignment_id", id);
+    .in("assignment_id", uniqueIds);
 
   const admin = createAdminClient();
   if (files && files.length > 0) {
@@ -314,9 +384,11 @@ export async function deleteAssignment(id: string): Promise<void> {
       .remove(subs.map((s) => s.file_path));
   }
 
-  const { error } = await supabase.from("assignments").delete().eq("id", id);
+  const { error } = await supabase
+    .from("assignments")
+    .delete()
+    .in("id", uniqueIds);
   if (error) throw new Error(error.message);
 
   revalidatePath("/tutor");
-  redirect("/tutor");
 }

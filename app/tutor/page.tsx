@@ -17,7 +17,7 @@ export default async function TutorDashboard() {
   await requireTutor();
   const supabase = await createClient();
 
-  const [{ data: assignments }, { data: students }, { data: categories }, unread] =
+  const [{ data: assignments }, { data: students }, { data: invites }, { data: categories }, unread] =
     await Promise.all([
       supabase
         .from("assignments")
@@ -29,6 +29,10 @@ export default async function TutorDashboard() {
         .from("profiles")
         .select("id, full_name, email")
         .eq("role", "student"),
+      supabase
+        .from("student_invites")
+        .select("id, full_name")
+        .is("accepted_at", null),
       supabase.from("categories").select("id, name").order("name"),
       unreadAssignmentIds(),
     ]);
@@ -58,7 +62,15 @@ export default async function TutorDashboard() {
       new Date(a.due_at).getTime() < nowMs,
   ).length;
 
-  const studentOptions = students ?? [];
+  const studentOptions = [
+    ...(students ?? []),
+    ...(invites ?? []).map((invite) => ({
+      id: invite.id,
+      full_name: invite.full_name,
+      email: null,
+      pending: true,
+    })),
+  ];
   const hasStudents = studentOptions.length > 0;
   const needsAttention = awaiting + overdue;
 

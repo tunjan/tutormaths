@@ -14,6 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
+      pending_assignment_files: {
+        Row: {
+          created_at: string
+          file_path: string
+          id: string
+          mime_type: string
+          pending_assignment_id: string
+          size_bytes: number | null
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          file_path: string
+          id?: string
+          mime_type: string
+          pending_assignment_id: string
+          size_bytes?: number | null
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          file_path?: string
+          id?: string
+          mime_type?: string
+          pending_assignment_id?: string
+          size_bytes?: number | null
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      pending_assignments: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          description: string | null
+          due_at: string
+          file_path: string | null
+          id: string
+          invite_id: string
+          latex_body: string | null
+          title: string
+          tutor_id: string
+          type: Database["public"]["Enums"]["assignment_type"]
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_at: string
+          file_path?: string | null
+          id: string
+          invite_id: string
+          latex_body?: string | null
+          title: string
+          tutor_id: string
+          type: Database["public"]["Enums"]["assignment_type"]
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_at?: string
+          file_path?: string | null
+          id?: string
+          invite_id?: string
+          latex_body?: string | null
+          title?: string
+          tutor_id?: string
+          type?: Database["public"]["Enums"]["assignment_type"]
+        }
+        Relationships: []
+      }
       assignment_files: {
         Row: {
           assignment_id: string
@@ -478,6 +550,10 @@ export type Database = {
     Functions: {
       custom_access_token_hook: { Args: { event: Json }; Returns: Json }
       is_tutor: { Args: never; Returns: boolean }
+      redeem_pending_assignments: {
+        Args: { p_invite_id: string; p_student_id: string }
+        Returns: undefined
+      }
       request_more_homework: {
         Args: { p_message?: string | null }
         Returns: undefined

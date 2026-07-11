@@ -33,6 +33,7 @@ interface StudentOption {
   id: string;
   full_name: string;
   email: string | null;
+  pending?: boolean;
 }
 
 const accept = ASSIGNMENT_MIME as readonly string[];
@@ -194,6 +195,7 @@ export function NewAssignmentForm({
       await createAssignment({
         id,
         studentId,
+        pendingInvite: students.find((s) => s.id === studentId)?.pending,
         type,
         title,
         description: description || null,
@@ -250,7 +252,7 @@ export function NewAssignmentForm({
             <SelectContent>
               {students.map((s) => (
                 <SelectItem key={s.id} value={s.id}>
-                  {s.full_name || s.email}
+                  {s.full_name || s.email}{s.pending ? " (invited)" : ""}
                 </SelectItem>
               ))}
             </SelectContent>

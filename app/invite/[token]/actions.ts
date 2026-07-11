@@ -97,6 +97,15 @@ export async function acceptInvite(
     .update({ accepted_user_id: created.user.id })
     .eq("id", invite.id);
 
+  const { error: promoteErr } = await admin.rpc("redeem_pending_assignments", {
+    p_invite_id: invite.id,
+    p_student_id: created.user.id,
+  });
+  if (promoteErr) {
+    console.error("Failed to promote pending assignments", promoteErr);
+    return { error: "Your account was created, but your assignments could not be linked. Please contact your tutor." };
+  }
+
   // Sign them in within the action so the session cookies are set, then go home.
   const supabase = await createClient();
   const { error: signInErr } = await supabase.auth.signInWithPassword({

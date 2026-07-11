@@ -33,20 +33,35 @@ export default async function NewAssignmentPage({
   const { student } = await searchParams;
   const supabase = await createClient();
 
-  const [{ data: students }, { data: categories }] = await Promise.all([
+  const [{ data: students }, { data: invites }, { data: categories }] = await Promise.all([
     supabase
       .from("profiles")
       .select("id, full_name, email")
       .eq("role", "student")
       .order("full_name", { ascending: true }),
+    supabase
+      .from("student_invites")
+      .select("id, full_name")
+      .is("accepted_at", null)
+      .order("full_name"),
     supabase.from("categories").select("id, name").order("name"),
   ]);
 
-  const defaultStudentId = students?.some((s) => s.id === student)
+  const recipients = [
+    ...(students ?? []),
+    ...(invites ?? []).map((invite) => ({
+      id: invite.id,
+      full_name: invite.full_name,
+      email: null,
+      pending: true,
+    })),
+  ];
+
+  const defaultStudentId = recipients.some((s) => s.id === student)
     ? student
     : "";
 
-  const hasStudents = students && students.length > 0;
+  const hasStudents = recipients.length > 0;
 
   return (
     <div className="flex flex-col gap-8">
@@ -95,7 +110,7 @@ export default async function NewAssignmentPage({
           <Card>
             <CardContent className="py-2">
               <NewAssignmentForm
-                students={students}
+                students={recipients}
                 categories={categories ?? []}
                 defaultStudentId={defaultStudentId}
               />

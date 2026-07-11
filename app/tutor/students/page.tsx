@@ -45,6 +45,15 @@ export default async function StudentsPage() {
     full_name: s.full_name ?? "",
     email: s.email,
   }));
+  const recipientOptions = [
+    ...studentOptions,
+    ...(invites ?? []).map((invite) => ({
+      id: invite.id,
+      full_name: invite.full_name,
+      email: null,
+      pending: true,
+    })),
+  ];
 
   const hasAnyone = (students?.length ?? 0) + (invites?.length ?? 0) > 0;
 
@@ -103,7 +112,7 @@ export default async function StudentsPage() {
 
                 <div className="mt-4 border-t border-border pt-4">
                   <AssignTaskButton
-                    students={studentOptions}
+                    students={recipientOptions}
                     categories={categories ?? []}
                     defaultStudentId={s.id}
                     variant="outline"
@@ -142,6 +151,14 @@ export default async function StudentsPage() {
                 </p>
 
                 <div className="mt-4 border-t border-border pt-4">
+                  <AssignTaskButton
+                    students={recipientOptions}
+                    categories={categories ?? []}
+                    defaultStudentId={inv.id}
+                    variant="outline"
+                    size="sm"
+                    className="mb-2 w-full"
+                  />
                   <PendingInviteActions inviteId={inv.id} token={inv.token} />
                 </div>
               </div>
