@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { Link } from "next-view-transitions";
-import { Clock, Inbox, Search, Trash2, X } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { deleteAssignments } from "@/app/tutor/actions";
 import { Input } from "@/components/ui/input";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,35 +34,90 @@ export interface BrowserItem {
   unread: boolean;
 }
 
-export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[]; nowMs: number }) {
+type AssignmentFilter = "focus" | "active" | "completed" | "all";
+
+const filterOptions = [
+  { value: "focus", label: "Focus" },
+  { value: "active", label: "Active" },
+  { value: "completed", label: "Done" },
+  { value: "all", label: "All" },
+] satisfies { value: AssignmentFilter; label: string }[];
+
+const filterDescriptions: Record<AssignmentFilter, string> = {
+  focus: "Assignments that need a decision or follow-up.",
+  active: "Open assignments currently on track.",
+  completed: "Approved assignments.",
+  all: "Every assignment in one place.",
+};
+
+function isOpen(item: BrowserItem) {
+  return item.review_status === "assigned" || item.review_status === "needs_work";
+}
+
+function needsFocus(item: BrowserItem, nowMs: number) {
+  return (
+    item.review_status === "submitted" ||
+    (isOpen(item) && new Date(item.due_at).getTime() < nowMs)
+  );
+}
+
+function defaultFilter(items: BrowserItem[], nowMs: number): AssignmentFilter {
+  if (items.some((item) => needsFocus(item, nowMs))) return "focus";
+  if (
+    items.some(
+      (item) =>
+        isOpen(item) && new Date(item.due_at).getTime() >= nowMs,
+    )
+  ) {
+    return "active";
+  }
+  if (items.some((item) => item.review_status === "approved")) {
+    return "completed";
+  }
+  return "all";
+}
+
+export function TutorAssignmentBrowser({
+  items,
+  nowMs,
+}: {
+  items: BrowserItem[];
+  nowMs: number;
+}) {
+  const [filter, setFilter] = useState<AssignmentFilter>(() =>
+    defaultFilter(items, nowMs),
+  );
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [deleteIds, setDeleteIds] = useState<string[]>([]);
   const [deleting, startDelete] = useTransition();
 
-  const { matched, awaiting, overdue, active, completed } = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const matched = q
-      ? items.filter(
-        (a) =>
-          a.title.toLowerCase().includes(q) ||
-          a.student.toLowerCase().includes(q),
-      )
-      : items;
-    const isLate = (a: BrowserItem) => new Date(a.due_at).getTime() < nowMs;
-    const open = matched.filter(
-      (a) => a.review_status === "assigned" || a.review_status === "needs_work",
-    );
-    return {
-      matched,
-      awaiting: matched.filter((a) => a.review_status === "submitted"),
-      overdue: open.filter(isLate),
-      active: open.filter((a) => !isLate(a)),
-      completed: matched.filter((a) => a.review_status === "approved"),
-    };
-  }, [items, query, nowMs]);
+  const visible = useMemo(() => {
+    const source = items.filter((item) => {
+      if (filter === "focus") return needsFocus(item, nowMs);
+      if (filter === "active") {
+        return isOpen(item) && new Date(item.due_at).getTime() >= nowMs;
+      }
+      if (filter === "completed") return item.review_status === "approved";
+      return true;
+    });
 
-  const allMatchedSelected = matched.length > 0 && matched.every((a) => selected.has(a.id));
+    const q = query.trim().toLowerCase();
+    if (!q) return source;
+    return source.filter(
+      (item) =>
+        item.title.toLowerCase().includes(q) ||
+        item.student.toLowerCase().includes(q),
+    );
+  }, [filter, items, nowMs, query]);
+
+  const allVisibleSelected =
+    visible.length > 0 && visible.every((item) => selected.has(item.id));
+
+  function changeFilter(nextFilter: AssignmentFilter) {
+    setFilter(nextFilter);
+    setSelected(new Set());
+  }
 
   function toggle(id: string) {
     setSelected((current) => {
@@ -87,7 +142,9 @@ export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[];
           ids.forEach((id) => next.delete(id));
           return next;
         });
-        toast.success(`${ids.length} assignment${ids.length === 1 ? "" : "s"} deleted.`);
+        toast.success(
+          `${ids.length} assignment${ids.length === 1 ? "" : "s"} deleted.`,
+        );
       } catch (error) {
         toast.error((error as Error).message);
       } finally {
@@ -97,184 +154,184 @@ export function TutorAssignmentBrowser({ items, nowMs }: { items: BrowserItem[];
   }
 
   return (
-    <div className="flex flex-col gap-10">
-      <div className="flex flex-col gap-3">
-      <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-text-subtle" />
-        <Input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by assignment or student…"
-          aria-label="Search assignments"
-          className="h-11 pl-11 pr-4"
+    <section
+      aria-labelledby="assignments-heading"
+      className="overflow-hidden rounded-xl border border-border-subtle bg-card"
+    >
+      <div className="flex flex-col gap-5 border-b border-border-soft p-5 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <h2
+              id="assignments-heading"
+              className="text-xl font-semibold text-content-emphasis"
+            >
+              Assignments
+            </h2>
+            <p className="mt-1 text-sm text-content-subtle">
+              {filterDescriptions[filter]}
+            </p>
+          </div>
+          <Input
+            type="search"
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setSelected(new Set());
+            }}
+            placeholder="Search assignments"
+            aria-label="Search assignments"
+            className="w-full sm:w-72"
+          />
+        </div>
+
+        <SegmentedControl
+          value={filter}
+          onValueChange={changeFilter}
+          options={filterOptions}
+          className="grid w-full grid-cols-4 sm:w-auto"
         />
       </div>
-        {items.length > 0 && (
-          <div className="flex min-h-10 items-center justify-between gap-3 rounded-lg border border-border-subtle bg-bg-subtle px-3 py-2">
-            <label className="flex cursor-pointer items-center gap-2.5 text-xs font-medium text-content-emphasis">
-              <Checkbox
-                checked={allMatchedSelected}
-                onCheckedChange={() => {
-                  setSelected((current) => {
-                    const next = new Set(current);
-                    if (allMatchedSelected) matched.forEach((a) => next.delete(a.id));
-                    else matched.forEach((a) => next.add(a.id));
-                    return next;
-                  });
-                }}
-                aria-label="Select all matching assignments"
-              />
-              {allMatchedSelected ? "Clear matching" : `Select all${query ? " matching" : ""}`}
-            </label>
-            {selected.size > 0 && (
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-xs text-content-subtle">{selected.size} selected</span>
-                <Button variant="ghost" size="icon-xs" onClick={() => setSelected(new Set())} aria-label="Clear selection">
-                  <X />
-                </Button>
-                <Button variant="destructive" size="sm" disabled={deleting} onClick={() => confirmDelete(Array.from(selected))}>
-                  <Trash2 /> Delete
-                </Button>
-              </div>
-            )}
+
+      <div className="flex min-h-12 items-center justify-between gap-3 border-b border-border-soft bg-bg-muted/45 px-4 py-2">
+        {visible.length > 0 ? (
+          <label className="flex cursor-pointer items-center gap-2.5 text-xs font-medium text-content-subtle">
+            <Checkbox
+              checked={allVisibleSelected}
+              onCheckedChange={() => {
+                setSelected((current) => {
+                  const next = new Set(current);
+                  if (allVisibleSelected) {
+                    visible.forEach((item) => next.delete(item.id));
+                  } else {
+                    visible.forEach((item) => next.add(item.id));
+                  }
+                  return next;
+                });
+              }}
+              aria-label="Select all visible assignments"
+            />
+            {visible.length} assignment{visible.length === 1 ? "" : "s"}
+          </label>
+        ) : (
+          <span className="text-xs font-medium text-content-subtle">
+            0 assignments
+          </span>
+        )}
+
+        {selected.size > 0 && (
+          <div className="flex items-center gap-2">
+            <span className="hidden font-mono text-xs text-content-subtle sm:inline">
+              {selected.size} selected
+            </span>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={() => setSelected(new Set())}
+              aria-label="Clear selection"
+            >
+              <X data-icon="inline-start" />
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={deleting}
+              onClick={() => confirmDelete(Array.from(selected))}
+            >
+              <Trash2 data-icon="inline-start" />
+              Delete
+            </Button>
           </div>
         )}
       </div>
 
-      {awaiting.length > 0 && (
-        <section id="awaiting" className="scroll-mt-24">
-          <SectionHead
-            icon={<Inbox className="size-4" />}
-            title="Awaiting your review"
-            count={awaiting.length}
-          />
-          <List items={awaiting} selected={selected} onToggle={toggle} onDelete={(id) => confirmDelete([id])} />
-        </section>
+      {visible.length > 0 ? (
+        <AssignmentList
+          items={visible}
+          selected={selected}
+          onToggle={toggle}
+          onDelete={(id) => confirmDelete([id])}
+        />
+      ) : (
+        <EmptyState query={query} filter={filter} />
       )}
 
-      {overdue.length > 0 && (
-        <section id="overdue" className="scroll-mt-24">
-          <SectionHead
-            icon={<Clock className="size-4" />}
-            title="Overdue"
-            count={overdue.length}
-          />
-          <List items={overdue} selected={selected} onToggle={toggle} onDelete={(id) => confirmDelete([id])} />
-        </section>
-      )}
-
-      <div className="flex flex-col gap-3">
-        <SectionHead title="Active assignments" count={active.length} />
-        {active.length === 0 ? (
-          query ? (
-            <Empty>No active assignments match your search.</Empty>
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-6 py-24 text-center animate-fade-in mt-4">
-              <p className="text-base text-content-subtle">No active assignments yet.</p>
-              <Link
-                href="/tutor/assignments/new"
-                className={cn(buttonVariants({ variant: "default", size: "sm" }))}
-              >
-                Create an assignment
-              </Link>
-            </div>
-          )
-        ) : (
-          <List items={active} selected={selected} onToggle={toggle} onDelete={(id) => confirmDelete([id])} />
-        )}
-      </div>
-
-      {(completed.length > 0 || query.trim()) && (
-        <section>
-          <SectionHead title="Completed" count={completed.length} muted />
-          {completed.length > 0 ? (
-            <List items={completed} selected={selected} onToggle={toggle} onDelete={(id) => confirmDelete([id])} />
-          ) : (
-            <Empty>No completed assignments match your search.</Empty>
-          )}
-        </section>
-      )}
-      <AlertDialog open={deleteIds.length > 0} onOpenChange={(open) => !open && setDeleteIds([])}>
+      <AlertDialog
+        open={deleteIds.length > 0}
+        onOpenChange={(open) => !open && setDeleteIds([])}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete {deleteIds.length === 1 ? "this assignment" : `${deleteIds.length} assignments`}?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Delete {deleteIds.length === 1 ? "this assignment" : `${deleteIds.length} assignments`}?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Submissions, comments and uploaded files will be permanently removed. This can&rsquo;t be undone.
+              Submissions, comments and uploaded files will be permanently
+              removed. This can&rsquo;t be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="border-destructive bg-destructive text-white hover:ring-bg-error" onClick={runDelete}>
+            <AlertDialogAction
+              className="border-destructive bg-destructive text-white hover:ring-bg-error"
+              onClick={runDelete}
+            >
               Delete {deleteIds.length === 1 ? "assignment" : "assignments"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </section>
   );
 }
 
-function SectionHead({
-  title,
-  count,
-  icon,
-  muted,
+function AssignmentList({
+  items,
+  selected,
+  onToggle,
+  onDelete,
 }: {
-  title: string;
-  count: number;
-  icon?: React.ReactNode;
-  muted?: boolean;
-  }) {
-  return (
-    <div className="mb-4 flex items-baseline justify-between border-b border-border-soft pb-3">
-      <div className="flex items-center gap-2">
-        {icon && (
-          <span className="flex size-5 items-center justify-center text-text-subtle">
-            {icon}
-          </span>
-        )}
-        <h2
-          className={cn(
-            "text-h4 font-semibold",
-            muted ? "text-text-subtle" : "text-text-heading"
-          )}
-        >
-          {title}
-        </h2>
-      </div>
-      <span className="font-mono text-xs text-content-subtle">
-        {count} assignment{count === 1 ? "" : "s"}
-      </span>
-    </div>
-  );
-}
-
-function List({ items, selected, onToggle, onDelete }: {
   items: BrowserItem[];
   selected: Set<string>;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
 }) {
   return (
-    <div className="flex flex-col stagger-children overflow-hidden rounded-xl border border-border-subtle bg-card divide-y divide-border-muted">
-      {items.map((a) => (
-        <div key={a.id} className={cn("group/row flex items-center animate-fade-in transition-colors", selected.has(a.id) && "bg-bg-info")}>
-          <div className="flex items-center gap-1 pl-4">
-            <Checkbox checked={selected.has(a.id)} onCheckedChange={() => onToggle(a.id)} aria-label={`Select ${a.title}`} />
+    <div className="divide-y divide-border-muted">
+      {items.map((item) => (
+        <div
+          key={item.id}
+          className={cn(
+            "group/row flex items-center transition-colors",
+            selected.has(item.id) && "bg-bg-info",
+          )}
+        >
+          <div className="flex items-center pl-4">
+            <Checkbox
+              checked={selected.has(item.id)}
+              onCheckedChange={() => onToggle(item.id)}
+              aria-label={`Select ${item.title}`}
+            />
           </div>
-          <div className="min-w-0 flex-1"><AssignmentRow
-            href={`/tutor/assignments/${a.id}`}
-            title={a.title}
-            type={a.type}
-            dueAt={a.due_at}
-            pct={a.completion_pct}
-            reviewStatus={a.review_status}
-            student={a.student}
-            unread={a.unread}
-          /></div>
-          <Button variant="ghost" size="icon-sm" className="mr-3 text-content-subtle opacity-60 hover:text-destructive group-hover/row:opacity-100" onClick={() => onDelete(a.id)} aria-label={`Delete ${a.title}`}>
-            <Trash2 />
+          <div className="min-w-0 flex-1">
+            <AssignmentRow
+              href={`/tutor/assignments/${item.id}`}
+              title={item.title}
+              type={item.type}
+              dueAt={item.due_at}
+              pct={item.completion_pct}
+              reviewStatus={item.review_status}
+              student={item.student}
+              unread={item.unread}
+            />
+          </div>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="mr-2 text-content-subtle opacity-60 hover:text-destructive group-hover/row:opacity-100 sm:mr-3"
+            onClick={() => onDelete(item.id)}
+            aria-label={`Delete ${item.title}`}
+          >
+            <Trash2 data-icon="inline-start" />
           </Button>
         </div>
       ))}
@@ -282,10 +339,26 @@ function List({ items, selected, onToggle, onDelete }: {
   );
 }
 
-function Empty({ children }: { children: React.ReactNode }) {
+function EmptyState({
+  query,
+  filter,
+}: {
+  query: string;
+  filter: AssignmentFilter;
+}) {
+  const message = query.trim()
+    ? "No assignments match your search."
+    : filter === "focus"
+      ? "Nothing needs your attention."
+      : filter === "active"
+        ? "No active assignments yet."
+        : filter === "completed"
+          ? "No completed assignments yet."
+          : "No assignments yet.";
+
   return (
-    <p className="px-6 py-12 text-center text-base text-content-subtle">
-      {children}
-    </p>
+    <div className="flex min-h-44 items-center justify-center px-6 py-12 text-center">
+      <p className="text-sm text-content-subtle">{message}</p>
+    </div>
   );
 }

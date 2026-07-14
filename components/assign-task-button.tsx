@@ -40,7 +40,7 @@ export function AssignTaskButton({
         className={className}
         onClick={() => setOpen(true)}
       >
-        <Plus /> {label}
+        <Plus data-icon="inline-start" /> {label}
       </Button>
       <AssignTaskModal
         open={open}

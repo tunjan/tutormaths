@@ -1,17 +1,13 @@
-import { Link } from "next-view-transitions";
-import { AlertCircle, Inbox, Plus, Users } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { unreadAssignmentIds } from "@/lib/queries";
 import { PageHeader } from "@/components/ui/page-header";
 import { AddStudentButton } from "@/components/add-student-button";
 import { AssignTaskButton } from "@/components/assign-task-button";
-import { buttonVariants } from "@/components/ui/button";
 import {
   TutorAssignmentBrowser,
   type BrowserItem,
 } from "@/components/tutor-assignment-browser";
-import { cn } from "@/lib/utils";
 
 export default async function TutorDashboard() {
   await requireTutor();
@@ -77,22 +73,24 @@ export default async function TutorDashboard() {
   return (
     <div className="animate-rise">
       <PageHeader
-        eyebrow="Tutor workspace"
         title="Dashboard"
         description={
           !hasStudents
-            ? "Let's get you set up."
-            : awaiting === 0 && overdue === 0
-              ? "No reviews or overdue work need your attention."
-              : `${needsAttention} item${needsAttention === 1 ? "" : "s"} need a decision.`
+            ? "Start by inviting your first student."
+            : needsAttention > 0
+              ? `${needsAttention} assignment${needsAttention === 1 ? "" : "s"} need your attention across ${studentOptions.length} student${studentOptions.length === 1 ? "" : "s"}.`
+              : active > 0
+                ? `Everything is up to date. ${active} active assignment${active === 1 ? "" : "s"} across ${studentOptions.length} student${studentOptions.length === 1 ? "" : "s"}.`
+                : "Everything is up to date. You’re ready to assign the next task."
         }
         actions={
           hasStudents ? (
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2">
               <AddStudentButton variant="outline" />
               <AssignTaskButton
                 students={studentOptions}
                 categories={categories ?? []}
+                label="New assignment"
               />
             </div>
           ) : undefined
@@ -100,35 +98,7 @@ export default async function TutorDashboard() {
       />
 
       {hasStudents ? (
-        <>
-          <AttentionPanel awaiting={awaiting} overdue={overdue} />
-
-          <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatItem
-              label="Students"
-              value={studentOptions.length}
-              href="/tutor/students"
-              icon={<Users className="size-4" />}
-            />
-            <StatItem label="Active" value={active} />
-            <StatItem
-              label="Awaiting review"
-              value={awaiting}
-              href={awaiting > 0 ? "#awaiting" : undefined}
-              tone={awaiting > 0 ? "review" : "neutral"}
-            />
-            <StatItem
-              label="Overdue"
-              value={overdue}
-              href={overdue > 0 ? "#overdue" : undefined}
-              tone={overdue > 0 ? "overdue" : "neutral"}
-            />
-          </div>
-
-          <div className="mt-10">
-            <TutorAssignmentBrowser items={items} nowMs={nowMs} />
-          </div>
-        </>
+        <TutorAssignmentBrowser items={items} nowMs={nowMs} />
       ) : (
         <Onboarding />
       )}
@@ -136,199 +106,18 @@ export default async function TutorDashboard() {
   );
 }
 
-function AttentionPanel({
-  awaiting,
-  overdue,
-}: {
-  awaiting: number;
-  overdue: number;
-}) {
-  const clean = awaiting === 0 && overdue === 0;
-
-  if (clean) {
-    return (
-      <section className="rounded-xl border border-border-subtle bg-card p-5">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
-            <p className="text-xs font-medium text-content-subtle">
-              Attention queue
-            </p>
-            <h2 className="mt-1 text-xl font-semibold text-content-emphasis">
-              Nothing needs review right now
-            </h2>
-            <p className="mt-1 text-sm text-text-muted">
-              Create the next assignment or check student progress below.
-            </p>
-          </div>
-          <Link
-            href="/tutor/assignments/new"
-            className={cn(buttonVariants({ variant: "default", size: "sm" }), "shrink-0")}
-          >
-            <Plus />
-            New assignment
-          </Link>
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <section className="grid gap-4 lg:grid-cols-2">
-      <AttentionCard
-        href="#awaiting"
-        disabled={awaiting === 0}
-        icon={<Inbox className="size-5" />}
-        label="Needs review"
-        value={awaiting}
-        description={
-          awaiting > 0
-            ? "Submitted work is waiting for your feedback."
-            : "No submitted work is waiting."
-        }
-        tone="review"
-      />
-      <AttentionCard
-        href="#overdue"
-        disabled={overdue === 0}
-        icon={<AlertCircle className="size-5" />}
-        label="Overdue"
-        value={overdue}
-        description={
-          overdue > 0
-            ? "Follow up while the assignment is still fresh."
-            : "No active assignments are overdue."
-        }
-        tone="overdue"
-      />
-    </section>
-  );
-}
-
-function AttentionCard({
-  href,
-  disabled,
-  icon,
-  label,
-  value,
-  description,
-  tone,
-}: {
-  href: string;
-  disabled: boolean;
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  description: string;
-  tone: "review" | "overdue";
-}) {
-  const toneClass =
-    tone === "review"
-      ? "border-status-review-border bg-status-review-bg text-status-review"
-      : "border-status-overdue-border bg-status-overdue-bg text-status-overdue";
-
-  const inner = (
-    <div
-      className={cn(
-        "flex h-full items-start gap-4 rounded-xl border p-5 transition-all duration-150",
-        disabled
-          ? "border-border-soft bg-surface-muted text-text-muted"
-          : `${toneClass} hover:border-border-emphasis`,
-      )}
-    >
-      <span className="mt-1 grid size-10 shrink-0 place-items-center rounded-lg border border-current/20 bg-card/70">
-        {icon}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium opacity-80">
-          {label}
-        </p>
-        <div className="mt-2 flex items-end gap-3">
-          <span className="font-metric text-5xl font-semibold leading-none">
-            {value}
-          </span>
-          {!disabled && (
-            <span className="pb-1 text-sm font-medium">Open queue</span>
-          )}
-        </div>
-        <p className="mt-3 text-sm leading-relaxed text-text-muted">
-          {description}
-        </p>
-      </div>
-    </div>
-  );
-
-  return disabled ? (
-    inner
-  ) : (
-    <a href={href} className="block">
-      {inner}
-    </a>
-  );
-}
-
-function StatItem({
-  label,
-  value,
-  href,
-  icon,
-  tone = "neutral",
-}: {
-  label: string;
-  value: number;
-  href?: string;
-  icon?: React.ReactNode;
-  tone?: "neutral" | "review" | "overdue";
-}) {
-  const toneClass =
-    tone === "review"
-      ? "border-status-review-border bg-status-review-bg"
-      : tone === "overdue"
-        ? "border-status-overdue-border bg-status-overdue-bg"
-        : "border-border-strong bg-surface-raised";
-
-  const inner = (
-    <div
-      className={cn(
-        "flex h-full select-none flex-col gap-3 rounded-xl border p-5 transition-all duration-150",
-        href && "hover:border-border-emphasis",
-        toneClass,
-      )}
-    >
-      <span className="flex items-center justify-between gap-3 text-xs font-medium text-content-subtle">
-        {label}
-        {icon && <span className="text-text-muted">{icon}</span>}
-      </span>
-      <span className="font-metric text-4xl font-semibold leading-none text-content-emphasis lg:text-5xl">
-        {value}
-      </span>
-    </div>
-  );
-  if (!href) return inner;
-  return href.startsWith("#") ? (
-    <a href={href} className="block group">
-      {inner}
-    </a>
-  ) : (
-    <Link href={href} className="block group">
-      {inner}
-    </Link>
-  );
-}
-
 function Onboarding() {
   return (
-    <div className="flex flex-col items-center justify-center gap-6 py-24 text-center animate-fade-in">
-      <div className="space-y-4 max-w-md mx-auto">
-        <h2 className="text-h3 font-semibold text-foreground">Welcome to Maths Tasks</h2>
-        <p className="text-body text-text-muted leading-[1.6]">
+    <div className="mx-auto flex max-w-md animate-fade-in flex-col items-center gap-5 py-20 text-center">
+      <div className="flex flex-col gap-3">
+        <h2 className="text-h3 font-semibold text-foreground">Start with one student</h2>
+        <p className="text-sm leading-relaxed text-text-muted">
           Get set up in two steps: invite a student, then send them their first
           assignment. You&rsquo;ll review their work and track progress right
           here.
         </p>
       </div>
-      <div className="mt-2">
-        <AddStudentButton label="Invite your first student" />
-      </div>
+      <AddStudentButton label="Invite your first student" />
     </div>
   );
 }

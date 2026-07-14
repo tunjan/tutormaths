@@ -1,9 +1,23 @@
 import type { Metadata } from "next";
+import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ViewTransitions } from "next-view-transitions";
+
+const instrumentSans = Instrument_Sans({
+  variable: "--font-instrument-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Maths Tasks",
@@ -16,7 +30,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="font-sans"
+      className={`${instrumentSans.variable} ${ibmPlexMono.variable} font-sans`}
       suppressHydrationWarning
     >
       <body className="bg-background text-foreground antialiased">

@@ -17,7 +17,7 @@ export function AddStudentButton({
   return (
     <>
       <Button variant={variant} onClick={() => setOpen(true)}>
-        <Plus /> {label}
+        <Plus data-icon="inline-start" /> {label}
       </Button>
       <AddStudentModal open={open} onClose={() => setOpen(false)} />
     </>

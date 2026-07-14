@@ -11,18 +11,10 @@ import {
 /*  Bespoke chips for the three highlighted states                             */
 /* -------------------------------------------------------------------------- */
 
-/**
- * "Awaiting review" — frosted blue pill with a pulsing dot to signal action
- * is required from the tutor. The animation adds urgency without alarm.
- */
 function AwaitingReviewChip() {
   return (
     <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-status-review-border bg-status-review-bg px-2 py-0.5 text-xs font-medium text-status-review">
-      {/* pulsing indicator */}
-      <span className="relative flex size-[6px] shrink-0" aria-hidden>
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-status-review opacity-60 [animation-duration:1.8s]" />
-        <span className="relative inline-flex size-[6px] rounded-full bg-status-review" />
-      </span>
+      <span className="size-[6px] shrink-0 rounded-full bg-status-review" aria-hidden />
       Awaiting review
     </span>
   );
