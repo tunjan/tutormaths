@@ -2,62 +2,63 @@ import type { ReactNode } from "react";
 import { Link } from "next-view-transitions";
 import { AccountMenu } from "@/components/account-menu";
 import { Logo } from "@/components/logo";
-import { cn } from "@/lib/utils";
 
-export function AppToolbar({
+export function AppShell({
   homeHref,
   homeLabel,
   roleLabel,
   userEmail,
-  nav,
+  navigation,
+  mobileNavigation,
   notification,
   accountActions,
-  maxWidthClassName,
+  children,
 }: {
   homeHref: string;
   homeLabel: string;
   roleLabel: string;
   userEmail?: string | null;
-  nav: ReactNode;
+  navigation: ReactNode;
+  mobileNavigation: ReactNode;
   notification: ReactNode;
   accountActions: ReactNode;
-  maxWidthClassName: string;
+  children: ReactNode;
 }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-border-subtle bg-bg-default/95 backdrop-blur-md supports-[backdrop-filter]:bg-bg-default/85">
-      <div
-        className={cn(
-          "mx-auto grid min-h-16 w-full grid-cols-[auto_1fr_auto] items-center gap-2 px-4 sm:px-6 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]",
-          maxWidthClassName,
-        )}
-      >
-        <Link
-          href={homeHref}
-          aria-label={homeLabel}
-          className="flex h-10 min-w-0 items-center gap-2.5 rounded-lg text-content-emphasis focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-border-subtle"
-        >
-          <Logo />
-          <span className="hidden truncate text-sm font-semibold tracking-[-0.01em] min-[380px]:inline">
-            Maths Tasks
-          </span>
-          <span className="hidden truncate text-xs font-normal text-content-muted lg:inline">
+    <div className="min-h-dvh w-full bg-background">
+      <header className="sticky top-0 z-40 border-b border-border bg-background">
+        <div className="mx-auto flex min-h-11 w-full max-w-[1200px] items-center gap-3 px-4 py-3 sm:px-6">
+          <Link
+            href={homeHref}
+            aria-label={homeLabel}
+            className="flex min-w-0 items-center gap-2 text-content-emphasis focus-visible:outline-none"
+          >
+            <Logo />
+            <span className="truncate text-label">Maths Tasks</span>
+          </Link>
+
+          <span className="hidden h-4 w-px bg-border sm:block" aria-hidden />
+          <span className="hidden font-eyebrow text-content-muted sm:block">
             {roleLabel}
           </span>
-        </Link>
 
-        <div className="flex min-w-0 items-center justify-end md:justify-center">
-          {nav}
-        </div>
+          <div className="ml-2 hidden min-w-0 lg:block">{navigation}</div>
 
-        <div className="flex min-w-0 items-center justify-end gap-0.5">
-          {notification}
-          <AccountMenu
-            roleLabel={roleLabel}
-            userEmail={userEmail}
-            actions={accountActions}
-          />
+          <div className="ml-auto flex min-w-0 items-center gap-1">
+            {notification}
+            <div className="lg:hidden">{mobileNavigation}</div>
+            <AccountMenu
+              roleLabel={roleLabel}
+              userEmail={userEmail}
+              actions={accountActions}
+            />
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      <main className="mx-auto w-full max-w-[1200px] px-4 py-8 sm:px-6 md:py-16">
+        {children}
+      </main>
+    </div>
   );
 }

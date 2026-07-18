@@ -4,6 +4,11 @@ import { useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { AlertCircle } from "lucide-react";
+import {
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -43,9 +48,10 @@ export function CommentForm({
       className="flex flex-col gap-3"
     >
       {globalError && (
-        <div className="rounded-md bg-destructive-muted px-3 py-2 text-sm text-destructive" role="alert">
-          {globalError}
-        </div>
+        <Alert variant="destructive" role="alert">
+          <AlertCircle aria-hidden />
+          <AlertDescription>{globalError}</AlertDescription>
+        </Alert>
       )}
       <input type="hidden" name="assignment_id" value={assignmentId} />
       <Textarea

@@ -5,8 +5,12 @@ import { X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import {
+  Field,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 
 /**
  * Edits reminder windows as removable chips instead of a raw comma-separated
@@ -50,7 +54,7 @@ export function ReminderWindowsField({
     >
       <div className="flex min-h-7 flex-wrap items-center gap-2">
         {windows.length === 0 ? (
-          <span className="text-sm text-muted-foreground">
+          <span className="text-body text-muted-foreground">
             No reminders set.
           </span>
         ) : (
@@ -58,14 +62,14 @@ export function ReminderWindowsField({
             <Badge
               key={n}
               variant="secondary"
-              className="gap-1 py-1 pr-1 pl-2.5 text-sm font-normal"
+              className="gap-1 py-1 pr-1 pl-2"
             >
               {n}h before
               <button
                 type="button"
                 onClick={() => setWindows((w) => w.filter((x) => x !== n))}
                 aria-label={`Remove ${n} hour reminder`}
-                className="rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground"
+                className="relative grid size-5 place-items-center rounded-sm text-muted-foreground transition-colors duration-fast after:absolute after:-inset-2 hover:bg-bg-muted hover:text-foreground"
               >
                 <X className="size-3" />
               </button>
@@ -75,8 +79,8 @@ export function ReminderWindowsField({
       </div>
 
       <div className="flex items-end gap-2">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="reminder-draft">Add a window (hours before due)</Label>
+        <Field className="max-w-64">
+          <FieldLabel htmlFor="reminder-draft">Add a window (hours before due)</FieldLabel>
           <Input
             id="reminder-draft"
             inputMode="numeric"
@@ -95,16 +99,12 @@ export function ReminderWindowsField({
               }
             }}
           />
-        </div>
+        </Field>
         <Button type="button" variant="outline" onClick={add}>
           Add
         </Button>
       </div>
-      {error && (
-        <p className="text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      )}
+      <FieldError>{error}</FieldError>
 
       <div>
         <Button type="submit">Save</Button>

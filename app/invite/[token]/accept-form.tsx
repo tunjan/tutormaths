@@ -5,7 +5,16 @@ import { Mail } from "lucide-react";
 import { acceptInvite, type AcceptInviteState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import {
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
 
 const initialState: AcceptInviteState = {};
 
@@ -18,64 +27,59 @@ export function AcceptInviteForm({ token }: { token: string }) {
   const [state, formAction, pending] = useActionState(acceptInvite, initialState);
 
   return (
-    <form action={formAction} className="flex flex-col gap-5">
+    <form action={formAction}>
       <input type="hidden" name="token" value={token} />
 
-      <div className="flex flex-col gap-2.5">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          placeholder="you@example.com"
-          className="h-11 rounded-lg px-3.5 text-base md:text-base"
-        />
-      </div>
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="you@example.com"
+          />
+        </Field>
 
-      <div className="flex flex-col gap-2.5">
-        <Label htmlFor="password">Create a password</Label>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="new-password"
-          required
-          className="h-11 rounded-lg px-3.5 text-base md:text-base"
-        />
-      </div>
+        <Field>
+          <FieldLabel htmlFor="password">Create a password</FieldLabel>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            required
+          />
+        </Field>
 
-      <div className="flex flex-col gap-2.5">
-        <Label htmlFor="confirm">Confirm password</Label>
-        <Input
-          id="confirm"
-          name="confirm"
-          type="password"
-          autoComplete="new-password"
-          required
-          className="h-11 rounded-lg px-3.5 text-base md:text-base"
-        />
-      </div>
+        <Field>
+          <FieldLabel htmlFor="confirm">Confirm password</FieldLabel>
+          <Input
+            id="confirm"
+            name="confirm"
+            type="password"
+            autoComplete="new-password"
+            required
+          />
+        </Field>
 
-      <div className="flex items-start gap-3 rounded-lg border border-border bg-muted/50 px-3.5 py-3 text-sm text-muted-foreground">
-        <Mail className="mt-0.5 size-4 shrink-0 text-foreground" />
-        <p>
-          We&rsquo;ll email you when your tutor sets homework, leaves a comment,
-          or a due date is near. Please use an address you check regularly so you
-          don&rsquo;t miss anything.
-        </p>
-      </div>
+        <Alert variant="info">
+          <Mail aria-hidden />
+          <AlertDescription>
+            We&rsquo;ll email you when your tutor sets homework, leaves a comment,
+            or a due date is near. Please use an address you check regularly so you
+            don&rsquo;t miss anything.
+          </AlertDescription>
+        </Alert>
 
-      <Button type="submit" disabled={pending} className="h-11 w-full text-base">
-        {pending ? "Creating your account…" : "Create account"}
-      </Button>
+        <Button type="submit" disabled={pending} className="w-full">
+          {pending ? "Creating your account…" : "Create account"}
+        </Button>
 
-      {state.error && (
-        <p className="text-center text-sm text-destructive" role="alert">
-          {state.error}
-        </p>
-      )}
+        {state.error && <FieldError className="text-center">{state.error}</FieldError>}
+      </FieldGroup>
     </form>
   );
 }

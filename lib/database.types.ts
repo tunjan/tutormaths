@@ -238,6 +238,7 @@ export type Database = {
           author_id: string
           body: string
           created_at: string
+          deleted_at: string | null
           id: string
         }
         Insert: {
@@ -245,6 +246,7 @@ export type Database = {
           author_id: string
           body: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
         }
         Update: {
@@ -252,6 +254,7 @@ export type Database = {
           author_id?: string
           body?: string
           created_at?: string
+          deleted_at?: string | null
           id?: string
         }
         Relationships: [

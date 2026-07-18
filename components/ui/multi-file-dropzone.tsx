@@ -61,18 +61,18 @@ export function MultiFileDropzone({
         aria-disabled={!interactive}
         aria-live="polite"
         className={cn(
-          "flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed px-6 py-8 text-center text-sm transition-colors focus-within:outline-none focus-within:ring-4 focus-within:ring-border-subtle",
+          "flex flex-col items-center justify-center gap-2 rounded-md border border-dashed px-6 py-8 text-center text-body transition-[background-color,border-color,box-shadow] duration-base focus-within:outline-none",
           interactive ? "cursor-pointer" : "cursor-default opacity-80",
           dragging
-            ? "border-border-emphasis bg-bg-muted text-foreground"
-            : "border-border-subtle bg-transparent text-content-subtle hover:border-border-emphasis",
+            ? "border-accent-ink bg-accent-ink-subtle text-foreground"
+            : "border-border-default bg-card text-content-subtle hover:border-border-emphasis hover:bg-bg-muted",
         )}
       >
-        <UploadCloud className="mb-1 size-5 text-content-subtle" />
-        <span className="font-semibold text-foreground">
+        <UploadCloud className="mb-1 size-5 text-content-default" aria-hidden />
+        <span className="text-label text-foreground">
           Drag files here, or click to choose
         </span>
-        <span className="text-xs text-content-subtle">{hint}</span>
+        <span className="text-caption text-content-subtle">{hint}</span>
         <input
           ref={inputRef}
           type="file"
@@ -94,7 +94,7 @@ export function MultiFileDropzone({
           {existing.map((f) => (
             <li
               key={f.id}
-              className="flex items-center gap-2 rounded-lg border border-border-subtle bg-card px-3 py-2 text-sm"
+              className="flex min-h-10 items-center gap-2 rounded-sm border border-border bg-card px-3 py-2 text-body"
             >
               {isImage(f.mimeType) ? (
                 <ImageIcon className="size-4 shrink-0 text-content-subtle" />
@@ -108,7 +108,7 @@ export function MultiFileDropzone({
                   aria-label={`Remove ${f.name}`}
                   disabled={!interactive}
                   onClick={() => onRemoveExisting(f.id)}
-                  className="shrink-0 rounded-full p-0.5 text-content-subtle hover:bg-content-emphasis/5 hover:text-foreground"
+                  className="grid size-8 shrink-0 place-items-center rounded-sm text-content-subtle transition-colors duration-fast hover:bg-bg-muted hover:text-foreground"
                 >
                   <X className="size-4" />
                 </button>
@@ -118,7 +118,7 @@ export function MultiFileDropzone({
           {files.map((f, i) => (
             <li
               key={`${f.name}-${i}`}
-              className="flex items-center gap-2 rounded-lg border border-border-subtle bg-card px-3 py-2 text-sm"
+              className="flex min-h-10 items-center gap-2 rounded-sm border border-border bg-card px-3 py-2 text-body"
             >
               {f.type.startsWith("image/") ? (
                 <ImageIcon className="size-4 shrink-0 text-content-subtle" />
@@ -131,7 +131,7 @@ export function MultiFileDropzone({
                 aria-label={`Remove ${f.name}`}
                 disabled={!interactive}
                 onClick={() => onRemove(i)}
-                className="shrink-0 rounded-full p-0.5 text-content-subtle hover:bg-content-emphasis/5 hover:text-foreground"
+                className="grid size-8 shrink-0 place-items-center rounded-sm text-content-subtle transition-colors duration-fast hover:bg-bg-muted hover:text-foreground"
               >
                 <X className="size-4" />
               </button>

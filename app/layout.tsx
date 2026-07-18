@@ -1,21 +1,20 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ViewTransitions } from "next-view-transitions";
 
-const instrumentSans = Instrument_Sans({
-  variable: "--font-instrument-sans",
+const geist = Geist({
   subsets: ["latin"],
+  variable: "--font-geist-sans",
   display: "swap",
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
-  variable: "--font-ibm-plex-mono",
+const geistMono = Geist_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  variable: "--font-geist-mono",
   display: "swap",
 });
 
@@ -30,15 +29,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${instrumentSans.variable} ${ibmPlexMono.variable} font-sans`}
+      className={`${geist.variable} ${geistMono.variable} font-sans`}
       suppressHydrationWarning
     >
-      <body className="bg-background text-foreground antialiased">
+      <body className="bg-background text-content-default antialiased">
         <ViewTransitions>
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
-            enableSystem
+            defaultTheme="light"
+            enableSystem={false}
+            forcedTheme="light"
           >
             <TooltipProvider>{children}</TooltipProvider>
             <Toaster />

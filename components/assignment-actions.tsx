@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
-import { Plus } from "lucide-react";
+import { useState, useTransition } from "react";
+import { AlertCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { updateAssignment, deleteAssignment } from "@/app/tutor/actions";
@@ -12,6 +12,7 @@ import {
   MAX_FILE_BYTES,
 } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +22,7 @@ import { MultiFileDropzone } from "@/components/ui/multi-file-dropzone";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -36,7 +38,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
+import {
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
 
 export interface AttachmentInfo {
   id: string;
@@ -89,7 +94,7 @@ export function AssignmentActions({
   );
   const [latexValue, setLatexValue] = useState(latexBody ?? "");
   const [deleting, startDelete] = useTransition();
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const [editOpen, setEditOpen] = useState(false);
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [removedIds, setRemovedIds] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
@@ -183,7 +188,7 @@ export function AssignmentActions({
           : { addedFiles: uploaded, removedFileIds: removedIds }),
       });
       resetFileState();
-      dialogRef.current?.close();
+      setEditOpen(false);
       toast.success("Assignment updated.");
       setGlobalError("");
     } catch (err) {
@@ -205,14 +210,19 @@ export function AssignmentActions({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => dialogRef.current?.showModal()}
+          onClick={() => setEditOpen(true)}
         >
           Edit
         </Button>
         <AlertDialog>
           <AlertDialogTrigger
             render={
-              <Button variant="destructive" size="sm" disabled={deleting}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-destructive hover:bg-bg-error hover:text-destructive"
+                disabled={deleting}
+              >
                 {deleting ? "Deleting…" : "Delete"}
               </Button>
             }
@@ -228,6 +238,7 @@ export function AssignmentActions({
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
+                variant="destructive"
                 onClick={() =>
                   startDelete(async () => {
                     await deleteAssignment(id);
@@ -241,14 +252,23 @@ export function AssignmentActions({
         </AlertDialog>
       </div>
 
-      <dialog
-        ref={dialogRef}
-        className="fixed left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-[440px] -translate-x-1/2 -translate-y-1/2 rounded-[var(--modal-radius)] border border-border-subtle bg-card p-7 text-foreground shadow-[var(--shadow-lg)] backdrop:bg-black/35 backdrop:backdrop-blur-[6px] max-h-[85vh] overflow-y-auto outline-none"
+      <Modal
+        open={editOpen}
+        onClose={() => {
+          if (!busy) {
+            setEditOpen(false);
+            resetFileState();
+            setGlobalError("");
+          }
+        }}
+        title="Edit assignment"
+        className="max-w-2xl"
       >
         {globalError && (
-          <div className="mb-4 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
-            {globalError}
-          </div>
+          <Alert variant="destructive" role="alert" className="mb-4">
+            <AlertCircle aria-hidden />
+            <AlertDescription>{globalError}</AlertDescription>
+          </Alert>
         )}
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
           <input type="hidden" name="id" value={id} />
@@ -273,12 +293,14 @@ export function AssignmentActions({
                 setFormType((v as "problem_set" | "reading_notes") ?? formType)
               }
             >
-              <SelectTrigger aria-labelledby="edit-type-label">
+              <SelectTrigger aria-labelledby="edit-type-label" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="problem_set">Problem set</SelectItem>
-                <SelectItem value="reading_notes">Reading notes</SelectItem>
+                <SelectGroup>
+                  <SelectItem value="problem_set">Problem set</SelectItem>
+                  <SelectItem value="reading_notes">Reading notes</SelectItem>
+                </SelectGroup>
               </SelectContent>
             </Select>
           </div>
@@ -299,15 +321,17 @@ export function AssignmentActions({
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No topic</SelectItem>
-                {categories.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.name}
+                <SelectGroup>
+                  <SelectItem value="">No topic</SelectItem>
+                  {categories.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value={NEW_CATEGORY}>
+                    <Plus /> Create new topic…
                   </SelectItem>
-                ))}
-                <SelectItem value={NEW_CATEGORY}>
-                  <Plus className="size-3.5" /> Create new topic…
-                </SelectItem>
+                </SelectGroup>
               </SelectContent>
             </Select>
             {creatingNewCategory && (
@@ -356,31 +380,32 @@ export function AssignmentActions({
               <Textarea
                 name="latex_body"
                 rows={8}
-                className="font-mono text-sm"
+                className="font-mono text-code"
                 placeholder="Markdown with inline $…$ and display $$…$$ maths."
                 value={latexValue}
                 onChange={(e) => setLatexValue(e.target.value)}
               />
             )}
           </div>
-          <div className="flex gap-2">
-            <Button type="submit" disabled={busy}>
-              {busy ? "Saving…" : "Save changes"}
-            </Button>
+          <div className="flex flex-wrap justify-end gap-2 pt-2">
             <Button
               type="button"
               variant="ghost"
               disabled={busy}
               onClick={() => {
-                dialogRef.current?.close();
+                setEditOpen(false);
                 resetFileState();
+                setGlobalError("");
               }}
             >
               Cancel
             </Button>
+            <Button type="submit" disabled={busy}>
+              {busy ? "Saving…" : "Save changes"}
+            </Button>
           </div>
         </form>
-      </dialog>
+      </Modal>
     </>
   );
 }

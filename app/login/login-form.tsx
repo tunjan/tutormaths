@@ -6,7 +6,12 @@ import { signIn, type LoginState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 
 const initialState: LoginState = {};
 
@@ -14,67 +19,55 @@ export function LoginForm() {
   const [state, formAction, pending] = useActionState(signIn, initialState);
 
   return (
-    <form action={formAction} className="flex flex-col gap-5">
-      <div className="flex flex-col gap-2.5">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          placeholder="you@example.com"
-          className="h-11 text-base md:text-base"
-        />
-      </div>
+    <form action={formAction}>
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="you@example.com"
+          />
+        </Field>
 
-      <div className="flex flex-col gap-2.5">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="password">Password</Label>
-          <Link
-            href="/auth/reset"
-            className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+        <Field>
+          <div className="flex items-center justify-between gap-4">
+            <FieldLabel htmlFor="password">Password</FieldLabel>
+            <Link
+              href="/auth/reset"
+              className="text-caption text-content-info underline-offset-4 transition-colors duration-fast hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+          />
+        </Field>
+
+        <Field orientation="horizontal">
+          <Checkbox id="rememberMe" name="rememberMe" defaultChecked />
+          <FieldLabel
+            htmlFor="rememberMe"
+            className="cursor-pointer font-normal text-muted-foreground"
           >
-            Forgot password?
-          </Link>
-        </div>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          className="h-11 text-base md:text-base"
-        />
-      </div>
+            Keep me signed in
+          </FieldLabel>
+        </Field>
 
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id="rememberMe"
-          name="rememberMe"
-          defaultChecked
-        />
-        <Label
-          htmlFor="rememberMe"
-          className="cursor-pointer text-sm font-normal text-muted-foreground"
-        >
-          Keep me signed in
-        </Label>
-      </div>
+        <Button type="submit" disabled={pending} className="w-full">
+          {pending ? "Signing in…" : "Sign in"}
+        </Button>
 
-      <Button
-        type="submit"
-        disabled={pending}
-        className="h-11 w-full text-base"
-      >
-        {pending ? "Signing in…" : "Sign in"}
-      </Button>
-
-      {state.error && (
-        <p className="text-center text-sm text-destructive" role="alert">
-          {state.error}
-        </p>
-      )}
+        {state.error && <FieldError className="text-center">{state.error}</FieldError>}
+      </FieldGroup>
     </form>
   );
 }

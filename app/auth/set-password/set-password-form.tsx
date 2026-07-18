@@ -6,7 +6,12 @@ import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 
 export function SetPasswordForm() {
   const [supabase] = useState(() => createClient());
@@ -56,37 +61,33 @@ export function SetPasswordForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5">
-      <div className="flex flex-col gap-2.5">
-        <Label htmlFor="password">New password</Label>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="new-password"
-          required
-          className="h-11 rounded-lg px-3.5 text-base md:text-base"
-        />
-      </div>
-      <div className="flex flex-col gap-2.5">
-        <Label htmlFor="confirm">Confirm password</Label>
-        <Input
-          id="confirm"
-          name="confirm"
-          type="password"
-          autoComplete="new-password"
-          required
-          className="h-11 rounded-lg px-3.5 text-base md:text-base"
-        />
-      </div>
-      <Button type="submit" disabled={pending} className="h-11 w-full text-base">
-        {pending ? "Saving…" : "Set password"}
-      </Button>
-      {error && (
-        <p className="text-center text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      )}
+    <form onSubmit={onSubmit}>
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor="password">New password</FieldLabel>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            required
+          />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="confirm">Confirm password</FieldLabel>
+          <Input
+            id="confirm"
+            name="confirm"
+            type="password"
+            autoComplete="new-password"
+            required
+          />
+        </Field>
+        <Button type="submit" disabled={pending} className="w-full">
+          {pending ? "Saving…" : "Set password"}
+        </Button>
+        {error && <FieldError className="text-center">{error}</FieldError>}
+      </FieldGroup>
     </form>
   );
 }

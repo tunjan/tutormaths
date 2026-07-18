@@ -1,10 +1,15 @@
 import Link from "next/link";
-import { FileText, CalendarClock, BellRing } from "lucide-react";
+import { BellRing, CalendarClock, FileText, Info } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { NewAssignmentForm } from "./new-assignment-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { BackLink } from "@/components/ui/back-link";
+import { PageHeader } from "@/components/ui/page-header";
+import {
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
 
 const tips = [
   {
@@ -65,27 +70,26 @@ export default async function NewAssignmentPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex flex-col gap-3">
+      <header>
         <BackLink href="/tutor">Dashboard</BackLink>
-        <div>
-          <h1 className="text-3xl">New assignment</h1>
-          <p className="mt-1 max-w-prose text-sm text-muted-foreground">
-            Attach a PDF, pick a student, and set a due date. They&rsquo;ll be
-            notified right away.
-          </p>
-        </div>
+        <PageHeader
+          className="mt-4 mb-0"
+          title="New assignment"
+          description="Attach a PDF, pick a student, and set a due date. They’ll be notified right away."
+        />
       </header>
 
       {!hasStudents ? (
-        <Card className="max-w-2xl py-8">
-          <CardContent className="text-sm text-muted-foreground">
+        <Alert variant="info" className="max-w-2xl">
+          <Info aria-hidden />
+          <AlertDescription>
             You need a student first.{" "}
-            <Link href="/tutor/students" className="text-primary underline">
+            <Link href="/tutor/students" className="text-content-info underline">
               Invite a student
             </Link>
             .
-          </CardContent>
-        </Card>
+          </AlertDescription>
+        </Alert>
       ) : (
         <div className="flex flex-col gap-6">
           {/* How it works — a horizontal strip so the form below gets full width
@@ -94,21 +98,21 @@ export default async function NewAssignmentPage({
             {tips.map(({ icon: Icon, title, body }) => (
               <li
                 key={title}
-                className="flex gap-3 rounded-panel border border-border-soft bg-muted/30 p-4"
+                className="flex gap-3 rounded-md border border-border bg-card p-6"
               >
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-card text-primary ring-1 ring-foreground/10">
-                  <Icon className="size-4" />
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-bg-subtle text-content-default">
+                  <Icon className="size-5" aria-hidden />
                 </span>
-                <div className="flex flex-col gap-0.5">
-                  <p className="text-sm font-medium">{title}</p>
-                  <p className="text-sm text-muted-foreground">{body}</p>
+                <div className="flex flex-col gap-1">
+                  <p className="text-label">{title}</p>
+                  <p className="text-caption text-muted-foreground">{body}</p>
                 </div>
               </li>
             ))}
           </ul>
 
           <Card>
-            <CardContent className="py-2">
+            <CardContent>
               <NewAssignmentForm
                 students={recipients}
                 categories={categories ?? []}

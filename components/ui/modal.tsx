@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
+import type { ReactNode } from "react";
+import { Dialog } from "@base-ui/react/dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * A centred form dialog conforming to the premium design system modals.
+ * Shared controlled dialog for forms and detail views.
+ * Base UI owns focus trapping, Escape handling, scroll locking, and focus return.
  */
 export function Modal({
   open,
@@ -29,66 +30,58 @@ export function Modal({
   style?: React.CSSProperties;
   titleClassName?: string;
 }) {
-  const [mounted, setMounted] = useState(false);
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
-  }, [open, onClose]);
-
-  if (!open || !mounted) return null;
-
-  return createPortal(
-    <div className="modal-overlay">
-      <div
-        className="absolute inset-0 cursor-default"
-        onClick={onClose}
-        aria-hidden
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        className={cn(
-          "modal",
-          className
-        )}
-        style={style}
-      >
-        <div className="modal-header">
-          <div className="min-w-0">
-            <h2 className={cn("modal-title font-heading", titleClassName)}>{title}</h2>
-            {description && <p className="modal-subtitle">{description}</p>}
+  return (
+    <Dialog.Root
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) onClose();
+      }}
+    >
+      <Dialog.Portal>
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-[var(--color-overlay)] duration-slow ease-[var(--ease-standard)] data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
+        <Dialog.Popup
+          className={cn(
+            "fixed top-1/2 left-1/2 z-50 flex max-h-[85dvh] w-[calc(100%-2rem)] max-w-[460px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto rounded-lg border border-border bg-card p-6 text-card-foreground shadow-lg outline-hidden",
+            "duration-slow ease-[var(--ease-out)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-[0.98] data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-[0.98]",
+            className,
+          )}
+          style={style}
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <Dialog.Title
+                className={cn(
+                  "text-heading-md text-content-emphasis",
+                  titleClassName,
+                )}
+              >
+                {title}
+              </Dialog.Title>
+              {description && (
+                <Dialog.Description className="mt-2 text-caption text-content-subtle">
+                  {description}
+                </Dialog.Description>
+              )}
+            </div>
+            <Dialog.Close
+              aria-label="Close"
+              className="grid size-9 shrink-0 place-items-center rounded-sm text-content-subtle transition-colors duration-fast hover:bg-bg-muted hover:text-content-emphasis focus-visible:outline-none"
+            >
+              <X className="size-5" aria-hidden />
+            </Dialog.Close>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="modal-close"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
 
-        <div className="modal-divider" />
+          <div className="my-6 h-px shrink-0 bg-border-subtle" aria-hidden />
 
-        <div>{children}</div>
+          <div>{children}</div>
 
-        {footer && (
-          <div className="mt-7 flex items-center justify-end gap-3">
-            {footer}
-          </div>
-        )}
-      </div>
-    </div>,
-    document.body,
+          {footer && (
+            <div className="mt-6 flex flex-wrap items-center justify-end gap-2">
+              {footer}
+            </div>
+          )}
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

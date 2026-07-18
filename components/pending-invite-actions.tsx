@@ -56,7 +56,7 @@ export function PendingInviteActions({
       <Button
         type="button"
         variant="ghost"
-        size="sm"
+        size="icon-sm"
         disabled={pending}
         onClick={revoke}
         aria-label="Cancel invite"

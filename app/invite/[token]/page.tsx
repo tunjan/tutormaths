@@ -31,19 +31,16 @@ export default async function InvitePage({
   const firstName = invite?.full_name?.trim().split(/\s+/)[0] ?? "";
 
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 px-4 py-16">
-      <div className="flex flex-col items-center gap-4 text-center">
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-8 px-4 py-12">
+      <div className="flex flex-col items-center gap-3 text-center">
         <Logo />
-        <p className="text-sm text-muted-foreground">
-          {valid ? "Set up your student account" : "Invitation"}
-        </p>
       </div>
 
-      <Card className="w-full max-w-md gap-6">
+      <Card className="w-full max-w-[420px] gap-6">
         {valid ? (
           <>
-            <CardHeader className="gap-2 text-center">
-              <CardTitle className="text-xl font-semibold">
+            <CardHeader className="text-center">
+              <CardTitle className="text-h2">
                 {firstName ? `Welcome, ${firstName}` : "Welcome"}
               </CardTitle>
               <CardDescription>
@@ -57,8 +54,8 @@ export default async function InvitePage({
           </>
         ) : (
           <>
-            <CardHeader className="gap-2 text-center">
-              <CardTitle className="text-xl font-semibold text-content-error">
+            <CardHeader className="text-center">
+              <CardTitle className="text-h2 text-content-error">
                 This link is no longer valid
               </CardTitle>
               <CardDescription>
@@ -69,7 +66,7 @@ export default async function InvitePage({
             <CardContent className="text-center">
               <Link
                 href="/login"
-                className="text-sm text-foreground underline underline-offset-4 font-medium"
+                className="text-label text-content-info underline underline-offset-4"
               >
                 Go to sign in
               </Link>

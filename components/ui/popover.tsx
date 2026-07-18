@@ -32,12 +32,13 @@ function PopoverContent({
         alignOffset={alignOffset}
         side={side}
         sideOffset={sideOffset}
-        className="isolate z-[2100]"
+        className="isolate z-50"
       >
         <PopoverPrimitive.Popup
           data-slot="popover-content"
           className={cn(
-            "z-[2100] flex w-72 origin-(--transform-origin) flex-col rounded-lg border border-border-subtle bg-card p-3 text-sm text-foreground shadow-[var(--shadow-lg)] outline-hidden duration-150 data-[side=bottom]:slide-in-from-top-1 data-[side=inline-end]:slide-in-from-left-1 data-[side=inline-start]:slide-in-from-right-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1",
+            "flex w-72 origin-(--transform-origin) flex-col rounded-md border border-border bg-card p-4 text-body text-foreground shadow-md outline-hidden",
+            "duration-base ease-[var(--ease-out)] data-[side=bottom]:slide-in-from-top-1 data-[side=inline-end]:slide-in-from-left-1 data-[side=inline-start]:slide-in-from-right-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
             className
           )}
           {...props}
@@ -51,7 +52,7 @@ function PopoverHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="popover-header"
-      className={cn("flex flex-col gap-0.5 text-sm", className)}
+      className={cn("flex flex-col gap-1", className)}
       {...props}
     />
   )
@@ -61,7 +62,7 @@ function PopoverTitle({ className, ...props }: PopoverPrimitive.Title.Props) {
   return (
     <PopoverPrimitive.Title
       data-slot="popover-title"
-      className={cn("font-medium text-content-emphasis", className)}
+      className={cn("text-label text-content-emphasis", className)}
       {...props}
     />
   )
@@ -74,7 +75,7 @@ function PopoverDescription({
   return (
     <PopoverPrimitive.Description
       data-slot="popover-description"
-      className={cn("text-xs text-content-subtle", className)}
+      className={cn("text-caption text-content-subtle", className)}
       {...props}
     />
   )

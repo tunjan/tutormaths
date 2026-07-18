@@ -52,8 +52,11 @@ export function NotificationBell({
         if (active && data) setItems(data);
       });
 
+    // Realtime reuses an existing channel when the topic matches. React may
+    // replay effects in development before asynchronous channel cleanup has
+    // finished, so each setup needs its own topic.
     const channel = supabase
-      .channel(`notifications:${userId}`)
+      .channel(`notifications:${userId}:${crypto.randomUUID()}`)
       .on(
         "postgres_changes",
         {
@@ -71,7 +74,7 @@ export function NotificationBell({
 
     return () => {
       active = false;
-      supabase.removeChannel(channel);
+      void supabase.removeChannel(channel);
     };
   }, [supabase, userId]);
 
@@ -115,7 +118,7 @@ export function NotificationBell({
           >
             <Bell />
             {unread > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 justify-center px-1 text-[10px] tabular-nums">
+              <Badge variant="info" className="absolute -top-2 -right-2 h-5 min-w-5 justify-center rounded-full px-1 tabular-nums">
                 {unread}
               </Badge>
             )}
@@ -124,12 +127,12 @@ export function NotificationBell({
       />
       <PopoverContent align="end" className="w-80 p-0">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <span className="text-sm font-medium">Notifications</span>
+          <span className="text-label">Notifications</span>
           {unread > 0 && (
             <button
               type="button"
               onClick={markAllRead}
-              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              className="rounded-sm text-micro text-content-info transition-colors duration-fast hover:underline focus-visible:outline-none"
             >
               Mark all as read
             </button>
@@ -137,7 +140,7 @@ export function NotificationBell({
         </div>
         <ul className="max-h-96 divide-y divide-border overflow-y-auto">
           {items.length === 0 && (
-            <li className="px-4 py-8 text-center text-sm text-muted-foreground">
+            <li className="px-4 py-8 text-center text-body text-muted-foreground">
               No notifications yet.
             </li>
           )}
@@ -150,19 +153,19 @@ export function NotificationBell({
                   onClick={() => onItemClick(n)}
                   disabled={!clickable && !!n.read_at}
                   className={cn(
-                    "flex w-full flex-col items-start gap-0.5 px-4 py-3 text-left transition-colors",
+                    "flex w-full flex-col items-start gap-1 px-4 py-3 text-left transition-colors duration-fast",
                     clickable && "hover:bg-muted/50",
-                    !n.read_at && "bg-primary/5",
+                    !n.read_at && "bg-bg-info",
                   )}
                 >
-                  <span className="flex items-start gap-2 text-sm">
+                  <span className="flex items-start gap-2 text-body">
                     {!n.read_at && (
-                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
+                      <span className="mt-2 size-2 shrink-0 rounded-full bg-content-info" />
                     )}
                     <span>{n.body}</span>
                   </span>
                   <span
-                    className={cn("text-xs text-muted-foreground", !n.read_at && "pl-3.5")}
+                    className={cn("text-caption text-muted-foreground", !n.read_at && "pl-4")}
                     title={formatDateTime(n.created_at)}
                   >
                     {relativeTime(n.created_at)}

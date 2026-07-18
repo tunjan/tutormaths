@@ -8,6 +8,11 @@ import { BackLink } from "@/components/ui/back-link";
 import { AssignmentRow } from "@/components/assignment-row";
 import { cn } from "@/lib/utils";
 import { formatDate, type ReviewStatus } from "@/lib/format";
+import { Card } from "@/components/ui/card";
+import {
+  Empty as EmptyState,
+  EmptyDescription,
+} from "@/components/ui/empty";
 
 export default async function StudentDetailPage({
   params,
@@ -50,10 +55,10 @@ export default async function StudentDetailPage({
 
         <div className="flex items-start justify-between gap-4 mt-2">
           <div>
-            <h1 className="text-h1 font-semibold text-foreground">
+            <h1 className="text-h1 text-foreground">
               {student.full_name || student.email}
             </h1>
-            <p className="mt-1 text-sm text-content-subtle">
+            <p className="mt-1 text-caption text-content-subtle">
               {student.email} · joined {formatDate(student.created_at)}
             </p>
           </div>
@@ -77,7 +82,9 @@ export default async function StudentDetailPage({
           <SectionHeading>Active assignments</SectionHeading>
         </div>
         {active.length === 0 ? (
-          <Empty>No active assignments.</Empty>
+          <EmptyState className="p-8">
+            <EmptyDescription>No active assignments.</EmptyDescription>
+          </EmptyState>
         ) : (
           <AssignmentList items={active} />
         )}
@@ -85,7 +92,9 @@ export default async function StudentDetailPage({
 
       <Section title="History">
         {completed.length === 0 ? (
-          <Empty>No completed assignments yet.</Empty>
+          <EmptyState className="p-8">
+            <EmptyDescription>No completed assignments yet.</EmptyDescription>
+          </EmptyState>
         ) : (
           <AssignmentList items={completed} />
         )}
@@ -105,7 +114,7 @@ type AssignmentItem = {
 
 function AssignmentList({ items }: { items: AssignmentItem[] }) {
   return (
-    <div className="flex flex-col stagger-children overflow-hidden rounded-xl border border-border-subtle bg-card divide-y divide-border-muted">
+    <div className="flex flex-col stagger-children divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
       {items.map((a) => (
         <AssignmentRow
           key={a.id}
@@ -123,12 +132,12 @@ function AssignmentList({ items }: { items: AssignmentItem[] }) {
 
 function Stat({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="card card-interactive flex select-none flex-col gap-1 p-6">
-      <span className="text-xs font-medium text-content-subtle">{label}</span>
-      <span className="font-metric mt-1 text-3xl font-semibold leading-none text-content-emphasis">
+    <Card>
+      <span className="text-caption text-content-subtle">{label}</span>
+      <span className="font-metric text-h1 tabular-nums text-content-emphasis">
         {value}
       </span>
-    </div>
+    </Card>
   );
 }
 
@@ -144,13 +153,5 @@ function Section({
       <SectionHeading>{title}</SectionHeading>
       {children}
     </section>
-  );
-}
-
-function Empty({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="card p-6 text-center text-sm text-content-subtle">
-      {children}
-    </p>
   );
 }

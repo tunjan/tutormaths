@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-/** Overline-style section label — reads clearly as a structural divider. */
+/** Standard sub-section heading from the documented type scale. */
 export function SectionHeading({
   className,
   ...props
@@ -8,7 +8,7 @@ export function SectionHeading({
   return (
     <h2
       className={cn(
-        "text-xs font-semibold tracking-wider text-muted-foreground uppercase",
+        "text-heading-md text-foreground",
         className,
       )}
       {...props}

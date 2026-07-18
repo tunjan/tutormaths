@@ -11,6 +11,11 @@ import {
   MAX_FILE_BYTES,
   SUBMISSION_MIME,
 } from "@/lib/constants";
+import { AlertCircle } from "lucide-react";
+import {
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
 
 const accept = SUBMISSION_MIME as readonly string[];
 
@@ -79,15 +84,19 @@ export function SubmissionUploader({
   return (
     <div className="flex flex-col gap-3">
       {globalError && (
-        <div className="rounded-md bg-destructive-muted px-3 py-2 text-sm text-destructive" role="alert">
-          {globalError}
-        </div>
+        <Alert variant="destructive" role="alert">
+          <AlertCircle aria-hidden />
+          <AlertDescription>{globalError}</AlertDescription>
+        </Alert>
       )}
       <FileDropzone
         accept="application/pdf,image/jpeg"
-        hint="PDF or JPG, up to 20 MB"
+        title="Drop your solution here"
+        actionLabel="Browse files"
+        hint="PDF or JPG · 20 MB max"
         busy={busy}
         busyLabel="Uploading…"
+        className="py-6"
         onFile={(f) => void handleFile(f)}
       />
     </div>

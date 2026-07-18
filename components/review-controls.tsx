@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Check, RotateCcw } from "lucide-react";
+import { AlertCircle, Check, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { reviewSubmission } from "@/app/tutor/actions";
 import { Button } from "@/components/ui/button";
 import { type ReviewStatus } from "@/lib/format";
+import {
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
 
 /**
  * The tutor's verdict control. Approve / Return for revision are independent of
@@ -41,7 +45,7 @@ export function ReviewControls({
 
   if (status === "assigned") {
     return (
-      <p className="text-sm text-muted-foreground">
+      <p className="text-body text-muted-foreground">
         Nothing to review yet — the student hasn&rsquo;t submitted any work.
       </p>
     );
@@ -50,9 +54,10 @@ export function ReviewControls({
   return (
     <div className="flex flex-col gap-3">
       {globalError && (
-        <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
-          {globalError}
-        </div>
+        <Alert variant="destructive" role="alert">
+          <AlertCircle aria-hidden />
+          <AlertDescription>{globalError}</AlertDescription>
+        </Alert>
       )}
       <div className="flex flex-wrap items-center gap-2">
       <Button

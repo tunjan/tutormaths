@@ -1,5 +1,5 @@
 import { Link } from "next-view-transitions";
-import { ChevronRight, Clock } from "lucide-react";
+import { Clock, UsersRound } from "lucide-react";
 import { requireTutor } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/page-header";
@@ -7,7 +7,17 @@ import { AddStudentButton } from "@/components/add-student-button";
 import { AssignTaskButton } from "@/components/assign-task-button";
 import { PendingInviteActions } from "@/components/pending-invite-actions";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { formatDate } from "@/lib/format";
+import { Card } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 function initials(name: string): string {
   return name
@@ -67,50 +77,53 @@ export default async function StudentsPage() {
       />
 
       {!hasAnyone ? (
-        <div className="card flex flex-col items-center gap-3 px-6 py-16 text-center">
-          <span className="grid size-14 place-items-center rounded-full border border-border-subtle bg-bg-subtle text-content-subtle">
-            <ChevronRight className="size-6" />
-          </span>
-          <h3 className="text-xl font-semibold text-foreground">No students yet</h3>
-          <p className="max-w-sm text-sm text-content-subtle">
-            Add your first student to start assigning homework and tracking
-            progress.
-          </p>
-          <div className="mt-1">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <UsersRound aria-hidden />
+            </EmptyMedia>
+            <EmptyTitle>No students yet</EmptyTitle>
+            <EmptyDescription>
+              Add your first student to start assigning homework and tracking
+              progress.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
             <AddStudentButton />
-          </div>
-        </div>
+          </EmptyContent>
+        </Empty>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="card-gallery">
           {(students ?? []).map((s) => {
             const name = s.full_name || s.email || "Student";
             return (
-              <div key={s.id} className="card flex flex-col p-6">
+              <Card key={s.id}>
                 <Link
                   href={`/tutor/students/${s.id}`}
                   className="group flex items-start gap-3"
                 >
                   <span
-                    className="grid size-11 shrink-0 place-items-center rounded-full border border-border-subtle bg-bg-subtle text-sm font-semibold text-content-emphasis ring-2 ring-card"
+                    className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-bg-subtle text-label text-content-emphasis"
                   >
                     {initials(name)}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-foreground group-hover:underline">
+                    <p className="truncate text-label text-foreground group-hover:underline">
                       {s.full_name || "—"}
                     </p>
-                    <p className="truncate text-xs text-content-subtle">
+                    <p className="truncate text-caption text-content-subtle">
                       {s.email}
                     </p>
                   </div>
                   <Badge variant="success">Active</Badge>
                 </Link>
 
-                <p className="mt-4 font-mono text-xs text-content-subtle">
+                <p className="mt-4 text-caption text-content-subtle">
                   Joined {formatDate(s.created_at)}
                 </p>
 
-                <div className="mt-4 border-t border-border pt-4">
+                <Separator className="my-4" />
+                <div>
                   <AssignTaskButton
                     students={recipientOptions}
                     categories={categories ?? []}
@@ -120,37 +133,35 @@ export default async function StudentsPage() {
                     className="w-full"
                   />
                 </div>
-              </div>
+              </Card>
             );
           })}
 
           {(invites ?? []).map((inv) => {
             const name = inv.full_name || "Student";
             return (
-              <div
-                key={inv.id}
-                className="card flex flex-col p-6"
-              >
+              <Card key={inv.id}>
                 <div className="flex items-start gap-3">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-full border border-border-subtle bg-bg-subtle text-sm font-semibold text-content-subtle ring-2 ring-card">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-bg-subtle text-label text-content-subtle">
                     {initials(name)}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-foreground">
+                    <p className="truncate text-label text-foreground">
                       {inv.full_name || "—"}
                     </p>
-                    <p className="mt-0.5 flex items-center gap-1 text-xs text-content-attention">
-                      <Clock className="size-3.5" /> Awaiting sign-up
+                    <p className="mt-1 flex items-center gap-1 text-caption text-content-attention">
+                      <Clock className="size-4" /> Awaiting sign-up
                     </p>
                   </div>
                   <Badge variant="outline">Invited</Badge>
                 </div>
 
-                <p className="mt-4 font-mono text-xs text-content-subtle">
+                <p className="mt-4 text-caption text-content-subtle">
                   Invited {formatDate(inv.created_at)}
                 </p>
 
-                <div className="mt-4 border-t border-border pt-4">
+                <Separator className="my-4" />
+                <div>
                   <AssignTaskButton
                     students={recipientOptions}
                     categories={categories ?? []}
@@ -161,7 +172,7 @@ export default async function StudentsPage() {
                   />
                   <PendingInviteActions inviteId={inv.id} token={inv.token} />
                 </div>
-              </div>
+              </Card>
             );
           })}
 
@@ -174,7 +185,7 @@ export default async function StudentsPage() {
 
 function AddStudentTile() {
   return (
-    <div className="flex min-h-[13rem] items-center justify-center rounded-xl border border-dashed border-border-subtle transition-colors duration-150 hover:border-border-emphasis">
+    <div className="flex min-h-52 items-center justify-center rounded-md border border-dashed border-border transition-colors duration-base hover:border-border-emphasis">
       <AddStudentButton variant="ghost" />
     </div>
   );

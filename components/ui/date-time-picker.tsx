@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   Popover,
   PopoverContent,
@@ -57,7 +58,7 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const MINUTES = Array.from({ length: 12 }, (_, i) => i * 5);
 
 const selectClass =
-  "h-8 rounded-lg border border-input bg-transparent px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+  "h-8 rounded-sm border border-border bg-card px-2 text-body outline-none transition-[border-color,box-shadow] duration-fast focus-visible:border-accent-ink disabled:bg-bg-subtle disabled:text-content-muted";
 
 /**
  * Date + time picker built on the Base UI popover (no native datetime-local,
@@ -122,7 +123,7 @@ export function DateTimePicker({
             aria-invalid={invalid}
             aria-describedby={ariaDescribedBy}
             className={cn(
-              "h-9 w-full justify-between px-3 font-normal",
+              "h-10 w-full justify-between px-3 font-normal",
               !selected && "text-muted-foreground",
             )}
           >
@@ -142,7 +143,7 @@ export function DateTimePicker({
           >
             <ChevronLeft />
           </Button>
-          <div className="text-sm font-medium">
+          <div className="text-label">
             {MONTH_LABEL.format(monthStart)}
           </div>
           <Button
@@ -156,11 +157,11 @@ export function DateTimePicker({
           </Button>
         </div>
 
-        <div className="grid grid-cols-7 gap-0.5">
+        <div className="grid grid-cols-7 gap-1">
           {WEEKDAYS.map((w) => (
             <div
               key={w}
-              className="flex h-8 items-center justify-center text-xs font-medium text-muted-foreground"
+              className="flex h-8 items-center justify-center text-micro text-content-subtle"
             >
               {w}
             </div>
@@ -182,11 +183,11 @@ export function DateTimePicker({
                 aria-label={FULL_DATE.format(d)}
                 aria-current={isToday ? "date" : undefined}
                 className={cn(
-                  "flex size-8 items-center justify-center rounded-md text-sm tabular-nums transition-colors",
+                  "flex size-8 items-center justify-center rounded-sm text-body tabular-nums transition-colors duration-fast",
                   isSelected
                     ? "bg-primary text-primary-foreground"
                     : "hover:bg-muted",
-                  !isSelected && isToday && "ring-1 ring-primary/40",
+                  !isSelected && isToday && "border border-border-default font-medium",
                 )}
               >
                 {day}
@@ -195,8 +196,9 @@ export function DateTimePicker({
           })}
         </div>
 
-        <div className="mt-3 flex items-center justify-between gap-2 border-t border-border pt-3">
-          <div className="flex items-center gap-1.5">
+        <Separator className="my-3" />
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
             <label className="sr-only" htmlFor={`${id ?? name}-hour`}>
               Hour
             </label>
@@ -212,7 +214,7 @@ export function DateTimePicker({
                 </option>
               ))}
             </select>
-            <span className="text-sm text-muted-foreground">:</span>
+            <span className="text-body text-muted-foreground">:</span>
             <label className="sr-only" htmlFor={`${id ?? name}-minute`}>
               Minute
             </label>

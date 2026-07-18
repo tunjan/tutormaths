@@ -5,26 +5,32 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1.5 overflow-hidden rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-all focus-visible:ring-4 focus-visible:ring-border-subtle [&>svg]:pointer-events-none [&>svg]:size-3.5!",
+  "group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden px-2 py-1 text-micro whitespace-nowrap transition-[background-color,border-color,color] duration-fast focus-visible:outline-none [&>svg]:pointer-events-none [&>svg]:size-3!",
   {
     variants: {
       variant: {
         default:
-          "bg-bg-inverted text-content-inverted [a]:hover:bg-content-default",
+          "rounded-sm border border-transparent bg-bg-subtle text-content-default [a]:hover:bg-border-subtle",
         secondary:
-          "border border-border-subtle bg-bg-subtle text-content-default [a]:hover:bg-bg-emphasis",
+          "rounded-sm border border-border bg-card text-content-default [a]:hover:bg-bg-muted",
         destructive:
-          "bg-bg-error text-content-error [a]:hover:bg-bg-error",
+          "rounded-sm border border-transparent bg-bg-error text-content-error [a]:hover:bg-bg-error/70",
         outline:
-          "border border-border-subtle bg-transparent text-content-default [a]:hover:bg-bg-muted",
+          "rounded-sm border border-border bg-card text-content-default [a]:hover:bg-bg-muted",
         ghost:
-          "text-content-subtle hover:bg-content-emphasis/5 hover:text-content-emphasis",
-        link: "text-content-info underline-offset-4 hover:underline",
-        accent: "bg-bg-info text-content-info",
-        "accent-alt": "bg-bg-attention text-content-attention",
-        success: "bg-bg-success text-content-success",
-        warning: "bg-bg-warning text-content-warning",
-        info: "bg-bg-info text-content-info",
+          "rounded-sm border border-transparent text-content-subtle hover:bg-bg-muted hover:text-content-emphasis",
+        link:
+          "rounded-sm border border-transparent text-content-info underline-offset-4 hover:underline",
+        accent:
+          "rounded-sm border border-transparent bg-accent-ink-subtle text-accent-ink",
+        "accent-alt":
+          "rounded-sm border border-transparent bg-bg-attention text-content-attention",
+        success:
+          "rounded-sm border border-transparent bg-bg-success text-content-success",
+        warning:
+          "rounded-sm border border-transparent bg-bg-warning text-content-warning",
+        info:
+          "rounded-sm border border-transparent bg-bg-info text-content-info",
       },
     },
     defaultVariants: {

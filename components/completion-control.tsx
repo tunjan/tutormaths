@@ -1,16 +1,15 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Check, UploadCloud } from "lucide-react";
+import { Check, Info, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { updateCompletion } from "@/app/student/actions";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
 
 export function CompletionControl({
   assignmentId,
@@ -72,66 +71,54 @@ export function CompletionControl({
         : "In progress";
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-5">
-        <div className="flex min-w-0 flex-1 flex-col gap-2.5">
-          <div className="flex items-baseline justify-between gap-3">
-            <span className="text-sm font-medium text-foreground">
-              {statusLabel}
-            </span>
-            <span className="text-sm font-semibold tabular-nums text-muted-foreground">
-              {pct}%
-            </span>
-          </div>
-          <Slider
-            value={[pct]}
-            min={0}
-            max={100}
-            step={5}
-            onValueChange={(v) => setPct(Array.isArray(v) ? v[0] : v)}
-            onValueCommitted={(v) => save(Array.isArray(v) ? v[0] : v)}
-            className="w-full"
-            aria-label="Completion percentage"
-          />
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
+        <div className="flex items-baseline justify-between gap-3">
+          <span className="text-label text-foreground">
+            {statusLabel}
+          </span>
+          <span className="text-label tabular-nums text-foreground">
+            {pct}%
+          </span>
         </div>
-        {needsToSubmit ? (
-          <Button
-            onClick={focusUpload}
-            disabled={pending}
-            className="w-full shrink-0 sm:w-auto"
-          >
-            <UploadCloud data-icon="inline-start" />
-            Upload work
-          </Button>
-        ) : (
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  size="icon"
-                  onClick={() => save(100, { focusUpload: !hasSubmissions })}
-                  disabled={doneWithSubmission || pending}
-                  aria-label={doneWithSubmission ? "Completed" : "Mark as done"}
-                  className="shrink-0"
-                />
-              }
-            >
-              <Check data-icon="inline-start" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{doneWithSubmission ? "Completed" : "Mark as done"}</p>
-            </TooltipContent>
-          </Tooltip>
-        )}
+        <Slider
+          value={[pct]}
+          min={0}
+          max={100}
+          step={5}
+          onValueChange={(v) => setPct(Array.isArray(v) ? v[0] : v)}
+          onValueCommitted={(v) => save(Array.isArray(v) ? v[0] : v)}
+          className="w-full"
+          aria-label="Completion percentage"
+        />
       </div>
 
-      {needsToSubmit && (
-        <p
-          className="rounded-panel border border-border bg-surface-muted px-3.5 py-2.5 text-[13px] leading-relaxed text-muted-foreground"
-          role="status"
+      {needsToSubmit ? (
+        <Button size="sm" onClick={focusUpload} disabled={pending} className="w-full">
+          <UploadCloud data-icon="inline-start" />
+          Upload work
+        </Button>
+      ) : (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => save(100, { focusUpload: !hasSubmissions })}
+          disabled={doneWithSubmission || pending}
+          aria-label={doneWithSubmission ? "Assignment completed" : "Mark assignment complete"}
+          className="w-full"
         >
-          You&rsquo;ve marked this done. Upload your work below to hand it in for review.
-        </p>
+          <Check data-icon="inline-start" />
+          {doneWithSubmission ? "Completed" : "Mark as complete"}
+        </Button>
+      )}
+
+      {needsToSubmit && (
+        <Alert variant="info" role="status">
+          <Info aria-hidden />
+          <AlertDescription>
+            Upload below to send it to your tutor.
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   );

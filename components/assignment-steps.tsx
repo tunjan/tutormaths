@@ -30,50 +30,51 @@ export function AssignmentSteps({ status }: { status: ReviewStatus }) {
   const states = nodesFor(status);
 
   return (
-    <ol className="flex w-full items-center gap-2" aria-label="Assignment progress">
+    <ol className="grid w-full grid-cols-3" aria-label="Assignment progress">
       {labels.map((label, i) => {
         const state = states[i];
         const isLast = i === labels.length - 1;
         return (
           <li
             key={label}
-            className={cn("flex items-center gap-2", !isLast && "flex-1")}
+            aria-current={state === "current" ? "step" : undefined}
+            className="relative flex min-w-0 flex-col gap-2"
           >
-            <span className="flex items-center gap-2">
+            <span className="flex items-center">
               <span
                 aria-hidden
                 className={cn(
-                  "flex size-6 shrink-0 items-center justify-center rounded-panel border text-xs font-medium tabular-nums transition-colors",
+                  "relative z-10 flex size-7 shrink-0 items-center justify-center rounded-full border text-micro tabular-nums transition-colors duration-fast",
                   state === "done" &&
                     "border-transparent bg-primary text-primary-foreground",
                   state === "current" &&
-                    "border-primary bg-accent-ink-subtle text-primary",
+                    "border-primary bg-background text-primary ring-4 ring-primary/10",
                   state === "todo" &&
-                    "border-border-soft bg-transparent text-muted-foreground",
+                    "border-border-strong bg-background text-muted-foreground",
                 )}
               >
-                {state === "done" ? <Check className="size-3.5" /> : i + 1}
+                {state === "done" ? <Check className="size-4" /> : i + 1}
               </span>
-              <span
-                className={cn(
-                  "text-sm whitespace-nowrap",
-                  state === "todo"
-                    ? "text-muted-foreground"
-                    : "font-medium text-foreground",
-                )}
-              >
-                {label}
-              </span>
+              {!isLast && (
+                <span
+                  aria-hidden
+                  className={cn(
+                    "h-px min-w-0 flex-1",
+                    states[i + 1] === "todo" ? "bg-border-strong" : "bg-primary",
+                  )}
+                />
+              )}
             </span>
-            {!isLast && (
-              <span
-                aria-hidden
-                className={cn(
-                  "h-px flex-1",
-                  states[i + 1] === "todo" ? "bg-border-soft" : "bg-primary",
-                )}
-              />
-            )}
+            <span
+              className={cn(
+                "truncate pr-2 text-micro",
+                state === "todo"
+                  ? "text-muted-foreground"
+                  : "font-semibold text-foreground",
+              )}
+            >
+              {label}
+            </span>
           </li>
         );
       })}

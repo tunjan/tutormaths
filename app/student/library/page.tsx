@@ -8,13 +8,13 @@ export default async function StudentLibrary() {
   const categories = await loadLibrary();
 
   return (
-    <div className="w-full py-8 animate-rise">
+    <div className="w-full animate-rise">
       <PageHeader
         title="Library"
         description="Reference material shared by your tutor — browse and download by topic."
       />
 
-      <div className="mt-12">
+      <div>
         <LibraryView categories={categories} canManage={false} />
       </div>
     </div>

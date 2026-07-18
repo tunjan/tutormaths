@@ -2,11 +2,10 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ExternalLink, Trash2 } from "lucide-react";
+import { AlertCircle, ExternalLink, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteSubmission } from "@/app/student/actions";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +20,10 @@ import {
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatDateTime, humanFileSize } from "@/lib/format";
+import {
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
 
 export interface SubmissionItemView {
   id: string;
@@ -42,13 +45,11 @@ export function SubmissionList({
   canDelete: boolean;
 }) {
   return (
-    <Card className="py-0">
-      <CardContent className="divide-y divide-border px-0">
+    <div className="divide-y divide-border-subtle">
         {submissions.map((s) => (
           <SubmissionItem key={s.id} submission={s} canDelete={canDelete} />
         ))}
-      </CardContent>
-    </Card>
+    </div>
   );
 }
 
@@ -66,14 +67,15 @@ function SubmissionItem({
   return (
     <div className="px-6 py-4">
       {globalError && (
-        <div className="mb-3 rounded-md bg-destructive-muted px-3 py-2 text-sm text-destructive" role="alert">
-          {globalError}
-        </div>
+        <Alert variant="destructive" role="alert" className="mb-3">
+          <AlertCircle aria-hidden />
+          <AlertDescription>{globalError}</AlertDescription>
+        </Alert>
       )}
       <div className="flex items-center justify-between gap-3">
-        <div className="text-sm">
+        <div className="text-body">
           <div>{formatDateTime(s.created_at)}</div>
-          <div className="text-xs text-muted-foreground">
+          <div className="text-caption text-muted-foreground">
             {s.mime_type === "application/pdf" ? "PDF" : "Image"}
             {s.size_bytes ? ` · ${humanFileSize(s.size_bytes)}` : ""}
           </div>
@@ -84,7 +86,7 @@ function SubmissionItem({
               href={s.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+              className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }))}
               aria-label="Open in a new tab"
             >
               <ExternalLink />
@@ -97,7 +99,7 @@ function SubmissionItem({
                   <Button
                     type="button"
                     variant="ghost"
-                    size="sm"
+                    size="icon-sm"
                     disabled={deleting}
                     aria-label="Delete submission"
                     className="text-muted-foreground hover:text-destructive"
@@ -117,7 +119,7 @@ function SubmissionItem({
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    className={cn(buttonVariants({ variant: "destructive" }))}
+                    variant="destructive"
                     onClick={() =>
                       startDelete(async () => {
                         try {

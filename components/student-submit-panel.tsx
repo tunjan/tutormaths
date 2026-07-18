@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ExternalLink, FileText, Plus, Trash2 } from "lucide-react";
+import { AlertCircle, ExternalLink, FileText, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteSubmission } from "@/app/student/actions";
 import { SubmissionUploader } from "@/components/submission-uploader";
@@ -21,6 +21,10 @@ import {
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { humanFileSize } from "@/lib/format";
+import {
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
 
 export interface StudentSubmission {
   id: string;
@@ -33,29 +37,40 @@ export function StudentSubmitPanel({
   assignmentId,
   studentId,
   submissions,
+  embedded = false,
 }: {
   assignmentId: string;
   studentId: string;
   submissions: StudentSubmission[];
+  embedded?: boolean;
 }) {
   const hasWork = submissions.length > 0;
   const [adding, setAdding] = useState(false);
 
   return (
-    <div className="flex flex-col gap-5 rounded-panel border border-border-soft bg-surface-paper/90 p-5">
-      <div className="flex min-w-0 flex-col gap-1">
-        <p className="text-sm font-medium text-foreground">
-          {hasWork ? "Submitted for tutor review" : "Upload your completed work"}
-        </p>
-        <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
-          {hasWork
-            ? "Your tutor can see these files. Upload a revision if needed."
-            : "Submit a PDF or JPG when you are ready for feedback."}
-        </p>
-      </div>
+    <div
+      className={cn(
+        "flex flex-col",
+        embedded ? "gap-4" : "gap-6",
+        !embedded &&
+          "rounded-md border border-border bg-card p-6",
+      )}
+    >
+      {(!embedded || hasWork) && (
+        <div className="flex min-w-0 flex-col gap-1">
+          <p className="text-label text-foreground">
+            {hasWork ? "Submitted files" : "Upload your completed work"}
+          </p>
+          <p className="max-w-prose text-caption text-muted-foreground">
+            {hasWork
+              ? "Your tutor can see these files. Upload a revision if needed."
+              : "Submit a PDF or JPG when you are ready for feedback."}
+          </p>
+        </div>
+      )}
 
       {hasWork && (
-        <ul className="flex flex-col gap-1 rounded-panel border border-border-soft bg-background/70 p-2">
+        <ul className="flex flex-col gap-1 rounded-md bg-bg-muted p-2">
           {submissions.map((s) => (
             <SubmissionRow key={s.id} submission={s} />
           ))}
@@ -68,7 +83,7 @@ export function StudentSubmitPanel({
 
       {hasWork && (
         <div className="flex items-center justify-between gap-4">
-          <p className="text-[13px] tabular-nums text-muted-foreground">
+          <p className="text-caption tabular-nums text-muted-foreground">
             {submissions.length} {submissions.length === 1 ? "file" : "files"} uploaded
           </p>
           {!adding && (
@@ -96,19 +111,17 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
   return (
     <li className="flex flex-col gap-2">
       {error && (
-        <div
-          className="rounded-panel border border-destructive/20 bg-destructive/10 px-3 py-2 text-[13px] text-destructive"
-          role="alert"
-        >
-          {error}
-        </div>
+        <Alert variant="destructive" role="alert">
+          <AlertCircle aria-hidden />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
-      <div className="flex items-center justify-between rounded-panel bg-surface-paper px-3 py-3 transition-colors hover:bg-surface-hover">
+      <div className="flex items-center justify-between rounded-sm bg-card px-3 py-3 transition-colors duration-fast hover:bg-surface-hover">
         <div className="flex min-w-0 items-center gap-3 pr-4">
           <FileText className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.5} />
-          <div className="min-w-0 flex flex-col justify-center gap-0.5">
-            <p className="truncate text-[14px] font-medium text-foreground">{s.name}</p>
-            <p className="text-[12px] text-muted-foreground uppercase tracking-wide">
+          <div className="min-w-0 flex flex-col justify-center gap-1">
+            <p className="truncate text-label text-foreground">{s.name}</p>
+            <p className="text-caption text-muted-foreground">
               {s.size_bytes ? `${humanFileSize(s.size_bytes)} · ` : ""}uploaded
             </p>
           </div>
@@ -122,7 +135,7 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
               rel="noopener noreferrer"
               className={cn(
                 buttonVariants({ variant: "ghost", size: "icon-sm" }),
-                "text-muted-foreground hover:text-foreground rounded-md shadow-none",
+                "text-muted-foreground hover:text-foreground rounded-sm shadow-none",
               )}
               aria-label="Open submission in a new tab"
             >
@@ -138,7 +151,7 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
                   size="icon-sm"
                   disabled={deleting}
                   aria-label="Remove submission"
-                  className="text-muted-foreground hover:text-destructive rounded-md shadow-none"
+                  className="text-muted-foreground hover:text-destructive rounded-sm shadow-none"
                 >
                   <Trash2 />
                 </Button>
@@ -155,6 +168,7 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
+                  variant="destructive"
                   onClick={() =>
                     startDelete(async () => {
                       try {

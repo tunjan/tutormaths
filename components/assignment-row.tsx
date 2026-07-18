@@ -1,12 +1,14 @@
 "use client";
 
 import { Link } from "next-view-transitions";
-import { ChevronRight } from "lucide-react";
+import { BookOpenText, ChevronRight, ListChecks } from "lucide-react";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import {
   type ReviewStatus,
   relativeTime,
+  typeLabel,
 } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 export interface AssignmentRowProps {
   href: string;
@@ -17,6 +19,7 @@ export interface AssignmentRowProps {
   reviewStatus: ReviewStatus;
   student?: string;
   unread?: boolean;
+  showTypeMarker?: boolean;
 }
 
 function initials(name: string): string {
@@ -32,12 +35,16 @@ function initials(name: string): string {
 export function AssignmentRow({
   href,
   title,
+  type,
   dueAt,
   pct,
   reviewStatus,
   student,
   unread,
+  showTypeMarker = false,
 }: AssignmentRowProps) {
+  const AssignmentTypeIcon =
+    type === "reading_notes" ? BookOpenText : ListChecks;
   const dueText =
     reviewStatus === "approved" ? "completed" : `due ${relativeTime(dueAt)}`;
   const stateText =
@@ -51,38 +58,55 @@ export function AssignmentRow({
       ? `${pct}% complete`
       : null;
   const meta = [
-    student,
+    student ?? (showTypeMarker ? typeLabel(type) : null),
     stateText,
     reviewStatus === "needs_work" ? dueText : null,
     progressText,
   ]
     .filter(Boolean)
-    .join(" · ");
+    .join(showTypeMarker ? " / " : " · ");
 
   return (
     <Link
       href={href}
-      className="group relative flex items-center justify-between gap-4 px-4 py-3.5 transition-colors duration-150 hover:bg-surface-hover sm:px-5"
+      className="group relative flex items-center justify-between gap-4 px-4 py-3 transition-colors duration-fast hover:bg-bg-muted sm:px-6"
     >
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <div className="relative shrink-0">
-          <span className="grid size-8 place-items-center rounded-full border border-border-subtle bg-surface-muted text-[11px] font-semibold text-content-default">
-            {student ? initials(student) : "—"}
+          <span
+            className={cn(
+              "grid size-9 place-items-center border text-micro",
+              showTypeMarker
+                ? "rounded-sm border-transparent bg-bg-subtle text-content-default"
+                : "size-8 rounded-full border-border bg-bg-muted text-content-default",
+            )}
+          >
+            {student ? (
+              initials(student)
+            ) : showTypeMarker ? (
+              <AssignmentTypeIcon
+                className="size-4"
+                strokeWidth={1.75}
+                aria-hidden
+              />
+            ) : (
+              "—"
+            )}
           </span>
 
           {unread && (
             <span
-              className="absolute -right-0.5 -top-0.5 size-2 rounded-full border-2 border-surface-raised bg-status-review"
+              className="absolute -right-1 -top-1 size-2 rounded-full border-2 border-card bg-status-review"
               aria-label="Unread activity"
             />
           )}
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <h3 className="truncate text-sm font-semibold text-text-heading">
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <h3 className="truncate text-label text-text-heading">
             {title}
           </h3>
-          <span className="truncate text-xs text-content-subtle">
+          <span className="truncate text-caption text-content-subtle">
             {meta}
           </span>
         </div>

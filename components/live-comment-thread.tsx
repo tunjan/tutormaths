@@ -9,6 +9,8 @@ export interface Participant {
   role: string;
 }
 
+type CommentAction = (formData: FormData) => Promise<void>;
+
 /**
  * Renders the comment thread and appends new comments live via Supabase
  * Realtime, so a tutor↔student exchange updates without reloading. The author's
@@ -19,10 +21,16 @@ export function LiveCommentThread({
   assignmentId,
   initial,
   participants,
+  currentUserId,
+  editAction,
+  deleteAction,
 }: {
   assignmentId: string;
   initial: CommentView[];
   participants: Record<string, Participant>;
+  currentUserId: string;
+  editAction: CommentAction;
+  deleteAction: CommentAction;
 }) {
   // Resolve display name/role from the known participants where possible. This
   // matters for the student view, where RLS hides the tutor's profile row so the
@@ -78,6 +86,31 @@ export function LiveCommentThread({
           });
         },
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "comments",
+          filter: `assignment_id=eq.${assignmentId}`,
+        },
+        (payload) => {
+          const row = payload.new as {
+            id: string;
+            body: string;
+            deleted_at: string | null;
+          };
+          setComments((prev) =>
+            row.deleted_at
+              ? prev.filter((comment) => comment.id !== row.id)
+              : prev.map((comment) =>
+                  comment.id === row.id
+                    ? { ...comment, body: row.body }
+                    : comment,
+                ),
+          );
+        },
+      )
       .subscribe();
 
     return () => {
@@ -85,5 +118,25 @@ export function LiveCommentThread({
     };
   }, [assignmentId]);
 
-  return <CommentThread comments={comments} />;
+  return (
+    <CommentThread
+      assignmentId={assignmentId}
+      comments={comments}
+      currentUserId={currentUserId}
+      editAction={editAction}
+      deleteAction={deleteAction}
+      onUpdated={(commentId, body) =>
+        setComments((prev) =>
+          prev.map((comment) =>
+            comment.id === commentId ? { ...comment, body } : comment,
+          ),
+        )
+      }
+      onDeleted={(commentId) =>
+        setComments((prev) =>
+          prev.filter((comment) => comment.id !== commentId),
+        )
+      }
+    />
+  );
 }

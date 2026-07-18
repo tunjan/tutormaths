@@ -4,7 +4,11 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 
 export function ResetForm() {
   const [supabase] = useState(() => createClient());
@@ -31,29 +35,30 @@ export function ResetForm() {
 
   if (sent) {
     return (
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-center text-body text-muted-foreground">
         If that email has an account, a password-reset link is on its way.
       </p>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5">
-      <div className="flex flex-col gap-2.5">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          placeholder="you@example.com"
-          className="h-11 rounded-lg px-3.5 text-base md:text-base"
-        />
-      </div>
-      <Button type="submit" disabled={pending} className="h-11 w-full text-base">
-        {pending ? "Sending…" : "Send reset link"}
-      </Button>
+    <form onSubmit={onSubmit}>
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="you@example.com"
+          />
+        </Field>
+        <Button type="submit" disabled={pending} className="w-full">
+          {pending ? "Sending…" : "Send reset link"}
+        </Button>
+      </FieldGroup>
     </form>
   );
 }

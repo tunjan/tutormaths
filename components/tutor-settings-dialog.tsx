@@ -46,10 +46,10 @@ export function TutorSettingsDialog({
         title="Settings"
         description="Configure your tutor workspace."
       >
-        <div className="space-y-4 pt-2">
+        <div className="flex flex-col gap-4">
           <div>
-            <h3 className="text-[14px] font-medium text-foreground mb-1">Reminder windows</h3>
-            <p className="text-[13px] text-muted-foreground mb-4 leading-relaxed">
+            <h3 className="text-h4 text-foreground">Reminder windows</h3>
+            <p className="mt-1 mb-4 text-caption text-muted-foreground">
               How long before an assignment is due a reminder is sent (email and in-app). Add one chip per window.
             </p>
             <ReminderWindowsField

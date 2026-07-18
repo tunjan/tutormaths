@@ -19,7 +19,7 @@ export function FilePreview({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border border-border bg-muted/30",
+        "overflow-hidden rounded-md border border-border bg-bg-muted",
         className,
       )}
     >

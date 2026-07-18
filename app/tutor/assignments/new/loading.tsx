@@ -7,7 +7,7 @@ export default function Loading() {
       <Skeleton className="h-8 w-44" />
 
       {/* Card with form fields */}
-      <div className="rounded-xl border bg-card p-6">
+      <div className="rounded-md border border-border bg-card p-6">
         <div className="flex flex-col gap-6">
           {/* Student select */}
           <div className="flex flex-col gap-2">
@@ -37,10 +37,10 @@ export default function Loading() {
           {/* File dropzone */}
           <div className="flex flex-col gap-2">
             <Skeleton className="h-4 w-28" />
-            <Skeleton className="h-24 w-full rounded-xl" />
+            <Skeleton className="h-24 w-full rounded-md" />
           </div>
           {/* Submit button */}
-          <Skeleton className="h-10 w-36" />
+          <Skeleton className="h-9 w-36" />
         </div>
       </div>
     </div>

@@ -40,7 +40,7 @@ export function AccountMenu({
             aria-label={`Open ${accountLabel} account menu`}
             title={accountLabel}
           >
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-bg-subtle text-xs font-medium text-content-default">
+            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-bg-subtle text-micro text-content-default">
               {accountInitial(userEmail, roleLabel)}
             </span>
             <span className="hidden min-w-0 truncate text-left lg:block">
@@ -50,7 +50,7 @@ export function AccountMenu({
         }
       />
       <PopoverContent align="end" sideOffset={8} className="w-72 p-2">
-        <PopoverHeader className="px-2 py-1.5">
+        <PopoverHeader className="px-2 py-2">
           <PopoverTitle className="truncate">{accountLabel}</PopoverTitle>
           <PopoverDescription>{roleLabel}</PopoverDescription>
         </PopoverHeader>

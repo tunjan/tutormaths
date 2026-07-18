@@ -4,12 +4,12 @@ import { cn } from "@/lib/utils";
 
 export default function NotFound() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-surface px-4 text-center">
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-background px-4 text-center">
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-h1">
           Page not found
         </h1>
-        <p className="max-w-md text-sm text-muted-foreground">
+        <p className="max-w-md text-body text-muted-foreground">
           That page doesn&rsquo;t exist, or you don&rsquo;t have access to it.
         </p>
       </div>

@@ -60,6 +60,7 @@ export function LibraryDeleteButton({
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
+            variant="destructive"
             onClick={() =>
               start(async () => {
                 try {

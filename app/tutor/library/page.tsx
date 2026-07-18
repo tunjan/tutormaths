@@ -21,7 +21,7 @@ export default async function TutorLibrary() {
         }
       />
 
-      <div className="mt-12">
+      <div>
         <LibraryView categories={categories} canManage />
       </div>
     </div>

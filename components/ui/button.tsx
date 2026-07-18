@@ -4,35 +4,43 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap border text-sm font-medium transition-all duration-150 cursor-pointer disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-border-subtle disabled:bg-bg-subtle disabled:text-content-muted [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-border-subtle",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm border text-button transition-[background-color,border-color,color,box-shadow,transform] duration-fast ease-[var(--ease-standard)] active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:scale-100 disabled:border-transparent disabled:bg-bg-subtle disabled:text-content-muted [&_svg]:pointer-events-none [&_svg]:size-5 [&_svg]:shrink-0 focus-visible:outline-none",
   {
     variants: {
       variant: {
         default:
-          "border-primary bg-primary text-primary-foreground hover:bg-content-default hover:ring-4 hover:ring-border-subtle",
+          "border-transparent bg-primary text-primary-foreground hover:bg-[var(--color-ink-hover)]",
         outline:
-          "border-border-subtle bg-card text-content-emphasis hover:border-border-emphasis hover:bg-bg-muted hover:ring-4 hover:ring-border-subtle",
+          "border-border bg-card text-content-emphasis hover:bg-bg-muted",
         secondary:
-          "border-border-subtle bg-bg-subtle text-content-emphasis hover:bg-bg-emphasis hover:ring-4 hover:ring-border-subtle",
+          "border-border bg-card text-content-emphasis hover:bg-bg-muted",
         ghost:
-          "border-transparent bg-transparent text-content-default hover:bg-content-emphasis/5 hover:text-content-emphasis",
+          "border-transparent bg-transparent text-content-emphasis hover:bg-bg-muted",
         soft:
-          "border-transparent bg-bg-info text-content-info hover:ring-4 hover:ring-bg-info",
+          "border-transparent bg-bg-subtle text-content-emphasis hover:bg-border-subtle",
         destructive:
-          "border-destructive bg-destructive text-white hover:ring-4 hover:ring-bg-error",
+          "border-transparent bg-destructive text-destructive-foreground hover:bg-[var(--color-error-deep)]",
         link:
-          "border-transparent bg-transparent text-content-info underline-offset-4 hover:underline",
+          "h-auto rounded-none border-transparent bg-transparent px-0 text-content-info underline-offset-4 hover:underline",
+        marketing:
+          "rounded-pill border-transparent bg-primary px-3.5 text-button-lg text-primary-foreground hover:bg-[var(--color-ink-hover)]",
+        "marketing-secondary":
+          "rounded-pill border-border bg-card px-3.5 text-button-lg text-content-emphasis hover:bg-bg-muted",
+        category:
+          "rounded-pill-category border-border bg-card px-4 text-button hover:bg-bg-muted",
+        icon:
+          "rounded-full border-border bg-card text-content-emphasis hover:bg-bg-muted",
       },
       size: {
-        default: "h-10 px-3 text-sm rounded-lg",
-        sm: "h-8 px-2.5 text-xs rounded-md",
-        md: "h-10 px-3 text-sm rounded-lg",
-        lg: "h-11 px-4 text-sm rounded-lg",
-        xl: "h-12 px-5 text-base rounded-lg",
-        icon: "size-10 rounded-lg",
-        "icon-xs": "size-8 rounded-md [&_svg]:size-3",
-        "icon-sm": "size-9 rounded-lg",
-        "icon-lg": "size-12 rounded-lg [&_svg]:size-5",
+        default: "h-9 px-1.5",
+        sm: "h-8 px-1.5 [&_svg]:size-4",
+        md: "h-9 px-1.5",
+        lg: "h-10 px-1.5",
+        xl: "h-11 px-3.5",
+        icon: "size-9 px-0",
+        "icon-xs": "size-8 px-0 [&_svg]:size-4",
+        "icon-sm": "size-8 px-0 [&_svg]:size-4",
+        "icon-lg": "size-11 px-0 [&_svg]:size-5",
       },
     },
     defaultVariants: {
@@ -51,6 +59,7 @@ function Button({
   return (
     <ButtonPrimitive
       data-slot="button"
+      data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />

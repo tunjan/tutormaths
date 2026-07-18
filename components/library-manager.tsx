@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FolderPlus, Plus, Upload } from "lucide-react";
+import { AlertCircle, FolderPlus, Plus, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -13,12 +13,21 @@ import {
 import { BUCKET_LIBRARY, LIBRARY_MIME, MAX_FILE_BYTES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Modal } from "@/components/ui/modal";
 import { FileDropzone } from "@/components/ui/file-dropzone";
 import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import {
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
+import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -96,8 +105,8 @@ function NewCategoryModal({
         </>
       }
     >
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="cat-name">Topic name</Label>
+      <Field>
+        <FieldLabel htmlFor="cat-name">Topic name</FieldLabel>
         <Input
           id="cat-name"
           value={name}
@@ -111,7 +120,7 @@ function NewCategoryModal({
             }
           }}
         />
-      </div>
+      </Field>
     </Modal>
   );
 }
@@ -228,9 +237,9 @@ function UploadModal({
         </>
       }
     >
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <Label id="upload-topic-label">Topic</Label>
+      <FieldGroup>
+        <Field>
+          <FieldLabel id="upload-topic-label">Topic</FieldLabel>
           <Select
             value={categoryId}
             onValueChange={(v) => setCategoryId(v ?? "")}
@@ -246,14 +255,16 @@ function UploadModal({
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {categories.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.name}
+              <SelectGroup>
+                {categories.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+                <SelectItem value={NEW_CATEGORY}>
+                  <Plus /> Create new topic…
                 </SelectItem>
-              ))}
-              <SelectItem value={NEW_CATEGORY}>
-                <Plus className="size-3.5" /> Create new topic…
-              </SelectItem>
+              </SelectGroup>
             </SelectContent>
           </Select>
           {creatingNew && (
@@ -264,34 +275,35 @@ function UploadModal({
               onChange={(e) => setNewCategory(e.target.value)}
             />
           )}
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="doc-title">Title</Label>
+        <Field>
+          <FieldLabel htmlFor="doc-title">Title</FieldLabel>
           <Input
             id="doc-title"
             value={title}
             placeholder="Differentiation — formula sheet"
             onChange={(e) => setTitle(e.target.value)}
           />
-        </div>
+        </Field>
 
-        <div className="flex flex-col gap-2">
-          <Label>File</Label>
+        <Field>
+          <FieldLabel>File</FieldLabel>
           <FileDropzone
             accept={accept.join(",")}
             hint="PDF, JPG or PNG, up to 20 MB"
             selectedName={file?.name}
             onFile={(f) => setFile(f ?? null)}
           />
-        </div>
+        </Field>
 
         {error && (
-          <p className="rounded-md border border-content-error/20 bg-bg-error px-3 py-2 text-sm text-content-error" role="alert">
-            {error}
-          </p>
+          <Alert variant="destructive" role="alert">
+            <AlertCircle aria-hidden />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
-      </div>
+      </FieldGroup>
     </Modal>
   );
 }

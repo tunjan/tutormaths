@@ -34,6 +34,7 @@ export async function loadComments(
     .from("comments")
     .select("id, body, created_at, author_id")
     .eq("assignment_id", assignmentId)
+    .is("deleted_at", null)
     .order("created_at", { ascending: true });
 
   if (!comments || comments.length === 0) return [];

@@ -1,6 +1,10 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@/components/ui/toggle-group";
 
 export interface SegmentedOption<T extends string> {
   value: T;
@@ -23,32 +27,22 @@ export function SegmentedControl<T extends string>({
   className?: string;
 }) {
   return (
-    <div
-      role="group"
+    <ToggleGroup
+      value={[value]}
+      onValueChange={(nextValues) => {
+        const nextValue = nextValues.at(-1) as T | undefined;
+        if (nextValue) onValueChange(nextValue);
+      }}
       className={cn(
-        "inline-flex self-start rounded-lg border border-border-subtle bg-bg-subtle p-1",
+        "self-start",
         className,
       )}
     >
-      {options.map((opt) => {
-        const active = opt.value === value;
-        return (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => onValueChange(opt.value)}
-            aria-pressed={active}
-            className={cn(
-              "rounded-md px-3 py-1.5 text-sm font-medium transition-colors duration-150",
-              active
-                ? "bg-card text-content-emphasis shadow-[var(--shadow-md)]"
-                : "text-content-subtle hover:text-content-emphasis",
-            )}
-          >
-            {opt.label}
-          </button>
-        );
-      })}
-    </div>
+      {options.map((opt) => (
+        <ToggleGroupItem key={opt.value} value={opt.value}>
+          {opt.label}
+        </ToggleGroupItem>
+      ))}
+    </ToggleGroup>
   );
 }

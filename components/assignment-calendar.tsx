@@ -7,6 +7,10 @@ import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 import { type ReviewStatus, formatDate, typeLabel } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import {
+  Empty,
+  EmptyDescription,
+} from "@/components/ui/empty";
 
 export interface CalendarAssignment {
   id: string;
@@ -90,10 +94,10 @@ export function AssignmentCalendar({
     <div className="flex flex-col gap-6">
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-h3 font-semibold tracking-tight text-foreground">
+        <h2 className="text-h3 text-foreground">
           {monthLabel.format(cursor)}
         </h2>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={goToday}>
             Today
           </Button>
@@ -117,12 +121,12 @@ export function AssignmentCalendar({
       </div>
 
       {/* Grid */}
-      <div className="overflow-hidden rounded-xl border border-border-subtle bg-card">
+      <div className="overflow-hidden rounded-md border border-border bg-card">
         <div className="grid grid-cols-7 border-b border-border-subtle bg-bg-muted">
           {WEEKDAYS.map((d) => (
             <div
               key={d}
-              className="px-2 py-2 text-center font-mono text-[11px] font-medium text-content-subtle"
+              className="px-2 py-2 text-center text-micro text-content-subtle"
             >
               <span className="hidden sm:inline">{d}</span>
               <span className="sm:hidden">{d[0]}</span>
@@ -145,7 +149,7 @@ export function AssignmentCalendar({
                 aria-pressed={isSelected}
                 aria-label={`${formatDate(date.toISOString())}, ${items.length} due`}
                 className={cn(
-                  "group/cell relative flex min-h-[68px] flex-col gap-1 border-b border-border-muted p-2 text-left transition-colors sm:min-h-[104px] outline-none",
+                  "group/cell relative flex min-h-[68px] flex-col gap-1 border-b border-border-muted p-2 text-left outline-none transition-colors duration-fast sm:min-h-[104px]",
                   (i + 1) % 7 === 0 && "border-r-0",
                   i >= 35 && "border-b-0",
                   inMonth ? "bg-surface-raised" : "bg-surface-muted/55",
@@ -155,7 +159,7 @@ export function AssignmentCalendar({
               >
                 <span
                   className={cn(
-                    "flex size-6 shrink-0 items-center justify-center rounded-full text-[12px] tabular-nums font-medium",
+                    "flex size-6 shrink-0 items-center justify-center rounded-full text-micro tabular-nums",
                     isToday
                       ? "bg-foreground font-semibold text-background"
                       : inMonth
@@ -173,7 +177,7 @@ export function AssignmentCalendar({
                         <CalendarChip key={a.id} a={a} unread={unreadSet.has(a.id)} />
                       ))}
                       {items.length > 3 && (
-                        <span className="px-1 text-[11px] text-text-subtle">
+                        <span className="px-1 text-micro text-text-subtle">
                           +{items.length - 3} more
                         </span>
                       )}
@@ -182,12 +186,8 @@ export function AssignmentCalendar({
                       {items.slice(0, 4).map((a) => (
                         <span
                           key={a.id}
-                          className={cn(
-                            "size-1.5 rounded-full",
-                            a.review_status === "approved"
-                              ? "bg-muted-foreground/50"
-                              : "bg-foreground",
-                          )}
+                          className="size-1.5 rounded-full bg-content-default"
+                          aria-hidden
                         />
                       ))}
                     </div>
@@ -201,32 +201,32 @@ export function AssignmentCalendar({
 
       {/* Selected-day agenda */}
       <div className="flex flex-col gap-3">
-        <h3 className="text-xs font-medium text-content-subtle">
+        <h3 className="text-label text-content-emphasis">
           {formatDate(new Date(selectedKey + "T00:00:00").toISOString())}
         </h3>
         {selected.length === 0 ? (
-          <p className="card p-6 text-center text-sm text-content-subtle">
-            Nothing due this day.
-          </p>
+          <Empty className="p-8">
+            <EmptyDescription>Nothing due this day.</EmptyDescription>
+          </Empty>
         ) : (
-          <div className="flex flex-col overflow-hidden rounded-xl border border-border-subtle bg-card divide-y divide-border-muted">
+          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
             {selected.map((a) => {
               const TypeIcon = a.type === "reading_notes" ? BookOpen : FileText;
               return (
                 <Link
                   key={a.id}
                   href={`/student/assignments/${a.id}`}
-                  className="group flex items-center justify-between gap-4 px-5 py-3 transition-colors hover:bg-surface-hover"
+                  className="group flex items-center justify-between gap-4 px-6 py-3 transition-colors duration-fast hover:bg-surface-hover"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-full border border-border-strong bg-surface-muted text-muted-foreground group-hover:text-foreground">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-sm border border-border bg-surface-muted text-muted-foreground group-hover:text-foreground">
                       <TypeIcon className="size-4" strokeWidth={1.5} />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-text-heading">
+                      <p className="truncate text-label text-text-heading">
                         {a.title}
                       </p>
-                      <p className="truncate text-xs text-text-subtle">
+                      <p className="truncate text-caption text-text-subtle">
                         {typeLabel(a.type)}
                       </p>
                     </div>
@@ -235,7 +235,7 @@ export function AssignmentCalendar({
                   <div className="flex items-center gap-3">
                     {unreadSet.has(a.id) && (
                       <span
-                        className="size-2 shrink-0 rounded-full bg-foreground"
+                        className="size-2 shrink-0 rounded-full bg-content-info"
                         aria-label="Unread activity"
                       />
                     )}
@@ -268,17 +268,15 @@ function CalendarChip({
       onClick={(e) => e.stopPropagation()}
       title={a.title}
       className={cn(
-        "flex items-center gap-1.5 rounded-sm px-1.5 py-0.5 text-[11px] leading-tight transition-colors w-full border border-transparent",
+        "flex w-full items-center gap-1 rounded-sm border border-transparent px-2 py-1 text-micro transition-colors duration-fast",
         done
           ? "bg-surface-hover text-text-subtle line-through hover:bg-surface-selected"
           : "bg-bg-muted text-text-heading hover:bg-bg-subtle",
       )}
     >
       <span
-        className={cn(
-          "size-1.5 shrink-0 rounded-full",
-          done ? "bg-text-subtle" : "bg-primary",
-        )}
+        className="size-1.5 shrink-0 rounded-full bg-content-default"
+        aria-hidden
       />
       <span className="truncate">{a.title}</span>
       {unread && !done && (

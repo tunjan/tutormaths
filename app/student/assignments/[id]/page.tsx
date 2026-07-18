@@ -1,54 +1,56 @@
 import { notFound } from "next/navigation";
+import {
+  BookOpen,
+  CalendarDays,
+  Download,
+  MessageSquareText,
+  Paperclip,
+} from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { signedUrl } from "@/lib/storage";
 import { loadComments } from "@/lib/queries";
-import { addComment } from "@/lib/actions/comments";
+import {
+  addComment,
+  deleteComment,
+  editComment,
+} from "@/lib/actions/comments";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
-import { AssignmentSteps } from "@/components/assignment-steps";
 import { CompletionControl } from "@/components/completion-control";
-import { ProblemMaterialCard } from "@/components/problem-material-card";
 import { StudentSubmitPanel } from "@/components/student-submit-panel";
-import { LiveCommentThread, type Participant } from "@/components/live-comment-thread";
+import {
+  LiveCommentThread,
+  type Participant,
+} from "@/components/live-comment-thread";
 import { CommentComposer } from "@/components/comment-composer";
 import { MarkAssignmentRead } from "@/components/mark-assignment-read";
 import { MarkAssignmentOpened } from "@/components/mark-assignment-opened";
-import { RequestHomeworkButton } from "@/components/request-homework-button";
 import { buttonVariants } from "@/components/ui/button";
-import { Download } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { LatexContent } from "@/components/ui/latex-content";
+import { FilePreview } from "@/components/ui/file-preview";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { BUCKET_ASSIGNMENTS, BUCKET_SUBMISSIONS } from "@/lib/constants";
 import {
-  formatDateTime,
-  typeLabel,
   fileLabel,
+  formatDateTime,
   mimeFromPath,
+  typeLabel,
 } from "@/lib/format";
-import { FilePreview } from "@/components/ui/file-preview";
-
-function SectionHeader({
-  eyebrow,
-  title,
-  aside,
-}: {
-  eyebrow: string;
-  title: string;
-  aside?: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-start justify-between gap-4">
-      <div className="flex min-w-0 flex-col gap-1">
-        <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-          {eyebrow}
-        </span>
-        <h2 className="text-base font-semibold leading-tight tracking-tight text-foreground">
-          {title}
-        </h2>
-      </div>
-      {aside}
-    </div>
-  );
-}
 
 export default async function StudentAssignmentPage({
   params,
@@ -59,206 +61,247 @@ export default async function StudentAssignmentPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: a } = await supabase
+  const { data: assignment } = await supabase
     .from("assignments")
     .select("*")
     .eq("id", id)
     .single();
-  if (!a) notFound();
 
-  const { data: files } = await supabase
-    .from("assignment_files")
-    .select("id, file_path, mime_type, created_at")
-    .eq("assignment_id", id)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: true });
+  if (!assignment) notFound();
 
-  const attachments = await Promise.all(
-    (files ?? []).map(async (f) => ({
-      id: f.id,
-      name: fileLabel(f.file_path),
-      mimeType: f.mime_type || mimeFromPath(f.file_path),
-      url: await signedUrl(BUCKET_ASSIGNMENTS, f.file_path),
-    })),
-  );
+  const [{ data: files }, { data: category }, { data: submissionRows }, comments] =
+    await Promise.all([
+      supabase
+        .from("assignment_files")
+        .select("id, file_path, mime_type, created_at")
+        .eq("assignment_id", id)
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: true }),
+      assignment.category_id
+        ? supabase
+            .from("categories")
+            .select("name")
+            .eq("id", assignment.category_id)
+            .single()
+        : Promise.resolve({ data: null }),
+      supabase
+        .from("submissions")
+        .select("id, file_path, mime_type, size_bytes, created_at")
+        .eq("assignment_id", id)
+        .order("created_at", { ascending: false }),
+      loadComments(id),
+    ]);
 
-  const { data: category } = a.category_id
-    ? await supabase
-        .from("categories")
-        .select("name")
-        .eq("id", a.category_id)
-        .single()
-    : { data: null };
-
-  const { data: subs } = await supabase
-    .from("submissions")
-    .select("id, file_path, mime_type, size_bytes, created_at")
-    .eq("assignment_id", id)
-    .order("created_at", { ascending: false });
-
-  const submissions = await Promise.all(
-    (subs ?? []).map(async (s) => ({
-      id: s.id,
-      name: fileLabel(s.file_path),
-      size_bytes: s.size_bytes,
-      url: await signedUrl(BUCKET_SUBMISSIONS, s.file_path),
-    })),
-  );
-
-  const comments = await loadComments(id);
+  const [attachments, submissions] = await Promise.all([
+    Promise.all(
+      (files ?? []).map(async (file) => ({
+        id: file.id,
+        name: fileLabel(file.file_path),
+        mimeType: file.mime_type || mimeFromPath(file.file_path),
+        url: await signedUrl(BUCKET_ASSIGNMENTS, file.file_path),
+      })),
+    ),
+    Promise.all(
+      (submissionRows ?? []).map(async (submission) => ({
+        id: submission.id,
+        name: fileLabel(submission.file_path),
+        size_bytes: submission.size_bytes,
+        url: await signedUrl(BUCKET_SUBMISSIONS, submission.file_path),
+      })),
+    ),
+  ]);
 
   const participants: Record<string, Participant> = {
     [ctx.userId]: { name: "You", role: "student" },
-    [a.tutor_id]: { name: "Your tutor", role: "tutor" },
+    [assignment.tutor_id]: { name: "Your tutor", role: "tutor" },
   };
 
   return (
-    <div className="flex flex-col gap-12 animate-rise">
+    <div className="flex w-full min-w-0 flex-col gap-4 pb-6 animate-rise">
       <MarkAssignmentRead assignmentId={id} />
       <MarkAssignmentOpened assignmentId={id} />
 
-      {/* ── Header ───────────────────────────────────────────── */}
-      <header className="flex flex-col gap-6 border-b border-border-soft pb-8">
-        <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-4">
+      <Card className="gap-0 p-0">
+        <header className="flex min-w-0 flex-col justify-between gap-4 p-6 sm:p-6">
           <div className="flex min-w-0 flex-col gap-3">
-            <h1 className="max-w-3xl text-2xl font-semibold leading-tight tracking-tight text-foreground md:text-3xl">
-              {a.title}
-            </h1>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-              <span>Due {formatDateTime(a.due_at)}</span>
-              <span aria-hidden className="text-border-strong">
-                /
-              </span>
-              <span>
-                {category?.name ? `${category.name} · ` : ""}
-                {typeLabel(a.type)}
-              </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="default">
+                <BookOpen />
+                {typeLabel(assignment.type)}
+              </Badge>
+              {category?.name && <Badge variant="secondary">{category.name}</Badge>}
             </div>
+
+            <h1 className="max-w-4xl text-h1 text-foreground">
+              {assignment.title}
+            </h1>
           </div>
 
-          <AssignmentStatusBadge reviewStatus={a.review_status} dueAt={a.due_at} />
-        </div>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-body text-muted-foreground">
+            <span className="inline-flex items-center gap-2">
+              <CalendarDays className="size-4" aria-hidden />
+              Due {formatDateTime(assignment.due_at)}
+            </span>
+            <AssignmentStatusBadge
+              reviewStatus={assignment.review_status}
+              dueAt={assignment.due_at}
+            />
+          </div>
+        </header>
+      </Card>
 
-        <AssignmentSteps status={a.review_status} />
-      </header>
+      <main className="grid min-w-0 items-start gap-4 2xl:grid-cols-[minmax(0,1fr)_360px]">
+        <Card className="min-w-0 gap-0 p-0" aria-labelledby="assignment-material-title">
+          <CardHeader className="border-b border-border-soft p-6">
+            <CardTitle id="assignment-material-title" className="flex items-center gap-2">
+              <BookOpen className="size-4 text-content-default" aria-hidden />
+              Problem material
+            </CardTitle>
+            <CardAction>
+              <Badge variant="outline">
+                {attachments.length > 0
+                  ? `${attachments.length} ${attachments.length === 1 ? "file" : "files"}`
+                  : "Written brief"}
+              </Badge>
+            </CardAction>
+          </CardHeader>
 
-      {/* ── Two-column grid workspace ────────────────────────── */}
-      <div className="assignment-guidance-grid overflow-hidden rounded-panel border border-border-soft">
-        <div className="grid grid-cols-1 divide-y divide-border-soft lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)] lg:divide-x lg:divide-y-0">
-          {/* Left: work on the problem and hand it in */}
-          <div className="flex flex-col divide-y divide-border-soft bg-background/80">
-            {/* ── Problem material ─────────────────────────────────── */}
-            <section className="flex flex-col gap-6 p-6 md:p-8">
-              <SectionHeader eyebrow="01" title="Problem material" />
-
-              {attachments.length > 0 ? (
-                <div className="grid gap-4">
-                  {attachments.map((f) => (
-                    <div key={f.id} className="flex flex-col gap-2">
-                      <div className="overflow-hidden rounded-panel border border-border-soft">
-                        {f.url ? (
-                          <FilePreview
-                            url={f.url}
-                            mimeType={f.mimeType}
-                            title={f.name}
-                          />
-                        ) : (
-                          <div className="p-8 text-center text-sm text-muted-foreground">
-                            Couldn&rsquo;t load this file.
-                          </div>
-                        )}
+          <CardContent className="min-w-0 p-0">
+            {attachments.length > 0 ? (
+              <div className="flex min-w-0 flex-col divide-y divide-border-soft">
+                {attachments.map((file) => (
+                  <section key={file.id} className="min-w-0">
+                    <div className="flex min-w-0 items-center justify-between gap-4 px-4 py-3 sm:px-6">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <Paperclip className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                        <span className="truncate text-label text-foreground">
+                          {file.name}
+                        </span>
                       </div>
-                      {f.url && (
+                      {file.url && (
                         <a
-                          href={f.url}
+                          href={file.url}
                           target="_blank"
                           rel="noopener noreferrer"
                           download
-                          className={cn(
-                            buttonVariants({ variant: "ghost", size: "default" }),
-                            "self-start",
-                          )}
+                          className={buttonVariants({ variant: "ghost", size: "sm" })}
                         >
                           <Download data-icon="inline-start" />
-                          {f.mimeType.startsWith("image/")
-                            ? "Download image"
-                            : "Download PDF"}
+                          Download
                         </a>
                       )}
                     </div>
-                  ))}
-                </div>
-              ) : a.latex_body || a.description ? (
-                <ProblemMaterialCard
-                  title={a.title}
-                  description={a.description}
-                  latexBody={a.latex_body}
-                />
-              ) : (
-                <div className="rounded-panel border border-dashed border-border-soft bg-background/70 px-6 py-10 text-center text-sm text-muted-foreground">
-                  No problem material yet.
-                </div>
-              )}
-            </section>
 
-            {/* ── Hand in your work ────────────────────────────────── */}
-            <section className="flex flex-col gap-6 p-6 md:p-8">
-              <SectionHeader eyebrow="02" title="Hand in your work" />
-
-              <div className="flex flex-col gap-4 rounded-panel border border-border-soft bg-surface-paper/90 p-5">
-                <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                  Your progress
-                </span>
-                <CompletionControl
-                  assignmentId={id}
-                  initial={a.completion_pct}
-                  hasSubmissions={submissions.length > 0}
-                  uploadTargetId="student-submission"
-                />
+                    <div className="assignment-guidance-grid min-w-0 bg-bg-muted/55 p-2 sm:p-3">
+                      {file.url ? (
+                        <FilePreview
+                          url={file.url}
+                          mimeType={file.mimeType}
+                          title={file.name}
+                          className="rounded-md border-border bg-surface-paper"
+                        />
+                      ) : (
+                        <div className="grid min-h-[360px] place-items-center rounded-md border border-dashed border-border-strong bg-surface-paper p-8 text-center text-body text-muted-foreground">
+                          This file could not be loaded.
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                ))}
               </div>
+            ) : assignment.latex_body || assignment.description ? (
+              <div className="assignment-guidance-grid bg-bg-muted/55 p-3 sm:p-6">
+                <article className="mx-auto min-h-[420px] w-full max-w-5xl bg-surface-paper p-6 sm:p-8">
+                  {assignment.description && (
+                    <p className="max-w-3xl text-body-lg text-foreground">
+                      {assignment.description}
+                    </p>
+                  )}
+                  {assignment.description && assignment.latex_body && (
+                    <Separator className="my-8" />
+                  )}
+                  {assignment.latex_body && (
+                    <LatexContent
+                      source={assignment.latex_body}
+                      className="max-w-none"
+                    />
+                  )}
+                </article>
+              </div>
+            ) : (
+              <div className="assignment-guidance-grid grid min-h-[420px] place-items-center bg-bg-muted/55 p-8">
+                <Empty className="max-w-md border-0 bg-transparent p-8">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <BookOpen aria-hidden />
+                    </EmptyMedia>
+                    <EmptyTitle>No material yet</EmptyTitle>
+                    <EmptyDescription>
+                    Your tutor has not added a brief or file to this assignment.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
+        <aside
+          className="flex min-w-0 flex-col gap-4 2xl:sticky 2xl:top-6"
+          aria-label="Assignment controls"
+        >
+          <Card id="student-submission" tabIndex={-1} className="gap-0 p-0 scroll-mt-24">
+            <CardHeader className="border-b border-border-soft p-6">
+              <CardTitle>Your work</CardTitle>
+              <CardAction>
+                <Badge variant={submissions.length > 0 ? "success" : "info"}>
+                  {submissions.length > 0 ? "Submitted" : "To submit"}
+                </Badge>
+              </CardAction>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4 p-6">
+              <CompletionControl
+                assignmentId={id}
+                initial={assignment.completion_pct}
+                hasSubmissions={submissions.length > 0}
+                uploadTargetId="student-submission"
+              />
+              <Separator />
               <StudentSubmitPanel
                 assignmentId={id}
                 studentId={ctx.userId}
                 submissions={submissions}
+                embedded
               />
-            </section>
-          </div>
+            </CardContent>
+          </Card>
 
-          {/* Right: feedback and next steps */}
-          <div className="flex flex-col divide-y divide-border-soft bg-surface-paper/70">
-            {/* ── Tutor feedback ───────────────────────────────────── */}
-            <section className="flex flex-col gap-6 p-6 md:p-8">
-              <SectionHeader
-                eyebrow="03"
-                title="Tutor feedback"
-                aside={
-                  <span className="inline-flex min-w-7 items-center justify-center rounded-panel border border-border-soft bg-background/80 px-2 py-1 text-xs font-medium tabular-nums text-muted-foreground">
-                    {comments.length}
-                  </span>
-                }
+          <Card className="gap-0 p-0">
+            <CardHeader className="border-b border-border-soft p-6">
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquareText className="size-4 text-muted-foreground" aria-hidden />
+                Tutor discussion
+              </CardTitle>
+              <CardAction>
+                <Badge variant="outline">
+                  {comments.length} {comments.length === 1 ? "message" : "messages"}
+                </Badge>
+              </CardAction>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4 p-6">
+              <LiveCommentThread
+                assignmentId={id}
+                initial={comments}
+                participants={participants}
+                currentUserId={ctx.userId}
+                editAction={editComment}
+                deleteAction={deleteComment}
               />
-
-              <div className="flex flex-col gap-6">
-                <LiveCommentThread
-                  assignmentId={id}
-                  initial={comments}
-                  participants={participants}
-                />
-                <CommentComposer assignmentId={id} action={addComment} />
-              </div>
-            </section>
-
-            {/* ── Keep the momentum going (quiet promo, not a numbered step) ── */}
-            <section className="flex flex-wrap items-center justify-between gap-3 px-6 py-5 md:px-8">
-              <p className="text-sm text-muted-foreground">
-                Finished early? Ask your tutor for more.
-              </p>
-              <RequestHomeworkButton label="Request extra practice" />
-            </section>
-          </div>
-        </div>
-      </div>
+              <CommentComposer assignmentId={id} action={addComment} />
+            </CardContent>
+          </Card>
+        </aside>
+      </main>
     </div>
   );
 }

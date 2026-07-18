@@ -1,7 +1,6 @@
 import { requireStudent } from "@/lib/auth";
-import { AppToolbar } from "@/components/app-toolbar";
+import { AppShell } from "@/components/app-toolbar";
 import { StudentNav } from "@/components/student-nav";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notification-bell";
 import { SignOutButton } from "@/components/sign-out-button";
 
@@ -13,25 +12,21 @@ export default async function StudentLayout({
   const ctx = await requireStudent();
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background">
-      <AppToolbar
-        homeHref="/student"
-        homeLabel="Maths Tasks student dashboard"
-        roleLabel="Student workspace"
-        userEmail={ctx.email}
-        maxWidthClassName="max-w-5xl"
-        nav={<StudentNav />}
-        notification={<NotificationBell userId={ctx.userId} role="student" />}
-        accountActions={
-          <>
-            <ThemeToggle presentation="menu" />
-            <SignOutButton presentation="menu" />
-          </>
-        }
-      />
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 lg:py-10">
-        {children}
-      </main>
-    </div>
+    <AppShell
+      homeHref="/student"
+      homeLabel="Maths Tasks student dashboard"
+      roleLabel="Student workspace"
+      userEmail={ctx.email}
+      navigation={<StudentNav presentation="sidebar" />}
+      mobileNavigation={<StudentNav presentation="mobile" />}
+      notification={<NotificationBell userId={ctx.userId} role="student" />}
+      accountActions={
+        <>
+          <SignOutButton presentation="menu" />
+        </>
+      }
+    >
+      {children}
+    </AppShell>
   );
 }

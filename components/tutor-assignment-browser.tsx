@@ -20,6 +20,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AssignmentRow } from "@/components/assignment-row";
 import { cn } from "@/lib/utils";
+import {
+  Empty,
+  EmptyDescription,
+} from "@/components/ui/empty";
 
 import type { ReviewStatus } from "@/lib/format";
 
@@ -156,21 +160,22 @@ export function TutorAssignmentBrowser({
   return (
     <section
       aria-labelledby="assignments-heading"
-      className="overflow-hidden rounded-xl border border-border-subtle bg-card"
+      className="overflow-hidden rounded-md border border-border bg-card"
     >
-      <div className="flex flex-col gap-5 border-b border-border-soft p-5 sm:p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0">
-            <h2
-              id="assignments-heading"
-              className="text-xl font-semibold text-content-emphasis"
-            >
-              Assignments
-            </h2>
-            <p className="mt-1 text-sm text-content-subtle">
-              {filterDescriptions[filter]}
-            </p>
-          </div>
+      <div className="grid gap-4 border-b border-border-soft p-6 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div className="min-w-0">
+          <h2
+            id="assignments-heading"
+            className="text-h2 text-content-emphasis"
+          >
+            Assignments
+          </h2>
+          <p className="mt-1 text-body text-content-subtle">
+            {filterDescriptions[filter]}
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
           <Input
             type="search"
             value={query}
@@ -180,21 +185,21 @@ export function TutorAssignmentBrowser({
             }}
             placeholder="Search assignments"
             aria-label="Search assignments"
-            className="w-full sm:w-72"
+            className="w-full sm:w-64"
+          />
+
+          <SegmentedControl
+            value={filter}
+            onValueChange={changeFilter}
+            options={filterOptions}
+            className="grid w-full grid-cols-4 sm:w-auto"
           />
         </div>
-
-        <SegmentedControl
-          value={filter}
-          onValueChange={changeFilter}
-          options={filterOptions}
-          className="grid w-full grid-cols-4 sm:w-auto"
-        />
       </div>
 
-      <div className="flex min-h-12 items-center justify-between gap-3 border-b border-border-soft bg-bg-muted/45 px-4 py-2">
+      <div className="flex min-h-12 items-center justify-between gap-3 border-b border-border-soft bg-bg-muted/55 px-4 py-2">
         {visible.length > 0 ? (
-          <label className="flex cursor-pointer items-center gap-2.5 text-xs font-medium text-content-subtle">
+          <label className="flex cursor-pointer items-center gap-2 text-micro text-content-subtle">
             <Checkbox
               checked={allVisibleSelected}
               onCheckedChange={() => {
@@ -213,14 +218,14 @@ export function TutorAssignmentBrowser({
             {visible.length} assignment{visible.length === 1 ? "" : "s"}
           </label>
         ) : (
-          <span className="text-xs font-medium text-content-subtle">
+          <span className="text-micro text-content-subtle">
             0 assignments
           </span>
         )}
 
         {selected.size > 0 && (
           <div className="flex items-center gap-2">
-            <span className="hidden font-mono text-xs text-content-subtle sm:inline">
+            <span className="hidden text-micro text-content-subtle sm:inline">
               {selected.size} selected
             </span>
             <Button
@@ -232,8 +237,9 @@ export function TutorAssignmentBrowser({
               <X data-icon="inline-start" />
             </Button>
             <Button
-              variant="destructive"
+              variant="ghost"
               size="sm"
+              className="text-destructive hover:bg-bg-error hover:text-destructive"
               disabled={deleting}
               onClick={() => confirmDelete(Array.from(selected))}
             >
@@ -271,10 +277,7 @@ export function TutorAssignmentBrowser({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="border-destructive bg-destructive text-white hover:ring-bg-error"
-              onClick={runDelete}
-            >
+            <AlertDialogAction variant="destructive" onClick={runDelete}>
               Delete {deleteIds.length === 1 ? "assignment" : "assignments"}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -302,7 +305,7 @@ function AssignmentList({
           key={item.id}
           className={cn(
             "group/row flex items-center transition-colors",
-            selected.has(item.id) && "bg-bg-info",
+            selected.has(item.id) && "bg-bg-info/70",
           )}
         >
           <div className="flex items-center pl-4">
@@ -357,8 +360,8 @@ function EmptyState({
           : "No assignments yet.";
 
   return (
-    <div className="flex min-h-44 items-center justify-center px-6 py-12 text-center">
-      <p className="text-sm text-content-subtle">{message}</p>
-    </div>
+    <Empty className="min-h-44 rounded-none border-0 p-8">
+      <EmptyDescription>{message}</EmptyDescription>
+    </Empty>
   );
 }

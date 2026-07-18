@@ -9,12 +9,12 @@ export default function Loading() {
           <Skeleton className="h-4 w-72 max-w-full" />
         </div>
         <div className="hidden gap-2 sm:flex">
-          <Skeleton className="h-10 w-28" />
-          <Skeleton className="h-10 w-36" />
+          <Skeleton className="h-9 w-28" />
+          <Skeleton className="h-9 w-36" />
         </div>
       </div>
-      <div className="overflow-hidden rounded-xl border border-border-subtle bg-card">
-        <div className="flex flex-col gap-4 border-b border-border-soft p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="overflow-hidden rounded-md border border-border bg-card">
+        <div className="flex flex-col gap-4 border-b border-border-soft p-6 sm:flex-row sm:items-center sm:justify-between">
           <Skeleton className="h-8 w-52" />
           <Skeleton className="h-10 w-full sm:w-64" />
         </div>

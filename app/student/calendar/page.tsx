@@ -24,14 +24,14 @@ export default async function StudentCalendar() {
   const items = (assignments ?? []) as CalendarAssignment[];
 
   return (
-    <div className="w-full py-8 animate-rise">
+    <div className="w-full animate-rise">
       <PageHeader
         title="Calendar"
         description="Every assignment on its due date — plan your week at a glance."
         actions={<RequestHomeworkButton />}
       />
 
-      <div className="mt-16">
+      <div>
         <AssignmentCalendar assignments={items} unread={[...unread]} />
       </div>
     </div>

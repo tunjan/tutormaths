@@ -1,7 +1,6 @@
 import { requireTutor } from "@/lib/auth";
-import { AppToolbar } from "@/components/app-toolbar";
+import { AppShell } from "@/components/app-toolbar";
 import { TutorNav } from "@/components/tutor-nav";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "@/components/notification-bell";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
@@ -24,26 +23,22 @@ export default async function TutorLayout({
   const initialWindows = settings?.reminder_windows ?? [48, 24, 6];
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background">
-      <AppToolbar
-        homeHref="/tutor"
-        homeLabel="Maths Tasks tutor dashboard"
-        roleLabel="Tutor workspace"
-        userEmail={ctx.email}
-        maxWidthClassName="max-w-6xl"
-        nav={<TutorNav />}
-        notification={<NotificationBell userId={ctx.userId} role="tutor" />}
-        accountActions={
-          <>
-            <TutorSettingsDialog initialWindows={initialWindows} presentation="menu" />
-            <ThemeToggle presentation="menu" />
-            <SignOutButton presentation="menu" />
-          </>
-        }
-      />
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:py-10">
-        {children}
-      </main>
-    </div>
+    <AppShell
+      homeHref="/tutor"
+      homeLabel="Maths Tasks tutor dashboard"
+      roleLabel="Tutor workspace"
+      userEmail={ctx.email}
+      navigation={<TutorNav presentation="sidebar" />}
+      mobileNavigation={<TutorNav presentation="mobile" />}
+      notification={<NotificationBell userId={ctx.userId} role="tutor" />}
+      accountActions={
+        <>
+          <TutorSettingsDialog initialWindows={initialWindows} presentation="menu" />
+          <SignOutButton presentation="menu" />
+        </>
+      }
+    >
+      {children}
+    </AppShell>
   );
 }

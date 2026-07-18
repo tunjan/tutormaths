@@ -6,8 +6,12 @@ import { requestMoreHomework } from "@/app/student/actions";
 import { Button, type buttonVariants } from "@/components/ui/button";
 import { type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Field,
+  FieldDescription,
+  FieldLabel,
+} from "@/components/ui/field";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -66,11 +70,11 @@ export function RequestHomeworkButton({
             Your tutor will be notified that you&apos;d like to keep improving with extra exercises.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="grid gap-2">
-          <Label htmlFor="homework-request-message">
+        <Field>
+          <FieldLabel htmlFor="homework-request-message">
             Add a message{" "}
             <span className="text-muted-foreground font-normal">(optional)</span>
-          </Label>
+          </FieldLabel>
           <Textarea
             id="homework-request-message"
             value={message}
@@ -80,10 +84,10 @@ export function RequestHomeworkButton({
             placeholder="e.g. more practice on integration by parts, or harder problems on vectors"
             disabled={pending || done}
           />
-          <p className="text-muted-foreground text-xs">
+          <FieldDescription>
             Let your tutor know what you&apos;d like to work on.
-          </p>
-        </div>
+          </FieldDescription>
+        </Field>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
@@ -91,7 +95,7 @@ export function RequestHomeworkButton({
               startTransition(async () => {
                 await requestMoreHomework(message);
                 setDone(true);
-                toast.success("Request sent — your tutor has been notified.");
+                toast.success("Request sent. Your tutor has been notified.");
               })
             }
           >

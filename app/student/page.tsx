@@ -1,5 +1,10 @@
 import { Link } from "next-view-transitions";
-import { ArrowUpRight, CalendarClock } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpenText,
+  CalendarClock,
+  ListChecks,
+} from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { unreadAssignmentIds } from "@/lib/queries";
@@ -7,7 +12,31 @@ import { PageHeader } from "@/components/ui/page-header";
 import { RequestHomeworkButton } from "@/components/request-homework-button";
 import { AssignmentRow } from "@/components/assignment-row";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Progress,
+  ProgressLabel,
+  ProgressValue,
+} from "@/components/ui/progress";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { formatDateTime, relativeTime, typeLabel } from "@/lib/format";
+import { cn } from "@/lib/utils";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 export default async function StudentDashboard() {
   await requireStudent();
@@ -33,11 +62,15 @@ export default async function StudentDashboard() {
     : [];
 
   return (
-    <div className="w-full py-2 animate-rise">
+    <div className="mx-auto w-full max-w-6xl">
       <PageHeader
         title="My practice"
         description="Your assignments, with progress you control."
-        actions={<RequestHomeworkButton />}
+        actions={
+          nextAssignment ? (
+            <RequestHomeworkButton variant="outline" />
+          ) : undefined
+        }
       />
 
       {nextAssignment ? (
@@ -46,113 +79,90 @@ export default async function StudentDashboard() {
           unread={unread.has(nextAssignment.id)}
         />
       ) : (
-        <div className="rounded-xl border border-border-subtle bg-card p-6 text-center">
-          <h2 className="text-xl font-semibold text-content-emphasis">
-            Nothing due right now
-          </h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-text-muted">
-            {completed.length > 0
-              ? "You are caught up. Request more practice when you are ready."
-              : "Request practice from your tutor when you are ready for work."}
-          </p>
-          <div className="mt-5 flex justify-center">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <BookOpenText aria-hidden />
+            </EmptyMedia>
+            <EmptyTitle>
+              Nothing due right now
+            </EmptyTitle>
+            <EmptyDescription>
+              {completed.length > 0
+                ? "You are caught up. Request more practice when you are ready."
+                : "Request practice from your tutor when you are ready for work."}
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
             <RequestHomeworkButton />
-          </div>
-        </div>
+          </EmptyContent>
+        </Empty>
       )}
 
-      {nextAssignment && (
-        <>
-          <div className="mb-4 mt-10 flex items-baseline justify-between border-b border-border-strong pb-3">
-            <h2 className="text-h4 font-semibold text-foreground">Active tasks</h2>
-            <span className="font-mono text-xs text-muted-foreground">
-              {remainingActive.length} more
-            </span>
+      {remainingActive.length > 0 && (
+        <section className="mt-10" aria-labelledby="active-tasks-heading">
+          <div className="mb-3 flex items-center justify-between gap-4 px-1">
+            <h2
+              id="active-tasks-heading"
+              className="text-h4 text-content-emphasis"
+            >
+              More to do
+            </h2>
+            <Badge variant="secondary" className="tabular-nums">
+              {remainingActive.length}
+            </Badge>
           </div>
-
-          {remainingActive.length > 0 ? (
-            <div className="mb-10 flex flex-col overflow-hidden rounded-xl border border-border-subtle bg-card divide-y divide-border-muted stagger-children">
-              {remainingActive.map((a) => (
-                <div key={a.id} className="animate-fade-in">
-                  <AssignmentRow
-                    href={`/student/assignments/${a.id}`}
-                    title={a.title}
-                    type={a.type}
-                    dueAt={a.due_at}
-                    pct={a.completion_pct}
-                    reviewStatus={a.review_status}
-                    unread={unread.has(a.id)}
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="mb-10 rounded-xl border border-border-subtle bg-bg-muted p-5 text-center text-sm text-content-subtle">
-              That is your only active task.
-            </p>
-          )}
-        </>
+          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
+            {remainingActive.map((a) => (
+              <AssignmentRow
+                key={a.id}
+                href={`/student/assignments/${a.id}`}
+                title={a.title}
+                type={a.type}
+                dueAt={a.due_at}
+                pct={a.completion_pct}
+                reviewStatus={a.review_status}
+                unread={unread.has(a.id)}
+                showTypeMarker
+              />
+            ))}
+          </div>
+        </section>
       )}
 
       {completed.length > 0 && (
-        <div className="animate-fade-in mt-10" style={{ animationDelay: '100ms' }}>
-          <div className="mb-4 flex items-baseline justify-between border-b border-border-strong pb-3">
-            <h2 className="text-h4 font-semibold text-foreground">Completed</h2>
-            <span className="font-mono text-xs text-muted-foreground">
-              {completed.length} task{completed.length === 1 ? "" : "s"}
-            </span>
+        <section className="mt-10" aria-labelledby="completed-tasks-heading">
+          <div className="mb-3 flex items-center justify-between gap-4 px-1">
+            <h2
+              id="completed-tasks-heading"
+              className="text-h4 text-content-emphasis"
+            >
+              Completed
+            </h2>
+            <Badge variant="secondary" className="tabular-nums">
+              {completed.length}
+            </Badge>
           </div>
-          <div className="flex flex-col overflow-hidden rounded-xl border border-border-subtle bg-card divide-y divide-border-muted stagger-children">
+          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
             {completed.map((a) => (
-              <div key={a.id} className="animate-fade-in">
-                <AssignmentRow
-                  href={`/student/assignments/${a.id}`}
-                  title={a.title}
-                  type={a.type}
-                  dueAt={a.due_at}
-                  pct={a.completion_pct}
-                  reviewStatus={a.review_status}
-                  unread={unread.has(a.id)}
-                />
-              </div>
+              <AssignmentRow
+                key={a.id}
+                href={`/student/assignments/${a.id}`}
+                title={a.title}
+                type={a.type}
+                dueAt={a.due_at}
+                pct={a.completion_pct}
+                reviewStatus={a.review_status}
+                unread={unread.has(a.id)}
+                showTypeMarker
+              />
             ))}
           </div>
-        </div>
+        </section>
       )}
     </div>
   );
 }
-
-/**
- * Calm, monochrome backdrop patterns for the "Up next" card's side panel.
- * One is picked at random per render so the hero feels alive without adding
- * colour or noise — every variant stays within the paper/gray palette.
- */
-const CARD_PATTERNS: React.CSSProperties[] = [
-  {
-    backgroundImage:
-      "linear-gradient(135deg, var(--surface-muted) 25%, transparent 25%), linear-gradient(225deg, var(--surface-muted) 25%, transparent 25%), linear-gradient(45deg, var(--surface-muted) 25%, transparent 25%), linear-gradient(315deg, var(--surface-muted) 25%, var(--surface-paper) 25%)",
-    backgroundSize: "18px 18px",
-    backgroundPosition: "9px 0, 9px 0, 0 0, 0 0",
-  },
-  {
-    backgroundImage: "radial-gradient(var(--border-strong) 1.4px, transparent 1.5px)",
-    backgroundSize: "16px 16px",
-  },
-  {
-    backgroundImage:
-      "repeating-linear-gradient(45deg, var(--surface-muted) 0, var(--surface-muted) 1.5px, transparent 1.5px, transparent 11px)",
-  },
-  {
-    backgroundImage:
-      "linear-gradient(var(--surface-muted) 1px, transparent 1px), linear-gradient(90deg, var(--surface-muted) 1px, transparent 1px)",
-    backgroundSize: "16px 16px",
-  },
-  {
-    backgroundImage:
-      "repeating-linear-gradient(0deg, var(--border-soft) 0 1px, transparent 1px 13px), repeating-linear-gradient(90deg, var(--border-soft) 0 1px, transparent 1px 13px)",
-  },
-];
 
 function UpNextCard({
   assignment,
@@ -168,69 +178,80 @@ function UpNextCard({
   };
   unread: boolean;
 }) {
-  // Pick a backdrop from the id so each task keeps its own pattern across
-  // renders (stable, no hydration drift) while the set still feels varied.
-  const patternSeed = Array.from(assignment.id).reduce(
-    (acc, ch) => acc + ch.charCodeAt(0),
-    0,
-  );
-  const pattern = CARD_PATTERNS[patternSeed % CARD_PATTERNS.length];
+  const AssignmentTypeIcon =
+    assignment.type === "reading_notes" ? BookOpenText : ListChecks;
+  const heroLabel =
+    assignment.review_status === "submitted" ? "In review" : "Up next";
+  const actionLabel =
+    assignment.review_status === "submitted"
+      ? "View submission"
+      : assignment.review_status === "needs_work"
+        ? "Continue revisions"
+        : "Continue task";
 
   return (
-    <section className="relative overflow-hidden rounded-xl border border-border-subtle bg-card">
-      <div className="grid gap-0 lg:grid-cols-[1fr_auto]">
-        <div className="p-6 md:p-7">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-2 rounded-md border border-border-subtle bg-bg-subtle px-2 py-0.5 text-xs font-medium text-content-subtle">
-              <CalendarClock className="size-3.5" />
-              Up next
-            </span>
-            {unread && (
-              <span className="rounded-full bg-status-overdue-bg px-2.5 py-1 text-xs font-medium text-status-overdue">
-                New activity
-              </span>
-            )}
+    <Card role="region" aria-labelledby={`up-next-${assignment.id}`}>
+      <CardHeader className="grid gap-4 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-6">
+        <span className="grid size-10 place-items-center rounded-md bg-bg-subtle text-content-default">
+          <AssignmentTypeIcon className="size-5" aria-hidden />
+        </span>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary">
+              <CalendarClock aria-hidden />
+              {heroLabel}
+            </Badge>
+            {unread && <Badge variant="info">New activity</Badge>}
             <AssignmentStatusBadge
               reviewStatus={assignment.review_status}
               dueAt={assignment.due_at}
             />
           </div>
-
-          <h2 className="mt-5 max-w-3xl text-2xl font-semibold leading-tight text-content-emphasis sm:text-3xl">
+          <CardTitle
+            id={`up-next-${assignment.id}`}
+            role="heading"
+            aria-level={2}
+            className="mt-4 max-w-3xl text-h2"
+          >
             {assignment.title}
-          </h2>
-          <p className="mt-3 text-sm text-text-muted">
-            {typeLabel(assignment.type)} · due {relativeTime(assignment.due_at)} ·{" "}
-            {formatDateTime(assignment.due_at)}
-          </p>
-
-          <div className="mt-6 w-full max-w-[220px]">
-            <div className="mb-2 flex items-center justify-between text-xs font-medium text-content-subtle">
-              <span>Progress</span>
-              <span className="font-mono">{assignment.completion_pct}%</span>
-            </div>
-            <div className="h-2 overflow-hidden rounded-full bg-border-soft">
-              <span
-                className="block h-full rounded-full bg-primary transition-all duration-500"
-                style={{ width: `${assignment.completion_pct}%` }}
-              />
-            </div>
-          </div>
+          </CardTitle>
+          <CardDescription className="mt-2 text-pretty">
+            {typeLabel(assignment.type)}
+          </CardDescription>
         </div>
+      </CardHeader>
 
-        <div
-          className="hidden w-48 border-l border-border-soft bg-surface-paper lg:block"
-          style={pattern}
-        />
-      </div>
+      <CardContent>
+        <Progress
+          value={assignment.completion_pct}
+          aria-label={`${assignment.title} progress`}
+          className="gap-2"
+        >
+          <ProgressLabel className="text-micro text-content-subtle">
+            Progress
+          </ProgressLabel>
+          <ProgressValue className="text-micro text-content-emphasis" />
+        </Progress>
+      </CardContent>
 
-      <Link
-        href={`/student/assignments/${assignment.id}`}
-        aria-label={`Open task: ${assignment.title}`}
-        className="group absolute bottom-5 right-5 z-10 inline-flex size-12 items-center justify-center rounded-full border border-primary bg-primary text-primary-foreground transition-all duration-150 hover:ring-4 hover:ring-border-subtle focus-visible:ring-4 focus-visible:ring-border-subtle"
-      >
-        <ArrowUpRight className="size-5 transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-      </Link>
-    </section>
+      <CardFooter className="flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="flex min-w-0 items-center gap-2 text-pretty text-caption text-content-subtle">
+          <CalendarClock className="size-4 shrink-0" aria-hidden />
+          <span>
+            Due {relativeTime(assignment.due_at)}
+            <span className="hidden sm:inline">
+              {" "}/ {formatDateTime(assignment.due_at)}
+            </span>
+          </span>
+        </p>
+        <Link
+          href={`/student/assignments/${assignment.id}`}
+          className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
+        >
+          {actionLabel}
+          <ArrowRight data-icon="inline-end" aria-hidden />
+        </Link>
+      </CardFooter>
+    </Card>
   );
 }

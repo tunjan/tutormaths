@@ -6,7 +6,7 @@ export function ProgressBar({ value, label = "Progress" }: { value: number; labe
   return (
     <div className="flex items-center gap-3" role="group" aria-label={label}>
       <Progress value={v} className="flex-1" aria-label={label} />
-      <span className="w-10 shrink-0 text-right text-sm text-muted-foreground tabular-nums">
+      <span className="w-10 shrink-0 text-right text-caption text-muted-foreground tabular-nums">
         {v}%
       </span>
     </div>

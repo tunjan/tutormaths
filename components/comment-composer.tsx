@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useTransition, useRef, useEffect } from "react";
-import { Send } from "lucide-react";
+import { AlertCircle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
 
 /**
- * Compact comment composer: a growing textarea with an inline circular "send"
+ * Compact comment composer: a growing textarea with an inline send
  * button, plus ⌘/Ctrl + Enter to post. New comments stream back into the thread
  * via Supabase Realtime, so there's no separate refresh step. The server action
  * is passed in so the same composer can serve tutor and student views.
@@ -48,16 +52,14 @@ export function CommentComposer({
   }, [value]);
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-2">
       {error && (
-        <div
-          className="rounded-md bg-destructive-muted px-3 py-2 text-sm text-destructive"
-          role="alert"
-        >
-          {error}
-        </div>
+        <Alert variant="destructive" role="alert">
+          <AlertCircle aria-hidden />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
-      <div className="flex items-center gap-2 rounded-panel border border-border-soft bg-background/80 py-1.5 pl-3.5 pr-1.5 transition-colors focus-within:border-primary">
+      <div className="flex items-end gap-2 rounded-md border border-border bg-card p-2 pl-4 transition-[border-color,box-shadow] duration-base ease-[var(--ease-out)] focus-within:border-border-default focus-within:shadow-sm">
         <textarea
           ref={textareaRef}
           value={value}
@@ -70,18 +72,18 @@ export function CommentComposer({
           }}
           rows={1}
           placeholder="Write a comment…"
-          className="min-h-[34px] max-h-[160px] flex-1 resize-none bg-transparent py-[5px] text-[15px] leading-6 placeholder:text-muted-foreground focus:outline-none"
+          className="max-h-40 min-h-9 flex-1 resize-none bg-transparent py-2 text-body placeholder:text-content-muted focus:outline-none"
         />
         <Button
           type="button"
           onClick={submit}
           disabled={pending || !value.trim()}
           aria-label="Post comment"
-          size="icon"
-          variant="ghost"
-          className="size-[34px] shrink-0 rounded-[8px]"
+          size="icon-sm"
+          variant="soft"
+          className="shrink-0"
         >
-          <Send className="translate-x-[-0.5px]" />
+          <Send />
         </Button>
       </div>
     </div>

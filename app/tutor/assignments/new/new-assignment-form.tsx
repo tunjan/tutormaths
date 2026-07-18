@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { unstable_rethrow } from "next/navigation";
-import { FileText, Plus } from "lucide-react";
+import { AlertCircle, FileText, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createAssignment } from "@/app/tutor/actions";
 import { createCategory, type CategoryRow } from "@/lib/actions/library";
@@ -20,14 +20,20 @@ import { MultiFileDropzone } from "@/components/ui/multi-file-dropzone";
 import { LatexContent } from "@/components/ui/latex-content";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { SegmentedControl } from "@/components/ui/segmented-control";
+import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import {
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
 
 interface StudentOption {
   id: string;
@@ -66,7 +72,7 @@ function defaultDue(): string {
 function FieldError({ message, id }: { message?: string; id?: string }) {
   if (!message) return null;
   return (
-    <p id={id} className="text-sm text-destructive" role="alert">
+    <p id={id} className="text-caption text-destructive" role="alert">
       {message}
     </p>
   );
@@ -223,12 +229,12 @@ export function NewAssignmentForm({
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
       <div className="grid gap-6 lg:grid-cols-2">
         {/* LEFT COLUMN — the form fields */}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-6">
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <Label id="student-label">Student</Label>
           <Select
             value={studentId}
@@ -241,6 +247,7 @@ export function NewAssignmentForm({
               aria-labelledby="student-label"
               aria-invalid={!!errors.student}
               aria-describedby={errors.student ? "student-error" : undefined}
+              className="w-full"
             >
               <SelectValue placeholder="Choose a student…">
                 {studentId
@@ -250,17 +257,19 @@ export function NewAssignmentForm({
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {students.map((s) => (
-                <SelectItem key={s.id} value={s.id}>
-                  {s.full_name || s.email}{s.pending ? " (invited)" : ""}
-                </SelectItem>
-              ))}
+              <SelectGroup>
+                {students.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.full_name || s.email}{s.pending ? " (invited)" : ""}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
             </SelectContent>
           </Select>
           <FieldError id="student-error" message={errors.student} />
         </div>
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <Label id="type-label">Type</Label>
           <Select
             value={type}
@@ -268,20 +277,22 @@ export function NewAssignmentForm({
               setType((v as "problem_set" | "reading_notes") ?? "problem_set")
             }
           >
-            <SelectTrigger aria-labelledby="type-label">
+            <SelectTrigger aria-labelledby="type-label" className="w-full">
               <SelectValue>
                 {type === "problem_set" ? "Problem set" : type === "reading_notes" ? "Reading notes" : undefined}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="problem_set">Problem set</SelectItem>
-              <SelectItem value="reading_notes">Reading notes</SelectItem>
+              <SelectGroup>
+                <SelectItem value="problem_set">Problem set</SelectItem>
+                <SelectItem value="reading_notes">Reading notes</SelectItem>
+              </SelectGroup>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-2">
         <Label htmlFor="title">Title</Label>
         <Input
           id="title"
@@ -295,7 +306,7 @@ export function NewAssignmentForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <Label htmlFor="due_at">Due</Label>
           <DateTimePicker
             id="due_at"
@@ -308,7 +319,7 @@ export function NewAssignmentForm({
           <FieldError id="due-error" message={errors.due} />
         </div>
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <Label id="category-label">Topic (optional)</Label>
           <Select
             value={categoryId}
@@ -325,15 +336,17 @@ export function NewAssignmentForm({
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">No topic</SelectItem>
-              {categories.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.name}
+              <SelectGroup>
+                <SelectItem value="">No topic</SelectItem>
+                {categories.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+                <SelectItem value={NEW_CATEGORY}>
+                  <Plus /> Create new topic…
                 </SelectItem>
-              ))}
-              <SelectItem value={NEW_CATEGORY}>
-                <Plus className="size-3.5" /> Create new topic…
-              </SelectItem>
+              </SelectGroup>
             </SelectContent>
           </Select>
           {creatingNewCategory && (
@@ -352,7 +365,7 @@ export function NewAssignmentForm({
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-2">
         <Label htmlFor="description">Description (optional)</Label>
         <Textarea
           id="description"
@@ -362,7 +375,7 @@ export function NewAssignmentForm({
         />
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-2">
         <Label>Assignment content</Label>
         <SegmentedControl
           value={source}
@@ -394,7 +407,7 @@ export function NewAssignmentForm({
             <Textarea
               name="latex_body"
               rows={10}
-              className="font-mono text-sm"
+              className="font-mono text-code"
               placeholder={LATEX_PLACEHOLDER}
               value={latexBody}
               aria-invalid={!!errors.latex}
@@ -403,7 +416,7 @@ export function NewAssignmentForm({
                 setErrors((er) => ({ ...er, latex: undefined }));
               }}
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-caption text-muted-foreground">
               Markdown with inline <code>$…$</code> and display{" "}
               <code>$$…$$</code> maths.
             </p>
@@ -414,14 +427,14 @@ export function NewAssignmentForm({
         </div>
 
         {/* RIGHT COLUMN — live preview */}
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <Label>Preview</Label>
-          <div className="flex-1 min-h-[18rem] rounded-panel border border-border-soft bg-surface-inset p-5 overflow-auto">
+          <div className="min-h-72 flex-1 overflow-auto rounded-md border border-border bg-bg-muted p-6">
             {source === "latex" ? (
               latexBody.trim() ? (
                 <LatexContent source={latexBody} />
               ) : (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-body text-muted-foreground">
                   Start typing LaTeX on the left to see it rendered here.
                 </p>
               )
@@ -433,7 +446,7 @@ export function NewAssignmentForm({
                     key={p.url}
                     src={p.url}
                     alt={p.name}
-                    className="max-h-[40vh] w-full rounded-[8px] object-contain"
+                    className="max-h-[40vh] w-full rounded-md object-contain"
                   />
                 ))}
                 {selectedFiles
@@ -441,7 +454,7 @@ export function NewAssignmentForm({
                   .map((f, i) => (
                     <div
                       key={`${f.name}-${i}`}
-                      className="flex items-center gap-3 text-sm text-foreground"
+                      className="flex items-center gap-3 text-body text-foreground"
                     >
                       <FileText className="size-5 shrink-0 text-muted-foreground" />
                       <span className="truncate">{f.name}</span>
@@ -449,7 +462,7 @@ export function NewAssignmentForm({
                   ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-body text-muted-foreground">
                 Choose files on the left to preview them here.
               </p>
             )}
@@ -457,11 +470,13 @@ export function NewAssignmentForm({
         </div>
       </div>
 
-      <div className="flex flex-col-reverse gap-3 border-t border-border-soft pt-5 sm:flex-row sm:items-center sm:justify-end">
+      <Separator />
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
         {globalError && (
-          <div className="sm:mr-auto rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">
-            {globalError}
-          </div>
+          <Alert variant="destructive" role="alert" className="sm:mr-auto sm:max-w-md">
+            <AlertCircle aria-hidden />
+            <AlertDescription>{globalError}</AlertDescription>
+          </Alert>
         )}
         {onCancel ? (
           <Button type="button" variant="ghost" onClick={onCancel}>

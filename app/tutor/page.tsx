@@ -4,16 +4,31 @@ import { unreadAssignmentIds } from "@/lib/queries";
 import { PageHeader } from "@/components/ui/page-header";
 import { AddStudentButton } from "@/components/add-student-button";
 import { AssignTaskButton } from "@/components/assign-task-button";
+import { TutorDashboardOverview } from "@/components/tutor-dashboard-overview";
 import {
   TutorAssignmentBrowser,
   type BrowserItem,
 } from "@/components/tutor-assignment-browser";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 export default async function TutorDashboard() {
-  await requireTutor();
+  const ctx = await requireTutor();
   const supabase = await createClient();
 
-  const [{ data: assignments }, { data: students }, { data: invites }, { data: categories }, unread] =
+  const [
+    { data: assignments },
+    { data: students },
+    { data: invites },
+    { data: categories },
+    { data: tutorProfile },
+    unread,
+  ] =
     await Promise.all([
       supabase
         .from("assignments")
@@ -30,6 +45,11 @@ export default async function TutorDashboard() {
         .select("id, full_name")
         .is("accepted_at", null),
       supabase.from("categories").select("id, name").order("name"),
+      supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", ctx.userId)
+        .single(),
       unreadAssignmentIds(),
     ]);
 
@@ -49,7 +69,9 @@ export default async function TutorDashboard() {
   }));
 
   const awaiting = all.filter((a) => a.review_status === "submitted").length;
-  const active = all.filter((a) => a.review_status !== "approved").length;
+  const approved = all.filter((a) => a.review_status === "approved").length;
+  const activeItems = items.filter((a) => a.review_status !== "approved");
+  const active = activeItems.length;
   // eslint-disable-next-line react-hooks/purity
   const nowMs = Date.now();
   const overdue = all.filter(
@@ -57,6 +79,18 @@ export default async function TutorDashboard() {
       (a.review_status === "assigned" || a.review_status === "needs_work") &&
       new Date(a.due_at).getTime() < nowMs,
   ).length;
+  const focusItems = items.filter(
+    (item) =>
+      item.review_status === "submitted" ||
+      ((item.review_status === "assigned" || item.review_status === "needs_work") &&
+        new Date(item.due_at).getTime() < nowMs),
+  );
+  const averageProgress = activeItems.length
+    ? Math.round(
+        activeItems.reduce((total, item) => total + item.completion_pct, 0) /
+          activeItems.length,
+      )
+    : 0;
 
   const studentOptions = [
     ...(students ?? []),
@@ -69,11 +103,18 @@ export default async function TutorDashboard() {
   ];
   const hasStudents = studentOptions.length > 0;
   const needsAttention = awaiting + overdue;
+  const tutorName = tutorProfile?.full_name.trim();
+  const fallbackName = ctx.email?.split("@")[0]?.split(/[._-]/)[0];
+  const firstName = tutorName?.split(/\s+/)[0] || fallbackName;
+  const displayName = firstName
+    ? `${firstName.charAt(0).toUpperCase()}${firstName.slice(1)}`
+    : null;
 
   return (
     <div className="animate-rise">
       <PageHeader
-        title="Dashboard"
+        eyebrow={displayName ? `Welcome back, ${displayName}` : "Tutor workspace"}
+        title="Teaching overview"
         description={
           !hasStudents
             ? "Start by inviting your first student."
@@ -98,7 +139,21 @@ export default async function TutorDashboard() {
       />
 
       {hasStudents ? (
-        <TutorAssignmentBrowser items={items} nowMs={nowMs} />
+        <>
+          <TutorDashboardOverview
+            focusItems={focusItems}
+            activeItems={activeItems}
+            activeCount={active}
+            awaitingCount={awaiting}
+            approvedCount={approved}
+            overdueCount={overdue}
+            studentCount={(students ?? []).length}
+            pendingInviteCount={(invites ?? []).length}
+            averageProgress={averageProgress}
+            totalAssignmentCount={all.length}
+          />
+          <TutorAssignmentBrowser items={items} nowMs={nowMs} />
+        </>
       ) : (
         <Onboarding />
       )}
@@ -108,16 +163,18 @@ export default async function TutorDashboard() {
 
 function Onboarding() {
   return (
-    <div className="mx-auto flex max-w-md animate-fade-in flex-col items-center gap-5 py-20 text-center">
-      <div className="flex flex-col gap-3">
-        <h2 className="text-h3 font-semibold text-foreground">Start with one student</h2>
-        <p className="text-sm leading-relaxed text-text-muted">
+    <Empty className="animate-fade-in">
+      <EmptyHeader>
+        <EmptyTitle>Start with one student</EmptyTitle>
+        <EmptyDescription>
           Get set up in two steps: invite a student, then send them their first
           assignment. You&rsquo;ll review their work and track progress right
           here.
-        </p>
-      </div>
-      <AddStudentButton label="Invite your first student" />
-    </div>
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <AddStudentButton label="Invite your first student" />
+      </EmptyContent>
+    </Empty>
   );
 }

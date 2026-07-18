@@ -3,11 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Copy, UserPlus } from "lucide-react";
+import { AlertCircle, Copy, UserPlus } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import {
+  Alert,
+  AlertDescription,
+} from "@/components/ui/alert";
 
 interface Created {
   fullName: string;
@@ -69,16 +77,16 @@ export function AddStudentModal({
       description="Enter their name and we'll generate a link to share — they set their own email and password."
     >
       {created ? (
-        <div className="flex flex-col gap-4">
-          <p className="text-sm font-semibold text-foreground">
+        <div className="flex flex-col gap-6">
+          <p className="text-h4 text-foreground">
             Share this link with {created.fullName}
           </p>
-          <p className="text-sm text-content-subtle">
+          <p className="text-body text-content-subtle">
             When they open it, they&rsquo;ll choose their email and a password.
             You can copy it again later from the students list.
           </p>
           <div className="flex items-center gap-2">
-            <code className="flex-1 truncate rounded-md border border-border-subtle bg-bg-muted px-3 py-2.5 text-sm text-foreground">
+            <code className="flex-1 truncate rounded-md border border-border-default bg-bg-muted px-3 py-2 font-mono text-code text-foreground">
               {created.link}
             </code>
             <Button
@@ -89,7 +97,7 @@ export function AddStudentModal({
                 toast.success("Link copied.");
               }}
             >
-              <Copy className="size-4" /> Copy
+              <Copy aria-hidden /> Copy
             </Button>
           </div>
           <div className="flex justify-end gap-3 pt-2">
@@ -99,9 +107,10 @@ export function AddStudentModal({
           </div>
         </div>
       ) : (
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="full_name">Full name</Label>
+        <form onSubmit={onSubmit}>
+          <FieldGroup>
+            <Field>
+            <FieldLabel htmlFor="full_name">Full name</FieldLabel>
             <Input
               id="full_name"
               name="full_name"
@@ -110,25 +119,24 @@ export function AddStudentModal({
               placeholder="e.g. Ada Lovelace"
               autoFocus
             />
-          </div>
+            </Field>
 
           {error && (
-            <p
-              className="rounded-md border border-content-error/20 bg-bg-error px-3 py-2 text-sm text-content-error"
-              role="alert"
-            >
-              {error}
-            </p>
+              <Alert variant="destructive" role="alert">
+                <AlertCircle aria-hidden />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
           )}
 
-          <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex items-center justify-end gap-2 pt-1">
             <Button type="button" variant="ghost" onClick={close}>
               Cancel
             </Button>
             <Button type="submit" disabled={busy}>
-              <UserPlus className="size-4" /> {busy ? "Creating…" : "Create invite link"}
+                <UserPlus aria-hidden /> {busy ? "Creating…" : "Create invite link"}
             </Button>
           </div>
+          </FieldGroup>
         </form>
       )}
     </Modal>

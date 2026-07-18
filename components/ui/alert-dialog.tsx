@@ -2,8 +2,10 @@
 
 import * as React from "react";
 import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog";
+import { type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 function AlertDialog({ ...props }: AlertDialogPrimitive.Root.Props) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />;
@@ -21,11 +23,12 @@ function AlertDialogContent({
 }: AlertDialogPrimitive.Popup.Props) {
   return (
     <AlertDialogPrimitive.Portal>
-      <AlertDialogPrimitive.Backdrop className="fixed inset-0 z-50 bg-black/35 dark:bg-black/60 backdrop-blur-[6px] duration-150 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
+      <AlertDialogPrimitive.Backdrop className="fixed inset-0 z-50 bg-[var(--color-overlay)] duration-slow ease-[var(--ease-standard)] data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
       <AlertDialogPrimitive.Popup
         data-slot="alert-dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 flex w-full max-w-[420px] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-[var(--modal-radius)] border border-border-subtle bg-card p-8 text-card-foreground shadow-[var(--shadow-lg)] duration-150 outline-hidden",
+          "fixed top-1/2 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-[420px] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-lg border border-border bg-card p-6 text-card-foreground shadow-lg outline-hidden",
+          "duration-slow ease-[var(--ease-out)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-[0.98] data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-[0.98]",
           className,
         )}
         {...props}
@@ -48,7 +51,7 @@ function AlertDialogFooter({ className, ...props }: React.ComponentProps<"div">)
   return (
     <div
       data-slot="alert-dialog-footer"
-      className={cn("flex justify-end gap-2.5 mt-7", className)}
+      className={cn("mt-6 flex justify-end gap-2", className)}
       {...props}
     />
   );
@@ -61,7 +64,7 @@ function AlertDialogTitle({
   return (
     <AlertDialogPrimitive.Title
       data-slot="alert-dialog-title"
-      className={cn("font-heading text-h2 font-semibold leading-tight text-content-emphasis", className)}
+      className={cn("text-heading-md text-content-emphasis", className)}
       {...props}
     />
   );
@@ -74,7 +77,7 @@ function AlertDialogDescription({
   return (
     <AlertDialogPrimitive.Description
       data-slot="alert-dialog-description"
-      className={cn("text-sm leading-relaxed text-content-subtle", className)}
+      className={cn("text-caption text-content-subtle", className)}
       {...props}
     />
   );
@@ -82,15 +85,14 @@ function AlertDialogDescription({
 
 function AlertDialogAction({
   className,
+  variant = "default",
   ...props
-}: AlertDialogPrimitive.Close.Props) {
+}: AlertDialogPrimitive.Close.Props &
+  VariantProps<typeof buttonVariants>) {
   return (
     <AlertDialogPrimitive.Close
       data-slot="alert-dialog-action"
-      className={cn(
-        "inline-flex h-10 cursor-pointer items-center justify-center rounded-[var(--btn-radius)] border border-primary bg-primary px-3 text-sm font-medium text-primary-foreground transition-all duration-150 hover:ring-4 hover:ring-border-subtle focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-border-subtle",
-        className
-      )}
+      className={cn(buttonVariants({ variant }), className)}
       {...props}
     />
   );
@@ -103,10 +105,7 @@ function AlertDialogCancel({
   return (
     <AlertDialogPrimitive.Close
       data-slot="alert-dialog-cancel"
-      className={cn(
-        "inline-flex h-10 cursor-pointer items-center justify-center rounded-[var(--btn-radius)] border border-border-subtle bg-card px-3 text-sm font-medium text-content-emphasis transition-all duration-150 hover:border-border-emphasis hover:bg-bg-muted hover:ring-4 hover:ring-border-subtle focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-border-subtle",
-        className
-      )}
+      className={cn(buttonVariants({ variant: "outline" }), className)}
       {...props}
     />
   );

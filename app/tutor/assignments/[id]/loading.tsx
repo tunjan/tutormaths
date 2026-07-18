@@ -34,7 +34,7 @@ export default function Loading() {
             <Skeleton className="h-5 w-28" />
             <Skeleton className="h-8 w-20" />
           </div>
-          <Skeleton className="h-[600px] rounded-xl" />
+          <Skeleton className="h-[600px] rounded-md" />
         </section>
 
         {/* Right: submissions + review + comments */}
@@ -42,18 +42,18 @@ export default function Loading() {
           {/* Submitted work */}
           <section className="flex flex-col gap-4">
             <Skeleton className="h-5 w-32" />
-            <Skeleton className="h-20 rounded-xl" />
+            <Skeleton className="h-20 rounded-md" />
           </section>
 
           {/* Review card */}
-          <Skeleton className="h-32 rounded-xl" />
+          <Skeleton className="h-32 rounded-md" />
 
           {/* Comments */}
           <section className="flex flex-col gap-4">
             <Skeleton className="h-5 w-24" />
-            <Skeleton className="h-24 rounded-xl" />
-            <Skeleton className="h-24 rounded-xl" />
-            <Skeleton className="h-20 rounded-xl" />
+            <Skeleton className="h-24 rounded-md" />
+            <Skeleton className="h-24 rounded-md" />
+            <Skeleton className="h-20 rounded-md" />
           </section>
         </div>
       </div>
