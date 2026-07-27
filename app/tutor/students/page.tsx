@@ -97,38 +97,38 @@ export default async function StudentsPage() {
           {(students ?? []).map((s) => {
             const name = s.full_name || s.email || "Student";
             return (
-              <Card key={s.id}>
+              <Card key={s.id} className="p-6">
                 <Link
                   href={`/tutor/students/${s.id}`}
                   className="group flex items-start gap-3"
                 >
                   <span
-                    className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-bg-subtle text-label text-content-emphasis"
+                    className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-muted text-sm font-semibold text-foreground"
                   >
                     {initials(name)}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-label text-foreground group-hover:underline">
+                    <p className="truncate text-sm font-semibold text-foreground group-hover:underline">
                       {s.full_name || "—"}
                     </p>
-                    <p className="truncate text-caption text-content-subtle">
+                    <p className="truncate text-xs text-muted-foreground">
                       {s.email}
                     </p>
                   </div>
                   <Badge variant="success">Active</Badge>
                 </Link>
 
-                <p className="mt-4 text-caption text-content-subtle">
+                <p className="mt-3 text-xs text-muted-foreground">
                   Joined {formatDate(s.created_at)}
                 </p>
 
-                <Separator className="my-4" />
+                <Separator className="-mx-6 my-4 w-[calc(100%+3rem)]" />
                 <div>
                   <AssignTaskButton
                     students={recipientOptions}
                     categories={categories ?? []}
                     defaultStudentId={s.id}
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     className="w-full"
                   />
@@ -140,35 +140,35 @@ export default async function StudentsPage() {
           {(invites ?? []).map((inv) => {
             const name = inv.full_name || "Student";
             return (
-              <Card key={inv.id}>
+              <Card key={inv.id} className="p-6">
                 <div className="flex items-start gap-3">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-bg-subtle text-label text-content-subtle">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-muted text-sm font-semibold text-muted-foreground">
                     {initials(name)}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-label text-foreground">
+                    <p className="truncate text-sm font-semibold text-foreground">
                       {inv.full_name || "—"}
                     </p>
-                    <p className="mt-1 flex items-center gap-1 text-caption text-content-attention">
-                      <Clock className="size-4" /> Awaiting sign-up
+                    <p className="mt-1 flex items-center gap-1 text-xs text-content-warning">
+                      <Clock className="size-3.5" /> Awaiting sign-up
                     </p>
                   </div>
                   <Badge variant="outline">Invited</Badge>
                 </div>
 
-                <p className="mt-4 text-caption text-content-subtle">
+                <p className="mt-3 text-xs text-muted-foreground">
                   Invited {formatDate(inv.created_at)}
                 </p>
 
-                <Separator className="my-4" />
-                <div>
+                <Separator className="-mx-6 my-4 w-[calc(100%+3rem)]" />
+                <div className="flex flex-col gap-2">
                   <AssignTaskButton
                     students={recipientOptions}
                     categories={categories ?? []}
                     defaultStudentId={inv.id}
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
-                    className="mb-2 w-full"
+                    className="w-full"
                   />
                   <PendingInviteActions inviteId={inv.id} token={inv.token} />
                 </div>
@@ -186,7 +186,7 @@ export default async function StudentsPage() {
 function AddStudentTile() {
   return (
     <div className="flex min-h-52 items-center justify-center rounded-md border border-dashed border-border transition-colors duration-base hover:border-border-emphasis">
-      <AddStudentButton variant="ghost" />
+      <AddStudentButton variant="minimal" />
     </div>
   );
 }

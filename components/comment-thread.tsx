@@ -130,7 +130,7 @@ function CommentItem({
             <div className="flex shrink-0 items-center gap-1">
               <Button
                 type="button"
-                variant="ghost"
+                variant="minimal"
                 size="sm"
                 disabled={pending}
                 onClick={() => {
@@ -145,7 +145,7 @@ function CommentItem({
                   render={
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="minimal"
                       size="sm"
                       disabled={pending}
                     >
@@ -214,7 +214,7 @@ function CommentItem({
               <div className="flex justify-end gap-2">
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   disabled={pending}
                   onClick={cancelEdit}

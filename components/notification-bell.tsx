@@ -110,7 +110,7 @@ export function NotificationBell({
       <PopoverTrigger
         render={
           <Button
-            variant="ghost"
+            variant="minimal"
             size="icon-sm"
             className="relative"
             aria-label={triggerLabel}
@@ -132,7 +132,7 @@ export function NotificationBell({
             <button
               type="button"
               onClick={markAllRead}
-              className="rounded-sm text-micro text-content-info transition-colors duration-fast hover:underline focus-visible:outline-none"
+              className="rounded-xs text-micro text-content-info transition-colors duration-fast hover:underline focus-visible:outline-none"
             >
               Mark all as read
             </button>

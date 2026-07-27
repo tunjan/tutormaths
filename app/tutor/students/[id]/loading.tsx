@@ -18,7 +18,7 @@ export default function Loading() {
       {/* Stat cards */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="gap-1 rounded-md border border-border bg-card py-6">
+          <div key={i} className="gap-1 rounded-2xl border border-border bg-card py-6">
             <div className="px-6">
               <Skeleton className="h-9 w-16" />
               <Skeleton className="mt-1 h-4 w-20" />

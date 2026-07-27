@@ -98,11 +98,11 @@ export function AssignmentCalendar({
           {monthLabel.format(cursor)}
         </h2>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={goToday}>
+          <Button variant="minimal" size="sm" onClick={goToday}>
             Today
           </Button>
           <Button
-            variant="outline"
+            variant="secondary"
             size="icon-sm"
             aria-label="Previous month"
             onClick={() => shiftMonth(-1)}
@@ -110,7 +110,7 @@ export function AssignmentCalendar({
             <ChevronLeft />
           </Button>
           <Button
-            variant="outline"
+            variant="secondary"
             size="icon-sm"
             aria-label="Next month"
             onClick={() => shiftMonth(1)}
@@ -121,7 +121,7 @@ export function AssignmentCalendar({
       </div>
 
       {/* Grid */}
-      <div className="overflow-hidden rounded-md border border-border bg-card">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card">
         <div className="grid grid-cols-7 border-b border-border-subtle bg-bg-muted">
           {WEEKDAYS.map((d) => (
             <div
@@ -209,7 +209,7 @@ export function AssignmentCalendar({
             <EmptyDescription>Nothing due this day.</EmptyDescription>
           </Empty>
         ) : (
-          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
+          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-2xl border border-border bg-card">
             {selected.map((a) => {
               const TypeIcon = a.type === "reading_notes" ? BookOpen : FileText;
               return (
@@ -219,7 +219,7 @@ export function AssignmentCalendar({
                   className="group flex items-center justify-between gap-4 px-6 py-3 transition-colors duration-fast hover:bg-surface-hover"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-sm border border-border bg-surface-muted text-muted-foreground group-hover:text-foreground">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-surface-muted text-muted-foreground group-hover:text-foreground">
                       <TypeIcon className="size-4" strokeWidth={1.5} />
                     </span>
                     <div className="min-w-0 flex-1">
@@ -268,7 +268,7 @@ function CalendarChip({
       onClick={(e) => e.stopPropagation()}
       title={a.title}
       className={cn(
-        "flex w-full items-center gap-1 rounded-sm border border-transparent px-2 py-1 text-micro transition-colors duration-fast",
+        "flex w-full items-center gap-1 rounded-xs border border-transparent px-2 py-1 text-micro transition-colors duration-fast",
         done
           ? "bg-surface-hover text-text-subtle line-through hover:bg-surface-selected"
           : "bg-bg-muted text-text-heading hover:bg-bg-subtle",

@@ -42,7 +42,7 @@ export default function Loading() {
           </section>
 
           {/* Progress card */}
-          <div className="rounded-md border border-border bg-card">
+          <div className="rounded-2xl border border-border bg-card">
             <div className="flex flex-col gap-2 p-6 pb-0">
               <Skeleton className="h-5 w-28" />
               <Skeleton className="h-4 w-64" />

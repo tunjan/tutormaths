@@ -160,7 +160,7 @@ export function TutorAssignmentBrowser({
   return (
     <section
       aria-labelledby="assignments-heading"
-      className="overflow-hidden rounded-md border border-border bg-card"
+      className="overflow-hidden rounded-2xl border border-border bg-card"
     >
       <div className="grid gap-4 border-b border-border-soft p-6 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div className="min-w-0">
@@ -229,7 +229,7 @@ export function TutorAssignmentBrowser({
               {selected.size} selected
             </span>
             <Button
-              variant="ghost"
+              variant="minimal"
               size="icon-xs"
               onClick={() => setSelected(new Set())}
               aria-label="Clear selection"
@@ -237,7 +237,7 @@ export function TutorAssignmentBrowser({
               <X data-icon="inline-start" />
             </Button>
             <Button
-              variant="ghost"
+              variant="minimal"
               size="sm"
               className="text-destructive hover:bg-bg-error hover:text-destructive"
               disabled={deleting}
@@ -328,7 +328,7 @@ function AssignmentList({
             />
           </div>
           <Button
-            variant="ghost"
+            variant="minimal"
             size="icon-sm"
             className="mr-2 text-content-subtle opacity-60 hover:text-destructive group-hover/row:opacity-100 sm:mr-3"
             onClick={() => onDelete(item.id)}

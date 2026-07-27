@@ -54,7 +54,7 @@ export function FileDropzone({
       aria-disabled={!interactive}
       aria-live="polite"
       className={cn(
-        "group flex flex-col items-center justify-center gap-2 rounded-md border border-dashed px-6 py-8 text-center text-body transition-[background-color,border-color,box-shadow] duration-base focus-within:outline-none",
+        "group flex flex-col items-center justify-center gap-2 rounded-control border border-dashed px-6 py-8 text-center text-body transition-[background-color,border-color,box-shadow] duration-base focus-within:outline-none",
         interactive ? "cursor-pointer" : "cursor-default opacity-80",
         dragging
           ? "border-accent-ink bg-accent-ink-subtle text-foreground"
@@ -78,14 +78,14 @@ export function FileDropzone({
         </>
       ) : (
         <>
-          <span className="flex size-10 items-center justify-center rounded-md bg-bg-subtle text-content-default">
+          <span className="flex size-10 items-center justify-center rounded-lg border border-border bg-bg-subtle text-content-default">
             <UploadCloud className="size-5" aria-hidden />
           </span>
           <span className="text-label text-foreground">{title}</span>
           <span className="max-w-[18rem] text-caption text-muted-foreground">
             {hint}
           </span>
-          <span className="mt-1 rounded-sm border border-border bg-card px-3 py-2 text-button text-content-emphasis transition-colors duration-fast group-hover:bg-bg-muted">
+          <span className="mt-1 rounded-control border border-border bg-card px-3 py-2 text-button text-content-emphasis transition-colors duration-fast group-hover:bg-bg-muted">
             {actionLabel}
           </span>
         </>

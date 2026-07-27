@@ -114,7 +114,7 @@ type AssignmentItem = {
 
 function AssignmentList({ items }: { items: AssignmentItem[] }) {
   return (
-    <div className="flex flex-col stagger-children divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
+    <div className="flex flex-col stagger-children divide-y divide-border-subtle overflow-hidden rounded-2xl border border-border bg-card">
       {items.map((a) => (
         <AssignmentRow
           key={a.id}
@@ -134,7 +134,7 @@ function Stat({ label, value }: { label: string; value: number | string }) {
   return (
     <Card>
       <span className="text-caption text-content-subtle">{label}</span>
-      <span className="font-metric text-h1 tabular-nums text-content-emphasis">
+      <span className="font-metric text-stat-lg tabular-nums text-content-emphasis">
         {value}
       </span>
     </Card>

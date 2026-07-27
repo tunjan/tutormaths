@@ -184,7 +184,7 @@ export default async function StudentAssignmentPage({
                           target="_blank"
                           rel="noopener noreferrer"
                           download
-                          className={buttonVariants({ variant: "ghost", size: "sm" })}
+                          className={buttonVariants({ variant: "minimal", size: "sm" })}
                         >
                           <Download data-icon="inline-start" />
                           Download

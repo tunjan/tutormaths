@@ -5,191 +5,207 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* DESIGN.md — Vercel / Geist primitives */
-  --vercel-primary: #171717;
-  --color-on-primary: #ffffff;
-  --color-ink: #171717;
-  --color-ink-hover: #171717;
-  --color-body: #4d4d4d;
-  --color-mute: #8f8f8f;
-  --color-faint: #a1a1a1;
-  --color-hairline: #ebebeb;
-  --color-hairline-soft: #f2f2f2;
-  --color-canvas: #fafafa;
-  --color-canvas-elevated: #ffffff;
-  --color-link: #0070f3;
-  --color-link-deep: #0761d1;
-  --color-link-soft: #d3e5ff;
-  --color-error: #ee0000;
-  --color-error-deep: #c50000;
-  --color-warning: #f5a623;
-  --color-warning-soft: #ffefcf;
-  --color-warning-deep: #ab570a;
-  --color-overlay: rgb(23 23 23 / 0.4);
-  --color-violet: #7928ca;
-  --color-violet-soft: #d8ccf1;
-  --color-cyan: #50e3c2;
-  --color-cyan-soft: #aaffec;
-  --color-pink: #ff0080;
-  --color-magenta: #eb367f;
-  --gradient-develop: linear-gradient(135deg, #007cf0, #00dfd8);
-  --gradient-preview: linear-gradient(135deg, #7928ca, #ff0080);
-  --gradient-ship: linear-gradient(135deg, #ff4d4d, #f9cb28);
-  --gradient-mesh:
-    radial-gradient(circle at 12% 18%, rgb(0 223 216 / 0.34), transparent 34%),
-    radial-gradient(circle at 86% 8%, rgb(255 0 128 / 0.25), transparent 31%),
-    radial-gradient(circle at 78% 82%, rgb(249 203 40 / 0.2), transparent 32%),
-    radial-gradient(circle at 42% 72%, rgb(121 40 202 / 0.19), transparent 36%),
-    #fafafa;
+  /* ---- OKLCH Ramp Architecture (Design Guidelines §2.1) ---- */
+  --gray-1: oklch(99% 0.002 260);    /* app background */
+  --gray-2: oklch(97% 0.003 260);    /* subtle surface */
+  --gray-3: oklch(94% 0.004 260);    /* hover fill */
+  --gray-4: oklch(89% 0.005 260);    /* border, strong */
+  --gray-5: oklch(75% 0.006 260);    /* disabled text */
+  --gray-6: oklch(55% 0.006 260);    /* muted text */
+  --gray-7: oklch(38% 0.006 260);    /* secondary text */
+  --gray-8: oklch(22% 0.006 260);    /* primary text */
+  --gray-9: oklch(12% 0.006 260);    /* headings, max contrast */
 
-  /* DESIGN.md — spacing and shape */
-  --space-xxs: 4px;
-  --space-xs: 8px;
-  --space-sm: 12px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-2xl: 40px;
-  --space-3xl: 64px;
-  --space-4xl: 96px;
-  --space-section: 128px;
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-pill-category: 64px;
-  --radius-pill: 100px;
-  --radius-full: 9999px;
+  --accent-9: oklch(58% 0.19 265);   /* primary buttons, links, focus rings */
+  --accent-4: oklch(90% 0.05 265);   /* accent-tinted surface */
 
-  /* Depth is intentionally scarce: flat cards, whisper-raised overlays. */
-  --design-shadow-xs: 0 1px 1px rgb(0 0 0 / 0.04);
-  --design-shadow-floating:
-    0 2px 2px rgb(0 0 0 / 0.04),
-    0 8px 16px -4px rgb(0 0 0 / 0.08);
+  /* ---- Semantic Status Ramps in OKLCH (Design Guidelines §11) ---- */
+  --surface-info: oklch(96% 0.02 250);
+  --content-info: oklch(40% 0.18 250);
+  --border-info: oklch(62% 0.18 250);
 
-  --design-font-sans: var(--font-geist-sans), Geist, Arial, sans-serif;
-  --design-font-mono:
-    var(--font-geist-mono), "Geist Mono", ui-monospace, SFMono-Regular,
-    Menlo, monospace;
-  --design-font-heading: var(--design-font-sans);
+  --surface-success: oklch(96% 0.03 145);
+  --content-success: oklch(38% 0.16 145);
+  --border-success: oklch(62% 0.18 145);
 
-  --ease-standard: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --dur-fast: 120ms;
-  --dur-base: 180ms;
-  --dur-slow: 240ms;
-  --focus-ring: 0 0 0 2px var(--color-canvas), 0 0 0 4px var(--color-link);
+  --surface-warning: oklch(96% 0.04 75);
+  --content-warning: oklch(38% 0.15 75);
+  --border-warning: oklch(68% 0.18 75);
 
-  /* shadcn / Base UI semantic mapping */
-  --background: var(--color-canvas);
-  --foreground: var(--color-ink);
-  --card: var(--color-canvas-elevated);
-  --card-foreground: var(--color-ink);
-  --popover: var(--color-canvas-elevated);
-  --popover-foreground: var(--color-ink);
-  --primary: var(--vercel-primary);
-  --primary-foreground: var(--color-on-primary);
-  --secondary: var(--color-canvas-elevated);
-  --secondary-foreground: var(--color-ink);
-  --muted: var(--color-hairline-soft);
-  --muted-foreground: var(--color-mute);
-  --accent: var(--color-hairline-soft);
-  --accent-foreground: var(--color-ink);
-  --destructive: var(--color-error);
-  --destructive-foreground: var(--color-on-primary);
-  --destructive-muted: #ffe5e5;
-  --border: var(--color-hairline);
-  --input: var(--color-hairline);
-  --ring: var(--color-link);
-  --radius: var(--radius-sm);
+  --surface-error: oklch(96% 0.04 25);
+  --content-error: oklch(40% 0.22 25);
+  --border-error: oklch(60% 0.22 25);
 
-  /* Compatibility aliases for the existing product surfaces. */
-  --bg-default: var(--color-canvas);
-  --bg-muted: var(--color-canvas);
-  --bg-subtle: var(--color-hairline-soft);
-  --bg-emphasis: var(--color-hairline-soft);
-  --bg-inverted: var(--color-ink);
+  --info: var(--surface-info);
+  --info-foreground: var(--content-info);
+  --success: var(--surface-success);
+  --success-foreground: var(--content-success);
+  --warning: var(--surface-warning);
+  --warning-foreground: var(--content-warning);
 
-  --border-muted: var(--color-hairline-soft);
-  --border-subtle: var(--color-hairline-soft);
-  --border-default: var(--color-hairline);
-  --border-emphasis: var(--color-body);
-  --border-soft: var(--color-hairline-soft);
-  --border-strong: var(--color-hairline);
+  /* ---- Core Surface & Content Tokens ---- */
+  --surface: oklch(100% 0 0);
+  --surface-subtle: var(--gray-2);
+  --surface-muted: var(--gray-1);
+  --surface-emphasis: var(--gray-3);
+  --surface-inverted: var(--gray-9);
 
-  --content-emphasis: var(--color-ink);
-  --content-default: var(--color-body);
-  --content-subtle: var(--color-mute);
-  --content-muted: var(--color-faint);
-  --content-inverted: var(--color-on-primary);
+  --content: var(--gray-8);
+  --content-emphasis: var(--gray-9);
+  --content-subtle: var(--gray-7);
+  --content-muted: var(--gray-6);
+  --content-disabled: var(--gray-5);
+  --content-inverted: oklch(99% 0 0);
 
-  --text-primary: var(--color-ink);
-  --text-secondary: var(--color-body);
-  --text-tertiary: var(--color-mute);
-  --text-quaternary: var(--color-faint);
-  --text-heading: var(--color-ink);
-  --text-muted: var(--color-mute);
-  --text-subtle: var(--color-faint);
+  --line: color-mix(in oklch, var(--gray-9) 10%, transparent);
+  --line-subtle: color-mix(in oklch, var(--gray-9) 6%, transparent);
+  --line-muted: color-mix(in oklch, var(--gray-9) 4%, transparent);
+  --line-emphasis: color-mix(in oklch, var(--gray-9) 16%, transparent);
 
-  --surface-base: var(--color-canvas);
-  --surface-muted: var(--color-canvas);
-  --surface-raised: var(--color-canvas-elevated);
-  --surface-inset: var(--color-hairline-soft);
-  --surface-hover: var(--color-hairline-soft);
-  --surface-selected: var(--color-link-soft);
-  --surface-paper: var(--color-canvas-elevated);
+  --brand: var(--gray-9);
+  --brand-emphasis: oklch(0% 0 0);
 
-  /* Blue is reserved for links, focus, and product-positive status. */
-  --accent-ink: var(--color-link);
-  --accent-ink-light: var(--color-link);
-  --accent-ink-dark: var(--color-link-deep);
-  --accent-ink-subtle: var(--color-link-soft);
+  --overlay: oklch(0% 0 0 / 0.5);
 
-  --bg-info: var(--color-link-soft);
-  --content-info: var(--color-link);
-  --bg-success: var(--color-link-soft);
-  --content-success: var(--color-link);
-  --bg-attention: var(--color-warning-soft);
-  --content-attention: var(--color-warning-deep);
-  --bg-warning: var(--color-warning-soft);
-  --content-warning: var(--color-warning-deep);
-  --bg-error: #ffe5e5;
-  --content-error: var(--color-error);
+  --accent-blue: var(--accent-9);
+  --accent-blue-light: oklch(75% 0.14 265);
+  --accent-blue-dark: oklch(42% 0.18 265);
 
-  --success-green: var(--color-link);
-  --success-green-light: var(--color-link);
-  --status-review: var(--color-link);
-  --status-review-bg: var(--color-link-soft);
-  --status-review-border: var(--color-link-soft);
-  --status-overdue: var(--color-error);
-  --status-overdue-bg: #ffe5e5;
-  --status-overdue-border: #ffd1d1;
-  --status-due: var(--color-warning-deep);
-  --status-due-bg: var(--color-warning-soft);
-  --status-due-border: #ffdf9d;
+  /* ---- Four-step Border Radius Scale (Design Guidelines §6) ---- */
+  --radius-sm: 6px;       /* checkboxes, tags/chips, tab hit-targets, small badges */
+  --radius-md: 8px;       /* inputs, buttons, dropdown menus, tooltips */
+  --radius-lg: 12px;      /* cards, modals, popovers, images */
+  --radius-full: 9999px;  /* avatars, switches, pill badges, circular icon buttons */
+  --radius-control: var(--radius-md);
+  --radius-xs: var(--radius-sm);
+  --radius-xl: var(--radius-lg);
+  --radius-2xl: var(--radius-lg);
+  --radius-3xl: var(--radius-lg);
+  --radius: 0.5rem;
 
-  --chart-primary: var(--color-link);
-  --chart-secondary: var(--color-ink);
-  --chart-tertiary: var(--color-error);
-  --chart-grid: var(--color-hairline-soft);
-  --chart-1: var(--chart-primary);
-  --chart-2: var(--chart-secondary);
-  --chart-3: var(--chart-tertiary);
-  --chart-4: var(--color-body);
-  --chart-5: var(--color-hairline);
+  /* ---- Elevation & Shadows (Design Guidelines §7) ---- */
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.10);
+  --shadow-lg: 0 12px 32px rgb(0 0 0 / 0.14);
 
-  --sidebar: var(--color-canvas);
-  --sidebar-foreground: var(--color-ink);
-  --sidebar-primary: var(--color-ink);
-  --sidebar-primary-foreground: var(--color-on-primary);
-  --sidebar-accent: var(--color-hairline-soft);
-  --sidebar-accent-foreground: var(--color-ink);
-  --sidebar-border: var(--color-hairline);
-  --sidebar-ring: var(--color-link);
+  --shadow-elevation-low: var(--shadow-xs);
+  --shadow-dropdown: var(--shadow-sm);
+  --shadow-dialog: var(--shadow-md);
+  --shadow-button-primary: 0 1px 2px rgb(0 0 0 / 0.08);
+  --shadow-button-primary-hover: 0 2px 4px rgb(0 0 0 / 0.12);
+  --shadow-outline-gray: var(--shadow-xs);
 
-  --line-strong: var(--color-ink);
-  --overlay: var(--color-overlay);
-  --tutor: var(--color-link);
-  --student: var(--color-link);
+  /* ---- Typography Stacks ---- */
+  --design-font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --design-font-heading: var(--font-inter-tight), var(--design-font-sans);
+  --design-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* ---- Motion (Design Guidelines §9.9) ---- */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 300ms;
+  --dur-entrance: 300ms;
+  --dur-drawer: 200ms;
+  --focus-ring: 0 0 0 2px var(--background), 0 0 0 4px var(--accent-9);
+
+  /* ---- shadcn / Base UI semantic mapping ---- */
+  --background: var(--gray-1);
+  --foreground: var(--content);
+  --card: var(--surface);
+  --card-foreground: var(--content);
+  --popover: var(--surface);
+  --popover-foreground: var(--content);
+  --primary: var(--brand);
+  --primary-foreground: var(--content-inverted);
+  --secondary: var(--surface);
+  --secondary-foreground: var(--content);
+  --muted: var(--surface-subtle);
+  --muted-foreground: var(--content-muted);
+  --accent: var(--gray-3);
+  --accent-foreground: var(--content-emphasis);
+  --destructive: var(--content-error);
+  --destructive-foreground: oklch(99% 0 0);
+  --border: color-mix(in oklch, var(--foreground) 8%, transparent);
+  --input: color-mix(in oklch, var(--foreground) 8%, transparent);
+  --ring: var(--accent-9);
+
+  /* Compatibility aliases */
+  --bg-default: var(--surface-muted);
+  --bg-muted: var(--surface-subtle);
+  --bg-subtle: var(--surface-subtle);
+  --bg-emphasis: var(--surface-emphasis);
+  --bg-inverted: var(--surface-inverted);
+
+  --border-muted: var(--line-subtle);
+  --border-subtle: var(--line-subtle);
+  --border-default: var(--line);
+  --border-emphasis: var(--line-emphasis);
+  --border-soft: var(--line-subtle);
+  --border-strong: var(--line-emphasis);
+
+  --text-primary: var(--content-emphasis);
+  --text-secondary: var(--content);
+  --text-tertiary: var(--content-subtle);
+  --text-quaternary: var(--content-muted);
+  --text-heading: var(--content-emphasis);
+  --text-muted: var(--content-muted);
+  --text-subtle: var(--content-subtle);
+
+  --surface-base: var(--surface-muted);
+  --surface-raised: var(--surface);
+  --surface-inset: var(--surface-subtle);
+  --surface-hover: var(--surface-subtle);
+  --surface-selected: var(--accent-4);
+  --surface-paper: var(--surface);
+
+  --accent-ink: var(--accent-9);
+  --accent-ink-light: var(--accent-4);
+  --accent-ink-dark: oklch(42% 0.18 265);
+  --accent-ink-subtle: var(--accent-4);
+
+  --bg-info: var(--surface-info);
+  --bg-success: var(--surface-success);
+  --bg-attention: var(--surface-warning);
+  --bg-warning: var(--surface-warning);
+  --bg-error: var(--surface-error);
+
+  --success-green: var(--content-success);
+  --success-green-light: var(--surface-success);
+  --status-review: var(--content-info);
+  --status-review-bg: var(--surface-info);
+  --status-review-border: var(--border-info);
+  --status-overdue: var(--content-error);
+  --status-overdue-bg: var(--surface-error);
+  --status-overdue-border: var(--border-error);
+  --status-due: var(--content-warning);
+  --status-due-bg: var(--surface-warning);
+  --status-due-border: var(--border-warning);
+
+  --chart-primary: var(--accent-9);
+  --chart-secondary: var(--gray-8);
+  --chart-tertiary: var(--content-error);
+  --chart-grid: var(--line-subtle);
+  --chart-1: oklch(58% 0.19 265);
+  --chart-2: oklch(62% 0.18 145);
+  --chart-3: oklch(68% 0.18 75);
+  --chart-4: oklch(60% 0.22 25);
+  --chart-5: oklch(62% 0.18 250);
+
+  --sidebar: var(--gray-1);
+  --sidebar-foreground: var(--gray-8);
+  --sidebar-primary: var(--accent-9);
+  --sidebar-primary-foreground: oklch(99% 0 0);
+  --sidebar-accent: var(--gray-3);
+  --sidebar-accent-foreground: var(--gray-9);
+  --sidebar-border: color-mix(in oklch, var(--gray-8) 8%, transparent);
+  --sidebar-ring: var(--accent-9);
+
+  --line-strong: var(--content-emphasis);
+  --tutor: var(--accent-9);
+  --student: var(--accent-9);
 
   --duration-150: var(--dur-fast);
   --duration-200: var(--dur-base);
@@ -198,11 +214,114 @@
   --default-transition-timing-function: var(--ease-standard);
 
   --sidebar-width: 260px;
-  --content-width: 1200px;
+  --content-width: 1280px;
+}
+
+.dark {
+  /* ---- OKLCH Dark Mode Ramp Remapping (Design Guidelines §2.1) ---- */
+  --background: oklch(14% 0.006 260);
+  --foreground: var(--gray-2);
+  --card: oklch(16% 0.006 260);
+  --card-foreground: var(--gray-2);
+  --popover: oklch(18% 0.006 260);
+  --popover-foreground: var(--gray-2);
+
+  --brand: oklch(98% 0 0);
+  --brand-emphasis: oklch(85% 0 0);
+
+  --primary: oklch(98% 0 0);
+  --primary-foreground: oklch(14% 0.006 260);
+
+  --secondary: oklch(18% 0.006 260);
+  --secondary-foreground: var(--gray-2);
+
+  --destructive: oklch(60% 0.22 25);
+  --destructive-foreground: oklch(99% 0 0);
+
+  --input: color-mix(in oklch, var(--foreground) 8%, transparent);
+  --ring: var(--accent-9);
+
+  --surface: oklch(16% 0.006 260);
+  --surface-subtle: oklch(20% 0.006 260);
+  --surface-muted: oklch(14% 0.006 260);
+  --surface-emphasis: oklch(26% 0.006 260);
+  --surface-inverted: var(--gray-1);
+
+  --content: var(--gray-3);
+  --content-emphasis: oklch(98% 0.002 260);
+  --content-subtle: var(--gray-5);
+  --content-muted: var(--gray-6);
+  --content-inverted: oklch(14% 0.006 260);
+
+  --line: color-mix(in oklch, var(--foreground) 8%, transparent);
+  --line-subtle: color-mix(in oklch, var(--foreground) 5%, transparent);
+  --line-muted: color-mix(in oklch, var(--foreground) 3%, transparent);
+  --line-emphasis: color-mix(in oklch, var(--foreground) 16%, transparent);
+
+  --accent: oklch(22% 0.006 260);
+  --accent-foreground: oklch(98% 0 0);
+
+  --muted: oklch(20% 0.006 260);
+  --muted-foreground: var(--gray-5);
+
+  --overlay: oklch(0% 0 0 / 0.7);
+
+  --surface-info: oklch(22% 0.04 250);
+  --content-info: oklch(85% 0.08 250);
+  --border-info: oklch(35% 0.12 250);
+
+  --surface-success: oklch(22% 0.04 145);
+  --content-success: oklch(85% 0.08 145);
+  --border-success: oklch(35% 0.12 145);
+
+  --surface-warning: oklch(24% 0.05 75);
+  --content-warning: oklch(88% 0.08 75);
+  --border-warning: oklch(40% 0.12 75);
+
+  --surface-error: oklch(22% 0.05 25);
+  --content-error: oklch(88% 0.10 25);
+  --border-error: oklch(40% 0.14 25);
+
+  --bg-default: var(--surface-muted);
+  --bg-muted: var(--surface-subtle);
+  --bg-subtle: var(--surface-subtle);
+  --bg-emphasis: var(--surface-emphasis);
+  --bg-inverted: var(--surface-inverted);
+
+  --border-muted: var(--line-subtle);
+  --border-subtle: var(--line-subtle);
+  --border-default: var(--line);
+  --border-emphasis: var(--line-emphasis);
+  --border-soft: var(--line-subtle);
+  --border-strong: var(--line-emphasis);
+
+  --text-primary: var(--content-emphasis);
+  --text-secondary: var(--content);
+  --text-tertiary: var(--content-subtle);
+  --text-quaternary: var(--content-muted);
+  --text-heading: var(--content-emphasis);
+  --text-muted: var(--content-subtle);
+  --text-subtle: var(--content-subtle);
+
+  --surface-base: var(--surface-muted);
+  --surface-raised: var(--surface);
+  --surface-inset: var(--surface-subtle);
+  --surface-hover: var(--surface-subtle);
+  --surface-paper: var(--surface);
+
+  --sidebar: oklch(14% 0.006 260);
+  --sidebar-foreground: var(--gray-2);
+  --sidebar-accent: oklch(20% 0.006 260);
+  --sidebar-accent-foreground: oklch(98% 0 0);
+  --sidebar-border: color-mix(in oklch, var(--foreground) 8%, transparent);
+  --border: color-mix(in oklch, var(--foreground) 8%, transparent);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-ring: var(--accent-9);
 }
 
 @theme inline {
-  --font-sans: var(--design-font-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--design-font-mono);
   --font-heading: var(--design-font-heading);
 
@@ -262,7 +381,7 @@
   --color-bg-success: var(--bg-success);
   --color-content-success: var(--content-success);
   --color-bg-attention: var(--bg-attention);
-  --color-content-attention: var(--content-attention);
+  --color-content-attention: var(--content-warning);
   --color-bg-warning: var(--bg-warning);
   --color-content-warning: var(--content-warning);
   --color-bg-error: var(--bg-error);
@@ -292,40 +411,45 @@
   --color-line-strong: var(--line-strong);
   --color-tutor: var(--tutor);
   --color-student: var(--student);
+  /* Radius: the fixed-px scale lives in the @theme block below.
+     Do NOT define calc()-based radius overrides here — they would
+     conflict with the three-tier scale (tight/control/panel). */
 }
 
 @theme {
-  --shadow-xs: var(--design-shadow-xs);
-  --shadow-sm: var(--design-shadow-xs);
-  --shadow-md: var(--design-shadow-floating);
-  --shadow-lg: var(--design-shadow-floating);
+  --shadow-xs: var(--shadow-elevation-low);
+  --shadow-sm: var(--shadow-outline-gray);
+  --shadow-md: var(--shadow-dropdown);
+  --shadow-lg: var(--shadow-dialog);
+  --shadow-elevation-low: var(--shadow-elevation-low);
+  --shadow-dropdown: var(--shadow-dropdown);
+  --shadow-dialog: var(--shadow-dialog);
+  --shadow-button-primary: var(--shadow-button-primary);
+  --shadow-button-primary-hover: var(--shadow-button-primary-hover);
+  --shadow-outline-gray: var(--shadow-outline-gray);
 
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 16px;
-  --radius-pill-category: 64px;
-  --radius-pill: 100px;
+  --radius-xs: 4px;
+  --radius-sm: 2px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-control: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
 
-  --text-display-xl: 48px;
-  --text-display-xl--line-height: 48px;
-  --text-display-xl--font-weight: 600;
-  --text-display-xl--letter-spacing: -2.4px;
-  --text-heading-lg: 32px;
-  --text-heading-lg--line-height: 40px;
+  /* Page title — the only heading-face type on a page (§2 hierarchy). */
+  --text-heading-lg: 20px;
+  --text-heading-lg--line-height: 28px;
   --text-heading-lg--font-weight: 600;
-  --text-heading-lg--letter-spacing: -1.28px;
-  --text-heading-md: 20px;
-  --text-heading-md--line-height: 28px;
+  /* Card/section/dialog title — body face, deliberately smaller than the
+     page title (§2: "reserves the display face for page-level titles only"). */
+  --text-heading-md: 14px;
+  --text-heading-md--line-height: 20px;
   --text-heading-md--font-weight: 600;
-  --text-heading-md--letter-spacing: -0.4px;
+
   --text-label: 14px;
   --text-label--line-height: 20px;
   --text-label--font-weight: 500;
-  --text-label--letter-spacing: -0.28px;
-  --text-eyebrow: 12px;
-  --text-eyebrow--line-height: 16px;
-  --text-eyebrow--font-weight: 500;
   --text-body-lg: 16px;
   --text-body-lg--line-height: 24px;
   --text-body-lg--font-weight: 400;
@@ -335,9 +459,9 @@
   --text-caption: 12px;
   --text-caption--line-height: 16px;
   --text-caption--font-weight: 400;
-  --text-button-lg: 16px;
-  --text-button-lg--line-height: 20px;
-  --text-button-lg--font-weight: 500;
+  --text-micro: 12px;
+  --text-micro--line-height: 16px;
+  --text-micro--font-weight: 500;
   --text-button: 14px;
   --text-button--line-height: 20px;
   --text-button--font-weight: 500;
@@ -345,34 +469,41 @@
   --text-code--line-height: 20px;
   --text-code--font-weight: 400;
 
-  /* Compatibility type aliases map only to DESIGN.md's declared hierarchy. */
-  --text-display: 48px;
-  --text-display--line-height: 48px;
-  --text-display--font-weight: 600;
-  --text-display--letter-spacing: -2.4px;
-  --text-h1: 32px;
-  --text-h1--line-height: 40px;
+  /* Compact in-page heading ladder (no marketing-scale display type — see
+     design doc §2/§3: the dashboard never exceeds the 20px page title). */
+  --text-h1: 20px;
+  --text-h1--line-height: 28px;
   --text-h1--font-weight: 600;
-  --text-h1--letter-spacing: -1.28px;
-  --text-h2: 32px;
-  --text-h2--line-height: 40px;
+  --text-h2: 18px;
+  --text-h2--line-height: 24px;
   --text-h2--font-weight: 600;
-  --text-h2--letter-spacing: -1.28px;
-  --text-h3: 20px;
-  --text-h3--line-height: 28px;
+  --text-h3: 16px;
+  --text-h3--line-height: 24px;
   --text-h3--font-weight: 600;
-  --text-h3--letter-spacing: -0.4px;
-  --text-h4: 20px;
-  --text-h4--line-height: 28px;
+  --text-h4: 16px;
+  --text-h4--line-height: 24px;
   --text-h4--font-weight: 600;
-  --text-h4--letter-spacing: -0.4px;
-  --text-micro: 12px;
-  --text-micro--line-height: 16px;
-  --text-micro--font-weight: 400;
 
-  --duration-fast: 120ms;
-  --duration-base: 180ms;
+  /* Dashboard KPI/metric numerals — distinct from the heading ladder so
+     stat displays keep visual weight even though headings stay compact. */
+  --text-stat-lg: 32px;
+  --text-stat-lg--line-height: 36px;
+  --text-stat-lg--font-weight: 700;
+  --text-stat-md: 24px;
+  --text-stat-md--line-height: 28px;
+  --text-stat-md--font-weight: 700;
+  --text-stat-sm: 20px;
+  --text-stat-sm--line-height: 24px;
+  --text-stat-sm--font-weight: 700;
+
+  --duration-fast: 100ms;
+  --duration-base: 200ms;
   --duration-slow: 240ms;
+  --duration-entrance: 600ms;
+  --duration-drawer: 150ms;
+
+  --animate-drawer-slide-left-in: drawer-slide-left-in var(--duration-drawer) ease-out;
+  --animate-drawer-slide-left-out: drawer-slide-left-out var(--duration-drawer) ease-in;
 }
 
 @layer base {
@@ -381,41 +512,32 @@
   }
 
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
 
   html {
-    @apply antialiased;
+    @apply antialiased font-sans;
     text-rendering: optimizeLegibility;
   }
 
   body {
     min-height: 100dvh;
-    background: var(--color-canvas);
-    color: var(--color-body);
+    background: var(--surface-muted);
+    color: var(--content);
     font-family: var(--design-font-sans);
     font-size: 14px;
     line-height: 20px;
     font-weight: 400;
     font-feature-settings: "liga" 1, "calt" 1;
+    @apply bg-background text-foreground;
   }
 
   h1,
   h2,
   h3,
   h4 {
-    color: var(--color-ink);
+    color: var(--content-emphasis);
     text-wrap: balance;
-  }
-
-  h1,
-  h2 {
-    letter-spacing: -0.04em;
-  }
-
-  h3,
-  h4 {
-    letter-spacing: -0.02em;
   }
 
   p {
@@ -428,15 +550,17 @@
   }
 
   ::placeholder {
-    color: var(--color-faint);
+    color: var(--content-muted);
     opacity: 1;
   }
 
   ::selection {
-    background: var(--color-link-soft);
-    color: var(--color-ink);
+    background: var(--surface-info);
+    color: var(--content-emphasis);
   }
 
+  /* Layered box-shadow ring instead of a bare outline (design doc §3
+     Motion / §8 Accessibility: focus-visible only, never bare :focus). */
   *:focus-visible {
     outline: none !important;
     box-shadow: var(--focus-ring) !important;
@@ -453,9 +577,9 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--color-hairline);
-    border: 2px solid var(--color-canvas);
-    border-radius: var(--radius-full);
+    background: var(--line);
+    border: 2px solid var(--surface-muted);
+    border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-track {
@@ -464,28 +588,48 @@
 }
 
 @layer utilities {
+  /* Small uppercase section/group label (design doc §2: "small structural
+     group labels in navigation" — body face, not a mono eyebrow). */
   .font-eyebrow {
-    font-family: var(--design-font-mono);
+    font-family: var(--design-font-sans);
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 16px;
-    letter-spacing: 0;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
   }
 
+  /* Page title only — the sole spot the heading (display) face appears;
+     everything else, including card/dialog/section titles, stays on the
+     body face (§2: "reserves the display face for page-level titles only"). */
+  .text-heading-lg,
+  .text-h1 {
+    font-family: var(--design-font-heading);
+  }
+
   .assignment-guidance-grid {
-    background-color: var(--color-hairline-soft);
+    background-color: var(--surface-subtle);
   }
 
   .card-gallery {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-    gap: var(--space-lg);
+    gap: 24px;
+  }
+
+  /* The one sanctioned arbitrary-value utility beyond rounded-control
+     (design doc §9): the button's active-state press micro-nudge. */
+  .active-press {
+    transition: transform var(--dur-fast) var(--ease-standard);
+  }
+
+  .active-press:active {
+    transform: translateY(0.5px);
   }
 }
 
 .shimmer {
-  background-color: var(--color-hairline-soft);
+  background-color: var(--surface-subtle);
   background-image: linear-gradient(
     90deg,
     transparent 0%,
@@ -493,7 +637,7 @@
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.6s linear infinite;
+  animation: shimmer 2s linear infinite;
 }
 
 @keyframes shimmer {
@@ -517,7 +661,7 @@
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -525,17 +669,52 @@
   }
 }
 
-.animate-fade-in {
-  animation: fade-in var(--dur-base) var(--ease-standard) both;
+@keyframes drawer-slide-left-in {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
-.animate-rise,
-.animate-slide-up {
-  animation: rise-in var(--dur-base) var(--ease-out) both;
+@keyframes drawer-slide-left-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
 }
 
-.stagger-children > * {
-  animation: fade-in var(--dur-base) var(--ease-standard) both;
+@media (prefers-reduced-motion: no-preference) {
+  .animate-fade-in {
+    animation: fade-in var(--dur-base) var(--ease-standard) both;
+  }
+
+  .animate-rise,
+  .animate-slide-up {
+    animation: rise-in var(--dur-entrance) var(--ease-entrance) both;
+  }
+
+  .stagger-children > * {
+    animation: fade-in var(--dur-base) var(--ease-standard) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-rise,
+  .animate-slide-up,
+  .stagger-children > * {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .stagger-children > *:nth-child(2) {

@@ -7,7 +7,7 @@ export function SignOutButton({ presentation = "icon" }: { presentation?: "icon"
       <form action="/auth/signout" method="post">
         <Button
           type="submit"
-          variant="ghost"
+          variant="minimal"
           size="default"
           className="w-full justify-start"
         >
@@ -22,7 +22,7 @@ export function SignOutButton({ presentation = "icon" }: { presentation?: "icon"
     <form action="/auth/signout" method="post">
       <Button
         type="submit"
-        variant="ghost"
+        variant="minimal"
         size="icon-sm"
         aria-label="Sign out"
         title="Sign out"

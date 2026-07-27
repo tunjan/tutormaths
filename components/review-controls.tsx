@@ -70,7 +70,7 @@ export function ReviewControls({
       </Button>
       <Button
         type="button"
-        variant="outline"
+        variant="secondary"
         onClick={() => decide("needs_work")}
         disabled={pending || status === "needs_work"}
       >

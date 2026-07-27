@@ -68,7 +68,7 @@ export default async function StudentDashboard() {
         description="Your assignments, with progress you control."
         actions={
           nextAssignment ? (
-            <RequestHomeworkButton variant="outline" />
+            <RequestHomeworkButton variant="secondary" />
           ) : undefined
         }
       />
@@ -112,7 +112,7 @@ export default async function StudentDashboard() {
               {remainingActive.length}
             </Badge>
           </div>
-          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
+          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-2xl border border-border bg-card">
             {remainingActive.map((a) => (
               <AssignmentRow
                 key={a.id}
@@ -143,7 +143,7 @@ export default async function StudentDashboard() {
               {completed.length}
             </Badge>
           </div>
-          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
+          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-2xl border border-border bg-card">
             {completed.map((a) => (
               <AssignmentRow
                 key={a.id}
@@ -192,7 +192,7 @@ function UpNextCard({
   return (
     <Card role="region" aria-labelledby={`up-next-${assignment.id}`}>
       <CardHeader className="grid gap-4 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-6">
-        <span className="grid size-10 place-items-center rounded-md bg-bg-subtle text-content-default">
+        <span className="grid size-10 place-items-center rounded-lg bg-bg-subtle text-content-default">
           <AssignmentTypeIcon className="size-5" aria-hidden />
         </span>
         <div className="min-w-0">

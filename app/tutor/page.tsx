@@ -127,7 +127,7 @@ export default async function TutorDashboard() {
         actions={
           hasStudents ? (
             <div className="flex flex-wrap gap-2">
-              <AddStudentButton variant="outline" />
+              <AddStudentButton variant="secondary" />
               <AssignTaskButton
                 students={studentOptions}
                 categories={categories ?? []}

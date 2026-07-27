@@ -43,7 +43,7 @@ export function LibraryManager({ categories }: { categories: CategoryRow[] }) {
 
   return (
     <div className="flex items-center gap-2">
-      <Button variant="outline" onClick={() => setCatOpen(true)}>
+      <Button variant="secondary" onClick={() => setCatOpen(true)}>
         <FolderPlus /> New topic
       </Button>
       <Button onClick={() => setUploadOpen(true)}>
@@ -96,7 +96,7 @@ function NewCategoryModal({
       description="Topics group your Library documents and tag assignments."
       footer={
         <>
-          <Button variant="ghost" onClick={onClose} disabled={busy}>
+          <Button variant="minimal" onClick={onClose} disabled={busy}>
             Cancel
           </Button>
           <Button onClick={submit} disabled={busy || !name.trim()}>
@@ -222,7 +222,7 @@ function UploadModal({
       footer={
         <>
           <Button
-            variant="ghost"
+            variant="minimal"
             disabled={busy}
             onClick={() => {
               reset();

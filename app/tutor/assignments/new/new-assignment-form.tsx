@@ -479,13 +479,13 @@ export function NewAssignmentForm({
           </Alert>
         )}
         {onCancel ? (
-          <Button type="button" variant="ghost" onClick={onCancel}>
+          <Button type="button" variant="minimal" onClick={onCancel}>
             Cancel
           </Button>
         ) : (
           <Link
             href="/tutor"
-            className={cn(buttonVariants({ variant: "ghost" }))}
+            className={cn(buttonVariants({ variant: "minimal" }))}
           >
             Cancel
           </Link>

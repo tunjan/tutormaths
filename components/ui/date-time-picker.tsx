@@ -58,7 +58,7 @@ const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const MINUTES = Array.from({ length: 12 }, (_, i) => i * 5);
 
 const selectClass =
-  "h-8 rounded-sm border border-border bg-card px-2 text-body outline-none transition-[border-color,box-shadow] duration-fast focus-visible:border-accent-ink disabled:bg-bg-subtle disabled:text-content-muted";
+  "h-8 rounded-control border border-border bg-card px-2 text-body outline-none transition-[border-color,box-shadow] duration-fast focus-visible:border-accent-ink disabled:bg-bg-subtle disabled:text-content-muted";
 
 /**
  * Date + time picker built on the Base UI popover (no native datetime-local,
@@ -118,7 +118,7 @@ export function DateTimePicker({
         render={
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             id={id}
             aria-invalid={invalid}
             aria-describedby={ariaDescribedBy}
@@ -136,7 +136,7 @@ export function DateTimePicker({
         <div className="mb-2 flex items-center justify-between gap-2">
           <Button
             type="button"
-            variant="ghost"
+            variant="minimal"
             size="icon-sm"
             aria-label="Previous month"
             onClick={() => shiftMonth(-1)}
@@ -148,7 +148,7 @@ export function DateTimePicker({
           </div>
           <Button
             type="button"
-            variant="ghost"
+            variant="minimal"
             size="icon-sm"
             aria-label="Next month"
             onClick={() => shiftMonth(1)}
@@ -183,7 +183,7 @@ export function DateTimePicker({
                 aria-label={FULL_DATE.format(d)}
                 aria-current={isToday ? "date" : undefined}
                 className={cn(
-                  "flex size-8 items-center justify-center rounded-sm text-body tabular-nums transition-colors duration-fast",
+                  "flex size-8 items-center justify-center rounded-lg text-body tabular-nums transition-colors duration-fast",
                   isSelected
                     ? "bg-primary text-primary-foreground"
                     : "hover:bg-muted",

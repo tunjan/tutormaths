@@ -45,6 +45,7 @@ export function ReminderWindowsField({
 
   return (
     <form
+      id="reminder-windows-form"
       action={async (formData) => {
         formData.set("windows", windows.join(","));
         await action(formData);
@@ -69,7 +70,7 @@ export function ReminderWindowsField({
                 type="button"
                 onClick={() => setWindows((w) => w.filter((x) => x !== n))}
                 aria-label={`Remove ${n} hour reminder`}
-                className="relative grid size-5 place-items-center rounded-sm text-muted-foreground transition-colors duration-fast after:absolute after:-inset-2 hover:bg-bg-muted hover:text-foreground"
+                className="relative grid size-5 place-items-center rounded-control text-muted-foreground transition-colors duration-fast after:absolute after:-inset-2 hover:bg-bg-muted hover:text-foreground"
               >
                 <X className="size-3" />
               </button>
@@ -100,15 +101,11 @@ export function ReminderWindowsField({
             }}
           />
         </Field>
-        <Button type="button" variant="outline" onClick={add}>
+        <Button type="button" variant="secondary" onClick={add}>
           Add
         </Button>
       </div>
       <FieldError>{error}</FieldError>
-
-      <div>
-        <Button type="submit">Save</Button>
-      </div>
     </form>
   );
 }

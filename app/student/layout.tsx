@@ -17,8 +17,7 @@ export default async function StudentLayout({
       homeLabel="Maths Tasks student dashboard"
       roleLabel="Student workspace"
       userEmail={ctx.email}
-      navigation={<StudentNav presentation="sidebar" />}
-      mobileNavigation={<StudentNav presentation="mobile" />}
+      navigation={<StudentNav />}
       notification={<NotificationBell userId={ctx.userId} role="student" />}
       accountActions={
         <>

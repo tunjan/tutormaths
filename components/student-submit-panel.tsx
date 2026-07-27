@@ -53,7 +53,7 @@ export function StudentSubmitPanel({
         "flex flex-col",
         embedded ? "gap-4" : "gap-6",
         !embedded &&
-          "rounded-md border border-border bg-card p-6",
+          "rounded-2xl border border-border bg-card p-6",
       )}
     >
       {(!embedded || hasWork) && (
@@ -89,7 +89,7 @@ export function StudentSubmitPanel({
           {!adding && (
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               size="sm"
               onClick={() => setAdding(true)}
             >
@@ -116,7 +116,7 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-      <div className="flex items-center justify-between rounded-sm bg-card px-3 py-3 transition-colors duration-fast hover:bg-surface-hover">
+      <div className="flex items-center justify-between rounded-control bg-card px-3 py-3 transition-colors duration-fast hover:bg-surface-hover">
         <div className="flex min-w-0 items-center gap-3 pr-4">
           <FileText className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.5} />
           <div className="min-w-0 flex flex-col justify-center gap-1">
@@ -134,8 +134,8 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
-                buttonVariants({ variant: "ghost", size: "icon-sm" }),
-                "text-muted-foreground hover:text-foreground rounded-sm shadow-none",
+                buttonVariants({ variant: "minimal", size: "icon-sm" }),
+                "text-muted-foreground hover:text-foreground",
               )}
               aria-label="Open submission in a new tab"
             >
@@ -147,11 +147,11 @@ function SubmissionRow({ submission: s }: { submission: StudentSubmission }) {
               render={
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="minimal"
                   size="icon-sm"
                   disabled={deleting}
                   aria-label="Remove submission"
-                  className="text-muted-foreground hover:text-destructive rounded-sm shadow-none"
+                  className="text-muted-foreground hover:text-destructive"
                 >
                   <Trash2 />
                 </Button>

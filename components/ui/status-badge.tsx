@@ -6,11 +6,12 @@ import {
   dueLabel,
   reviewLabel,
 } from "@/lib/format";
-import { cn } from "@/lib/utils";
+import { Clock, CheckCircle2, AlertCircle, AlertTriangle, Calendar } from "lucide-react";
 
 type StatusContent = {
   label: string;
-  variant: "default" | "success" | "warning" | "destructive" | "info";
+  variant: "default" | "success" | "warning" | "destructive" | "info" | "secondary";
+  icon: React.ComponentType<{ className?: string }>;
   dot: string;
 };
 
@@ -20,6 +21,7 @@ function statusContent(status: AssignmentStatus): StatusContent {
       return {
         label: "Awaiting review",
         variant: "info",
+        icon: Clock,
         dot: "bg-content-info",
       };
     }
@@ -28,6 +30,7 @@ function statusContent(status: AssignmentStatus): StatusContent {
       return {
         label: reviewLabel("approved"),
         variant: "success",
+        icon: CheckCircle2,
         dot: "bg-content-success",
       };
     }
@@ -35,6 +38,7 @@ function statusContent(status: AssignmentStatus): StatusContent {
     return {
       label: reviewLabel("needs_work"),
       variant: "warning",
+      icon: AlertTriangle,
       dot: "bg-content-warning",
     };
   }
@@ -43,6 +47,7 @@ function statusContent(status: AssignmentStatus): StatusContent {
     return {
       label: dueLabel("overdue"),
       variant: "destructive",
+      icon: AlertCircle,
       dot: "bg-content-error",
     };
   }
@@ -51,14 +56,16 @@ function statusContent(status: AssignmentStatus): StatusContent {
     return {
       label: "Due soon",
       variant: "warning",
+      icon: AlertTriangle,
       dot: "bg-content-warning",
     };
   }
 
   return {
     label: "Upcoming",
-    variant: "default",
-    dot: "bg-content-subtle/60",
+    variant: "secondary",
+    icon: Calendar,
+    dot: "bg-content-muted",
   };
 }
 
@@ -71,14 +78,13 @@ export function AssignmentStatusBadge({
   dueAt: string;
 }) {
   const content = statusContent(assignmentStatus(reviewStatus, dueAt));
+  const Icon = content.icon;
 
   return (
-    <Badge variant={content.variant} className="gap-1">
-      <span
-        className={cn("size-1.5 shrink-0 rounded-full", content.dot)}
-        aria-hidden
-      />
+    <Badge variant={content.variant} className="gap-1 px-2 py-0.5">
+      <Icon className="size-3 shrink-0" aria-hidden />
       {content.label}
     </Badge>
   );
 }
+

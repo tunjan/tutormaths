@@ -11,6 +11,7 @@ const eslintConfig = [
       "supabase/functions/**",
       "lib/database.types.ts",
       "next-env.d.ts",
+      "scripts/**",
     ],
   },
   ...next,

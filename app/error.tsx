@@ -22,7 +22,7 @@ export default function Error({
       </div>
       <div className="flex gap-3">
         <Button onClick={reset}>Try again</Button>
-        <Link href="/" className={cn(buttonVariants({ variant: "outline" }))}>
+        <Link href="/" className={cn(buttonVariants({ variant: "secondary" }))}>
           Go home
         </Link>
       </div>

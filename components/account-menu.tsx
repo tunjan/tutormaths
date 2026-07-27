@@ -34,7 +34,7 @@ export function AccountMenu({
       <PopoverTrigger
         render={
           <Button
-            variant="ghost"
+            variant="minimal"
             size="default"
             className="min-w-0 max-w-52"
             aria-label={`Open ${accountLabel} account menu`}

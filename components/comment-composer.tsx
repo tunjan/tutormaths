@@ -59,7 +59,7 @@ export function CommentComposer({
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-      <div className="flex items-end gap-2 rounded-md border border-border bg-card p-2 pl-4 transition-[border-color,box-shadow] duration-base ease-[var(--ease-out)] focus-within:border-border-default focus-within:shadow-sm">
+      <div className="flex items-end gap-2 rounded-2xl border border-border bg-card p-2 pl-4 transition-[border-color,box-shadow] duration-base ease-[var(--ease-out)] focus-within:border-border-default focus-within:shadow-sm">
         <textarea
           ref={textareaRef}
           value={value}

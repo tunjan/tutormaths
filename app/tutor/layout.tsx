@@ -28,8 +28,7 @@ export default async function TutorLayout({
       homeLabel="Maths Tasks tutor dashboard"
       roleLabel="Tutor workspace"
       userEmail={ctx.email}
-      navigation={<TutorNav presentation="sidebar" />}
-      mobileNavigation={<TutorNav presentation="mobile" />}
+      navigation={<TutorNav />}
       notification={<NotificationBell userId={ctx.userId} role="tutor" />}
       accountActions={
         <>

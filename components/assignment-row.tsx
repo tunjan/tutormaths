@@ -69,16 +69,16 @@ export function AssignmentRow({
   return (
     <Link
       href={href}
-      className="group relative flex items-center justify-between gap-4 px-4 py-3 transition-colors duration-fast hover:bg-bg-muted sm:px-6"
+      className="group relative flex items-center justify-between gap-4 px-4 py-3.5 transition-colors hover:bg-muted/50 sm:px-6 focus-visible:outline-none focus-visible:bg-muted/60"
     >
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <div className="relative shrink-0">
           <span
             className={cn(
-              "grid size-9 place-items-center border text-micro",
+              "grid place-items-center border text-xs font-semibold",
               showTypeMarker
-                ? "rounded-sm border-transparent bg-bg-subtle text-content-default"
-                : "size-8 rounded-full border-border bg-bg-muted text-content-default",
+                ? "size-9 rounded-sm border-border bg-muted/60 text-foreground"
+                : "size-8 rounded-full border-border bg-muted text-foreground",
             )}
           >
             {student ? (
@@ -96,17 +96,17 @@ export function AssignmentRow({
 
           {unread && (
             <span
-              className="absolute -right-1 -top-1 size-2 rounded-full border-2 border-card bg-status-review"
+              className="absolute -right-0.5 -top-0.5 size-2 rounded-full border-2 border-card bg-accent-9"
               aria-label="Unread activity"
             />
           )}
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <h3 className="truncate text-label text-text-heading">
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <h3 className="truncate text-sm font-semibold text-foreground">
             {title}
           </h3>
-          <span className="truncate text-caption text-content-subtle">
+          <span className="truncate text-xs text-muted-foreground">
             {meta}
           </span>
         </div>
@@ -118,7 +118,7 @@ export function AssignmentRow({
         </div>
 
         <ChevronRight
-          className="hidden size-4 text-muted-foreground/35 transition-colors group-hover:text-foreground sm:block"
+          className="hidden size-4 text-muted-foreground/40 transition-colors group-hover:text-foreground sm:block"
           strokeWidth={1.75}
         />
       </div>

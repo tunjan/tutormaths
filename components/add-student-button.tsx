@@ -7,10 +7,10 @@ import { AddStudentModal } from "@/components/add-student-modal";
 
 /** "Add student" button that opens the invite dialog. */
 export function AddStudentButton({
-  variant = "default",
+  variant = "primary",
   label = "Add student",
 }: {
-  variant?: "default" | "outline" | "soft" | "ghost";
+  variant?: "primary" | "secondary" | "soft" | "minimal";
   label?: string;
 }) {
   const [open, setOpen] = useState(false);

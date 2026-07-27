@@ -102,7 +102,7 @@ export default async function TutorAssignmentPage({
 
       <main className="flex w-full flex-col gap-4">
         {/* HERO SECTION */}
-        <header className="flex flex-col gap-6 rounded-md border border-border bg-card p-6">
+        <header className="flex flex-col gap-6 rounded-2xl border border-border bg-card p-6">
           <BackLink href="/tutor">
             Back to dashboard
           </BackLink>
@@ -186,7 +186,7 @@ export default async function TutorAssignmentPage({
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.5fr_1fr]">
 
           {/* LEFT COLUMN: ASSIGNMENT DETAILS & FILE PREVIEW */}
-          <div className="flex flex-col divide-y divide-border-subtle rounded-md border border-border bg-card p-6">
+          <div className="flex flex-col divide-y divide-border-subtle rounded-2xl border border-border bg-card p-6">
             {a.description && (
               <section className="flex flex-col gap-4 pb-6">
                 <p className="text-body-lg text-foreground">
@@ -230,7 +230,7 @@ export default async function TutorAssignmentPage({
                           target="_blank"
                           rel="noopener noreferrer"
                           className={cn(
-                            buttonVariants({ variant: "ghost", size: "default" }),
+                            buttonVariants({ variant: "minimal", size: "default" }),
                             "self-start",
                           )}
                         >
@@ -251,7 +251,7 @@ export default async function TutorAssignmentPage({
           </div>
 
           {/* RIGHT COLUMN: WORK, REVIEW & COMMENTS */}
-          <aside className="flex flex-col divide-y divide-border-subtle rounded-md border border-border bg-card p-6">
+          <aside className="flex flex-col divide-y divide-border-subtle rounded-2xl border border-border bg-card p-6">
             {/* SUBMITTED WORK */}
             <section className="flex flex-col gap-4 pb-6">
               <h3 className="text-h4 text-foreground">

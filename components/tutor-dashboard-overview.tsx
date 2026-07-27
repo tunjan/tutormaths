@@ -167,7 +167,7 @@ export function TutorDashboardOverview({
                   </span>
                   <div className="flex h-28 w-full max-w-12 items-end rounded-md bg-bg-muted p-1">
                     <span
-                      className="w-full rounded-sm bg-accent-ink"
+                      className="w-full rounded-xs bg-accent-ink"
                       style={{ height: `${Math.max(percentage, stage.value > 0 ? 8 : 0)}%` }}
                       aria-hidden="true"
                     />
@@ -211,7 +211,7 @@ export function TutorDashboardOverview({
             <CardAction>
               <Link
                 href="/tutor/students"
-                className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+                className={cn(buttonVariants({ variant: "minimal", size: "sm" }))}
               >
                 Students
               </Link>
@@ -284,7 +284,7 @@ export function TutorDashboardOverview({
               </div>
             ) : (
               <div className="flex min-h-36 items-center justify-center gap-3 px-6 text-center">
-                <span className="grid size-9 shrink-0 place-items-center rounded-md bg-bg-success text-content-success">
+                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-bg-success text-content-success">
                   <CircleCheck className="size-4" strokeWidth={1.75} aria-hidden />
                 </span>
                 <p className="text-left text-body text-content-subtle">Nothing is waiting on you.</p>
@@ -295,7 +295,7 @@ export function TutorDashboardOverview({
           <CardFooter className="justify-end">
             <Link
               href="#assignments-heading"
-              className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+              className={cn(buttonVariants({ variant: "minimal", size: "sm" }))}
             >
               View all
               <ArrowDown data-icon="inline-end" aria-hidden />
@@ -329,7 +329,7 @@ function MetricCard({
         </CardAction>
       </CardHeader>
       <CardContent className="mt-auto flex flex-col gap-2">
-        <p className="text-h2 tabular-nums text-content-emphasis">
+        <p className="text-stat-md tabular-nums text-content-emphasis">
           {value}
         </p>
         <p className="text-caption text-content-subtle">{caption}</p>
@@ -342,7 +342,7 @@ function InlineMetric({ label, value }: { label: string; value: number | string 
   return (
     <div className="text-right">
       <p className="text-micro text-content-subtle">{label}</p>
-      <p className="mt-1 text-h3 tabular-nums text-content-emphasis">
+      <p className="mt-1 text-stat-sm tabular-nums text-content-emphasis">
         {value}
       </p>
     </div>
@@ -457,7 +457,7 @@ function ProgressGauge({ value }: { value: number }) {
         />
       </svg>
       <div className="absolute inset-x-0 bottom-1 text-center">
-        <p className="text-h2 tabular-nums text-content-emphasis">
+        <p className="text-stat-md tabular-nums text-content-emphasis">
           {clampedValue}%
         </p>
         <p className="mt-2 text-caption text-content-subtle">Average completion</p>

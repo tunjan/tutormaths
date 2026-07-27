@@ -36,7 +36,7 @@ export function LibraryDeleteButton({
       <AlertDialogTrigger
         render={
           <Button
-            variant="ghost"
+            variant="minimal"
             size="icon-sm"
             disabled={pending}
             aria-label={isCategory ? `Delete topic ${name}` : `Delete ${name}`}

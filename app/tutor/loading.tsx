@@ -13,7 +13,7 @@ export default function Loading() {
           <Skeleton className="h-9 w-36" />
         </div>
       </div>
-      <div className="overflow-hidden rounded-md border border-border bg-card">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card">
         <div className="flex flex-col gap-4 border-b border-border-soft p-6 sm:flex-row sm:items-center sm:justify-between">
           <Skeleton className="h-8 w-52" />
           <Skeleton className="h-10 w-full sm:w-64" />

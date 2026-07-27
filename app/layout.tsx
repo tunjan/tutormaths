@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Inter_Tight } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ViewTransitions } from "next-view-transitions";
+import { cn } from "@/lib/utils";
 
-const geist = Geist({
+
+
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  variable: "--font-inter",
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const interTight = Inter_Tight({
   subsets: ["latin"],
-  variable: "--font-geist-mono",
+  variable: "--font-inter-tight",
   display: "swap",
 });
 
@@ -29,7 +32,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geist.variable} ${geistMono.variable} font-sans`}
+      className={cn(inter.variable, interTight.variable, "font-sans")}
       suppressHydrationWarning
     >
       <body className="bg-background text-content-default antialiased">
