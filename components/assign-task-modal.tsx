@@ -31,7 +31,9 @@ export function AssignTaskModal({
       open={open}
       onClose={onClose}
       title="Assign a task"
-      className="max-w-5xl!"
+      description="Choose who it’s for, add the material, and set a deadline."
+      className="max-h-[calc(100dvh-1rem)]! max-w-5xl! overflow-hidden sm:max-h-[calc(100dvh-2rem)]!"
+      contentClassName="flex min-h-0 flex-1 flex-col"
     >
       <NewAssignmentForm
         students={students}

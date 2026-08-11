@@ -44,7 +44,7 @@ export function AssignmentSteps({ status }: { status: ReviewStatus }) {
               <span
                 aria-hidden
                 className={cn(
-                  "relative z-10 flex size-7 shrink-0 items-center justify-center rounded-full border text-micro tabular-nums transition-colors duration-fast",
+                  "relative z-10 flex size-7 shrink-0 items-center justify-center rounded-full border text-caption tabular-nums transition-colors duration-fast",
                   state === "done" &&
                     "border-transparent bg-primary text-primary-foreground",
                   state === "current" &&
@@ -67,7 +67,7 @@ export function AssignmentSteps({ status }: { status: ReviewStatus }) {
             </span>
             <span
               className={cn(
-                "truncate pr-2 text-micro",
+                "truncate pr-2 text-caption",
                 state === "todo"
                   ? "text-muted-foreground"
                   : "font-semibold text-foreground",

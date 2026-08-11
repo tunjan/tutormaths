@@ -78,15 +78,15 @@ export function AddStudentModal({
     >
       {created ? (
         <div className="flex flex-col gap-6">
-          <p className="text-h4 text-foreground">
+          <h3 className="text-heading-md text-foreground">
             Share this link with {created.fullName}
-          </p>
+          </h3>
           <p className="text-body text-content-subtle">
             When they open it, they&rsquo;ll choose their email and a password.
             You can copy it again later from the students list.
           </p>
           <div className="flex items-center gap-2">
-            <code className="flex-1 truncate rounded-md border border-border-default bg-bg-muted px-3 py-2 font-mono text-code text-foreground">
+            <code className="flex-1 truncate rounded-md border border-border bg-card px-4 py-3 font-mono text-code text-foreground">
               {created.link}
             </code>
             <Button
@@ -97,7 +97,7 @@ export function AddStudentModal({
                 toast.success("Link copied.");
               }}
             >
-              <Copy aria-hidden /> Copy
+              <Copy data-icon="inline-start" aria-hidden /> Copy
             </Button>
           </div>
           <div className="flex justify-end gap-3 pt-2">
@@ -133,7 +133,7 @@ export function AddStudentModal({
               Cancel
             </Button>
             <Button type="submit" disabled={busy}>
-                <UserPlus aria-hidden /> {busy ? "Creating…" : "Create invite link"}
+                <UserPlus data-icon="inline-start" aria-hidden /> {busy ? "Creating…" : "Create invite link"}
             </Button>
           </div>
           </FieldGroup>

@@ -51,7 +51,7 @@ export function PendingInviteActions({
         className="flex-1"
         onClick={copyLink}
       >
-        <Copy /> {copied ? "Copied" : "Copy link"}
+        <Copy data-icon="inline-start" /> {copied ? "Copied" : "Copy link"}
       </Button>
       <Button
         type="button"

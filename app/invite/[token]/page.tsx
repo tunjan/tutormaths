@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Logo } from "@/components/logo";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AcceptInviteForm } from "./accept-form";
 import {
@@ -31,12 +30,8 @@ export default async function InvitePage({
   const firstName = invite?.full_name?.trim().split(/\s+/)[0] ?? "";
 
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-8 px-4 py-12">
-      <div className="flex flex-col items-center gap-3 text-center">
-        <Logo />
-      </div>
-
-      <Card className="w-full max-w-[420px] gap-6">
+    <main id="main-content" className="auth-canvas flex min-h-dvh items-center justify-center px-4 py-12">
+      <Card className="w-full max-w-[480px] gap-6">
         {valid ? (
           <>
             <CardHeader className="text-center">

@@ -26,19 +26,20 @@ import { CommentComposer } from "@/components/comment-composer";
 import { MarkAssignmentRead } from "@/components/mark-assignment-read";
 import { MarkAssignmentOpened } from "@/components/mark-assignment-opened";
 import { buttonVariants } from "@/components/ui/button";
+import { BackLink } from "@/components/ui/back-link";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardAction,
   CardContent,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { LatexContent } from "@/components/ui/latex-content";
 import { FilePreview } from "@/components/ui/file-preview";
 import {
   Empty,
+  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
@@ -117,46 +118,60 @@ export default async function StudentAssignmentPage({
   };
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-4 pb-6 animate-rise">
+    <div className="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-5 pb-6">
       <MarkAssignmentRead assignmentId={id} />
       <MarkAssignmentOpened assignmentId={id} />
 
-      <Card className="gap-0 p-0">
-        <header className="flex min-w-0 flex-col justify-between gap-4 p-6 sm:p-6">
-          <div className="flex min-w-0 flex-col gap-3">
+      <div className="min-w-0">
+        <BackLink href="/student" className="-ml-3">
+          Back to practice
+        </BackLink>
+
+        <header className="mt-3 flex min-w-0 flex-col gap-4 border-b border-border pb-5">
+          <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="default">
                 <BookOpen />
                 {typeLabel(assignment.type)}
               </Badge>
-              {category?.name && <Badge variant="secondary">{category.name}</Badge>}
+              {category?.name && (
+                <Badge variant="secondary">{category.name}</Badge>
+              )}
             </div>
 
-            <h1 className="max-w-4xl text-h1 text-foreground">
-              {assignment.title}
-            </h1>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-body text-muted-foreground">
-            <span className="inline-flex items-center gap-2">
-              <CalendarDays className="size-4" aria-hidden />
-              Due {formatDateTime(assignment.due_at)}
-            </span>
             <AssignmentStatusBadge
               reviewStatus={assignment.review_status}
               dueAt={assignment.due_at}
             />
           </div>
-        </header>
-      </Card>
 
-      <main className="grid min-w-0 items-start gap-4 2xl:grid-cols-[minmax(0,1fr)_360px]">
-        <Card className="min-w-0 gap-0 p-0" aria-labelledby="assignment-material-title">
-          <CardHeader className="border-b border-border-soft p-6">
-            <CardTitle id="assignment-material-title" className="flex items-center gap-2">
-              <BookOpen className="size-4 text-content-default" aria-hidden />
+          <div className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+            <h1 className="max-w-4xl text-balance text-h1 text-foreground">
+              {assignment.title}
+            </h1>
+            <time
+              dateTime={assignment.due_at}
+              className="inline-flex items-center gap-2 text-body tabular-nums text-muted-foreground md:justify-self-end"
+            >
+              <CalendarDays className="size-4" aria-hidden />
+              Due {formatDateTime(assignment.due_at)}
+            </time>
+          </div>
+        </header>
+      </div>
+
+      <main className="grid min-w-0 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_21rem]">
+        <Card
+          className="min-w-0 gap-0 rounded-lg border-border p-0 shadow-none"
+          aria-labelledby="assignment-material-title"
+        >
+          <CardHeader className="border-b border-border p-4 sm:p-5">
+            <h2
+              id="assignment-material-title"
+              className="text-label font-semibold text-foreground"
+            >
               Problem material
-            </CardTitle>
+            </h2>
             <CardAction>
               <Badge variant="outline">
                 {attachments.length > 0
@@ -171,7 +186,7 @@ export default async function StudentAssignmentPage({
               <div className="flex min-w-0 flex-col divide-y divide-border-soft">
                 {attachments.map((file) => (
                   <section key={file.id} className="min-w-0">
-                    <div className="flex min-w-0 items-center justify-between gap-4 px-4 py-3 sm:px-6">
+                    <div className="flex min-w-0 items-center justify-between gap-4 bg-bg-subtle px-4 py-2.5 sm:px-5">
                       <div className="flex min-w-0 items-center gap-2">
                         <Paperclip className="size-4 shrink-0 text-muted-foreground" aria-hidden />
                         <span className="truncate text-label text-foreground">
@@ -192,7 +207,7 @@ export default async function StudentAssignmentPage({
                       )}
                     </div>
 
-                    <div className="assignment-guidance-grid min-w-0 bg-bg-muted/55 p-2 sm:p-3">
+                    <div className="assignment-guidance-grid min-w-0 p-2 sm:p-3">
                       {file.url ? (
                         <FilePreview
                           url={file.url}
@@ -210,15 +225,15 @@ export default async function StudentAssignmentPage({
                 ))}
               </div>
             ) : assignment.latex_body || assignment.description ? (
-              <div className="assignment-guidance-grid bg-bg-muted/55 p-3 sm:p-6">
-                <article className="mx-auto min-h-[420px] w-full max-w-5xl bg-surface-paper p-6 sm:p-8">
+              <div className="assignment-guidance-grid p-2 sm:p-3">
+                <article className="mx-auto min-h-[360px] w-full max-w-5xl rounded-md border border-border bg-surface-paper p-5 sm:p-7">
                   {assignment.description && (
-                    <p className="max-w-3xl text-body-lg text-foreground">
+                    <p className="max-w-3xl text-pretty text-body-lg text-foreground">
                       {assignment.description}
                     </p>
                   )}
                   {assignment.description && assignment.latex_body && (
-                    <Separator className="my-8" />
+                    <Separator className="my-6" />
                   )}
                   {assignment.latex_body && (
                     <LatexContent
@@ -229,17 +244,25 @@ export default async function StudentAssignmentPage({
                 </article>
               </div>
             ) : (
-              <div className="assignment-guidance-grid grid min-h-[420px] place-items-center bg-bg-muted/55 p-8">
-                <Empty className="max-w-md border-0 bg-transparent p-8">
+              <div className="assignment-guidance-grid grid min-h-[360px] place-items-center p-6">
+                <Empty className="max-w-md border-0 bg-transparent p-6">
                   <EmptyHeader>
                     <EmptyMedia variant="icon">
                       <BookOpen aria-hidden />
                     </EmptyMedia>
                     <EmptyTitle>No material yet</EmptyTitle>
                     <EmptyDescription>
-                    Your tutor has not added a brief or file to this assignment.
+                      Your tutor has not added a brief or file to this assignment.
                     </EmptyDescription>
                   </EmptyHeader>
+                  <EmptyContent>
+                    <a
+                      href="#tutor-discussion"
+                      className={buttonVariants({ variant: "outline", size: "sm" })}
+                    >
+                      Ask your tutor
+                    </a>
+                  </EmptyContent>
                 </Empty>
               </div>
             )}
@@ -247,19 +270,25 @@ export default async function StudentAssignmentPage({
         </Card>
 
         <aside
-          className="flex min-w-0 flex-col gap-4 2xl:sticky 2xl:top-6"
+          className="flex min-w-0 flex-col gap-4 xl:sticky xl:top-5"
           aria-label="Assignment controls"
         >
-          <Card id="student-submission" tabIndex={-1} className="gap-0 p-0 scroll-mt-24">
-            <CardHeader className="border-b border-border-soft p-6">
-              <CardTitle>Your work</CardTitle>
+          <Card
+            id="student-submission"
+            tabIndex={-1}
+            className="scroll-mt-24 gap-0 rounded-lg border-border p-0 shadow-none"
+          >
+            <CardHeader className="border-b border-border p-4">
+              <h2 className="text-label font-semibold text-foreground">
+                Your work
+              </h2>
               <CardAction>
-                <Badge variant={submissions.length > 0 ? "success" : "info"}>
+                <Badge variant={submissions.length > 0 ? "success" : "outline"}>
                   {submissions.length > 0 ? "Submitted" : "To submit"}
                 </Badge>
               </CardAction>
             </CardHeader>
-            <CardContent className="flex flex-col gap-4 p-6">
+            <CardContent className="flex flex-col gap-4 p-4">
               <CompletionControl
                 assignmentId={id}
                 initial={assignment.completion_pct}
@@ -276,19 +305,26 @@ export default async function StudentAssignmentPage({
             </CardContent>
           </Card>
 
-          <Card className="gap-0 p-0">
-            <CardHeader className="border-b border-border-soft p-6">
-              <CardTitle className="flex items-center gap-2">
+          <Card
+            id="tutor-discussion"
+            className="scroll-mt-24 gap-0 rounded-lg border-border p-0 shadow-none"
+            aria-labelledby="tutor-discussion-title"
+          >
+            <CardHeader className="border-b border-border p-4">
+              <h2
+                id="tutor-discussion-title"
+                className="flex items-center gap-2 text-label font-semibold text-foreground"
+              >
                 <MessageSquareText className="size-4 text-muted-foreground" aria-hidden />
                 Tutor discussion
-              </CardTitle>
+              </h2>
               <CardAction>
                 <Badge variant="outline">
                   {comments.length} {comments.length === 1 ? "message" : "messages"}
                 </Badge>
               </CardAction>
             </CardHeader>
-            <CardContent className="flex flex-col gap-4 p-6">
+            <CardContent className="flex flex-col gap-3 p-4">
               <LiveCommentThread
                 assignmentId={id}
                 initial={comments}

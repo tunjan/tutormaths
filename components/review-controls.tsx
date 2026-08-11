@@ -65,7 +65,7 @@ export function ReviewControls({
         onClick={() => decide("approved")}
         disabled={pending || status === "approved"}
       >
-        <Check />
+        <Check data-icon="inline-start" />
         {status === "approved" ? "Approved" : "Approve"}
       </Button>
       <Button
@@ -74,7 +74,7 @@ export function ReviewControls({
         onClick={() => decide("needs_work")}
         disabled={pending || status === "needs_work"}
       >
-        <RotateCcw />
+        <RotateCcw data-icon="inline-start" />
         {status === "needs_work" ? "Changes requested" : "Return for revision"}
       </Button>
       </div>

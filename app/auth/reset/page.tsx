@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Logo } from "@/components/logo";
 import { ResetForm } from "./reset-form";
 import {
   Card,
@@ -11,12 +10,8 @@ import {
 
 export default function ResetPage() {
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-8 px-4 py-12">
-      <div className="flex flex-col items-center gap-3 text-center">
-        <Logo />
-      </div>
-
-      <Card className="w-full max-w-[420px]">
+    <main id="main-content" className="auth-canvas flex min-h-dvh items-center justify-center px-4 py-12">
+      <Card className="w-full max-w-[480px]">
         <CardHeader className="text-center">
           <CardTitle className="text-h2">
             Forgot your password?

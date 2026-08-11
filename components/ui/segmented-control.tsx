@@ -20,15 +20,19 @@ export function SegmentedControl<T extends string>({
   onValueChange,
   options,
   className,
+  ariaLabel,
 }: {
   value: T;
   onValueChange: (value: T) => void;
   options: SegmentedOption<T>[];
   className?: string;
+  ariaLabel?: string;
 }) {
   return (
     <ToggleGroup
+      aria-label={ariaLabel}
       value={[value]}
+      size="sm"
       onValueChange={(nextValues) => {
         const nextValue = nextValues.at(-1) as T | undefined;
         if (nextValue) onValueChange(nextValue);

@@ -109,7 +109,7 @@ function CommentItem({
   return (
     <li className="flex gap-3 py-4 first:pt-0 last:pb-0">
       <span
-        className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-bg-muted text-micro text-foreground"
+        className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-bg-muted text-caption text-foreground"
         aria-hidden
       >
         {initials(comment.authorName)}

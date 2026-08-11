@@ -1,13 +1,12 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteCategory, deleteLibraryDocument } from "@/lib/actions/library";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -16,7 +15,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
 
 /** Tutor-only confirm-and-delete for a Library document or a whole topic. */
 export function LibraryDeleteButton({
@@ -28,21 +26,30 @@ export function LibraryDeleteButton({
   id: string;
   name: string;
 }) {
+  const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
   const isCategory = kind === "category";
+  const triggerLabel = isCategory ? `Delete topic ${name}` : `Delete ${name}`;
+  const actionLabel = isCategory ? "Delete topic" : "Delete document";
 
   return (
-    <AlertDialog>
+    <AlertDialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (!pending) setOpen(nextOpen);
+      }}
+    >
       <AlertDialogTrigger
         render={
           <Button
             variant="minimal"
             size="icon-sm"
             disabled={pending}
-            aria-label={isCategory ? `Delete topic ${name}` : `Delete ${name}`}
+            aria-label={triggerLabel}
+            title={triggerLabel}
             className="text-muted-foreground hover:text-destructive"
           >
-            <Trash2 className="size-4" />
+            <Trash2 aria-hidden />
           </Button>
         }
       />
@@ -58,23 +65,28 @@ export function LibraryDeleteButton({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
+          <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
+          <Button
             variant="destructive"
+            disabled={pending}
+            aria-busy={pending}
             onClick={() =>
               start(async () => {
                 try {
                   if (isCategory) await deleteCategory(id);
                   else await deleteLibraryDocument(id);
-                  toast.success(isCategory ? "Topic deleted." : "Document deleted.");
+                  toast.success(
+                    isCategory ? "Topic deleted." : "Document deleted.",
+                  );
+                  setOpen(false);
                 } catch (err) {
                   toast.error((err as Error).message);
                 }
               })
             }
           >
-            Delete
-          </AlertDialogAction>
+            {pending ? "Deleting…" : actionLabel}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -21,6 +21,7 @@ export function AssignTaskButton({
   variant = "primary",
   size = "default",
   label = "Assign task",
+  ariaLabel,
   className,
 }: {
   students: StudentOption[];
@@ -29,6 +30,7 @@ export function AssignTaskButton({
   variant?: "primary" | "secondary" | "minimal" | "soft" | "destructive";
   size?: "default" | "sm" | "lg" | "icon" | "icon-xs" | "icon-sm" | "icon-lg";
   label?: string;
+  ariaLabel?: string;
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -37,6 +39,7 @@ export function AssignTaskButton({
       <Button
         variant={variant}
         size={size}
+        aria-label={ariaLabel}
         className={className}
         onClick={() => setOpen(true)}
       >

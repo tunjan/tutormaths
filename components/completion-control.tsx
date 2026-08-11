@@ -35,7 +35,7 @@ export function CompletionControl({
     if (!uploadTargetId) return;
     const target = document.getElementById(uploadTargetId);
     if (!target) return;
-    target.scrollIntoView({ block: "start", behavior: "smooth" });
+    target.scrollIntoView({ block: "start" });
     target.focus({ preventScroll: true });
   }
 

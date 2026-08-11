@@ -1,11 +1,7 @@
-import { Download, FileText, FolderOpen } from "lucide-react";
+import { ExternalLink, FileText, Folder, FolderOpen } from "lucide-react";
 import type { LibraryCategory } from "@/lib/queries";
 import { formatDate, humanFileSize } from "@/lib/format";
 import { LibraryDeleteButton } from "@/components/library-delete-button";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
 import {
   Empty,
   EmptyDescription,
@@ -13,6 +9,17 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+
+function documentCountLabel(count: number) {
+  return `${count} ${count === 1 ? "document" : "documents"}`;
+}
+
+function documentTypeLabel(mimeType: string) {
+  if (mimeType === "application/pdf") return "PDF";
+  if (mimeType === "image/jpeg") return "JPEG";
+  if (mimeType === "image/png") return "PNG";
+  return "File";
+}
 
 export function LibraryView({
   categories,
@@ -41,82 +48,164 @@ export function LibraryView({
     );
   }
 
+  const columnCount = canManage ? 4 : 3;
+
   return (
-    <div className="flex flex-col gap-10">
-      {categories.map((category) => (
-        <section key={category.id} className="flex flex-col gap-4">
-          <div className="flex items-baseline justify-between gap-4 border-b border-border-subtle pb-3">
-            <div className="flex items-baseline gap-3">
-              <h2 className="text-h4 text-foreground">
-                {category.name}
-              </h2>
-              <span className="text-micro text-content-subtle">
-                {category.documents.length} doc
-                {category.documents.length === 1 ? "" : "s"}
-              </span>
-            </div>
-            {canManage && (
-              <LibraryDeleteButton
-                kind="category"
-                id={category.id}
-                name={category.name}
-              />
-            )}
-          </div>
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <table className="w-full table-auto border-collapse sm:table-fixed">
+        <caption className="sr-only">
+          Library documents grouped by topic
+        </caption>
+        <thead className="hidden sm:table-header-group">
+          <tr className="border-b border-border-default">
+            <th
+              scope="col"
+              className="px-4 py-2 text-left font-eyebrow text-content-subtle sm:px-5"
+            >
+              Document
+            </th>
+            <th
+              scope="col"
+              className="w-36 px-3 py-2 text-left font-eyebrow text-content-subtle"
+            >
+              Added
+            </th>
+            <th
+              scope="col"
+              className="w-28 px-3 py-2 text-left font-eyebrow text-content-subtle"
+            >
+              Type / size
+            </th>
+            {canManage ? (
+              <th scope="col" className="w-14 px-2 py-2">
+                <span className="sr-only">Actions</span>
+              </th>
+            ) : null}
+          </tr>
+        </thead>
 
-          {category.documents.length === 0 ? (
-            <p className="px-1 text-body text-content-subtle">
-              No documents in this topic yet.
-            </p>
-          ) : (
-            <div className="card-gallery">
-              {category.documents.map((doc) => (
-                <Card key={doc.id} interactive size="sm" className="group">
-                  <CardContent className="flex items-start gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-md bg-bg-muted text-content-subtle">
-                    <FileText className="size-5" strokeWidth={1.5} />
+        {categories.map((category, categoryIndex) => (
+          <tbody
+            key={category.id}
+            className={categoryIndex === 0 ? undefined : "border-t border-border-subtle"}
+          >
+            <tr className="bg-bg-subtle">
+              <th
+                scope="rowgroup"
+                colSpan={columnCount}
+                className="px-4 py-2.5 text-left sm:px-5"
+              >
+                <div className="flex min-w-0 items-center gap-2">
+                  <Folder
+                    className="size-4 shrink-0 text-content-subtle"
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                  <h2 className="min-w-0 break-words text-label text-content-emphasis">
+                    {category.name}
+                  </h2>
+                  <span className="shrink-0 text-caption font-normal text-content-subtle">
+                    {documentCountLabel(category.documents.length)}
                   </span>
+                  {canManage ? (
+                    <LibraryDeleteButton
+                      kind="category"
+                      id={category.id}
+                      name={category.name}
+                    />
+                  ) : null}
+                </div>
+              </th>
+            </tr>
 
-                  <div className="min-w-0 flex-1">
+            {category.documents.map((doc) => {
+              const size = humanFileSize(doc.sizeBytes);
+              const type = documentTypeLabel(doc.mimeType);
+
+              return (
+                <tr
+                  key={doc.id}
+                  className="border-t border-border-subtle transition-colors duration-fast hover:bg-bg-default focus-within:bg-bg-default"
+                >
+                  <td className="px-4 py-2.5 align-middle sm:px-5">
                     {doc.url ? (
                       <a
                         href={doc.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-label text-foreground hover:underline"
+                        className="group/link flex min-w-0 items-center gap-3 rounded-sm focus-visible:outline-none"
                       >
-                        <span className="truncate">{doc.title}</span>
-                        <Download className="size-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-75" />
+                        <span className="grid size-8 shrink-0 place-items-center rounded-sm border border-border-subtle bg-bg-default text-content-subtle">
+                          <FileText
+                            className="size-4"
+                            strokeWidth={1.75}
+                            aria-hidden
+                          />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="flex min-w-0 items-center gap-1.5 text-label text-content-emphasis transition-colors duration-fast group-hover/link:text-accent-ink group-hover/link:underline">
+                            <span className="min-w-0 break-words">{doc.title}</span>
+                            <ExternalLink
+                              className="size-3.5 shrink-0 text-content-muted transition-colors duration-fast group-hover/link:text-accent-ink"
+                              strokeWidth={1.75}
+                              aria-hidden
+                            />
+                          </span>
+                          <span className="mt-0.5 block text-caption font-normal text-content-subtle sm:hidden">
+                            {[type, formatDate(doc.createdAt), size]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </span>
+                          <span className="sr-only"> Opens in a new tab.</span>
+                        </span>
                       </a>
                     ) : (
-                      <span className="text-label text-content-subtle">
-                        {doc.title}
-                      </span>
+                      <div className="flex min-w-0 items-center gap-3 text-content-subtle">
+                        <span className="grid size-8 shrink-0 place-items-center rounded-sm border border-border-subtle bg-bg-default">
+                          <FileText
+                            className="size-4"
+                            strokeWidth={1.75}
+                            aria-hidden
+                          />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block break-words text-label">
+                            {doc.title}
+                          </span>
+                          <span className="mt-0.5 block text-caption sm:hidden">
+                            File unavailable
+                          </span>
+                        </span>
+                      </div>
                     )}
-                    <p className="mt-1 truncate text-caption text-content-subtle">
-                      {[
-                        formatDate(doc.createdAt),
-                        humanFileSize(doc.sizeBytes),
-                      ]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </p>
-                  </div>
-
-                  {canManage && (
-                    <LibraryDeleteButton
-                      kind="document"
-                      id={doc.id}
-                      name={doc.title}
-                    />
-                  )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </section>
-      ))}
+                  </td>
+                  <td className="hidden px-3 py-2.5 align-middle text-caption text-content-subtle sm:table-cell">
+                    <time dateTime={doc.createdAt} className="font-metric">
+                      {formatDate(doc.createdAt)}
+                    </time>
+                  </td>
+                  <td className="hidden px-3 py-2.5 align-middle text-caption text-content-subtle sm:table-cell">
+                    <span className="font-metric">
+                      {type} · {size || "—"}
+                    </span>
+                  </td>
+                  {canManage ? (
+                    <td className="w-14 px-2 py-2 align-middle">
+                      <div className="flex justify-end">
+                        <LibraryDeleteButton
+                          kind="document"
+                          id={doc.id}
+                          name={doc.title}
+                        />
+                      </div>
+                    </td>
+                  ) : null}
+                </tr>
+              );
+            })}
+          </tbody>
+        ))}
+      </table>
     </div>
   );
 }

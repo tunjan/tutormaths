@@ -53,8 +53,8 @@ export function TutorSettingsDialog({
       >
         <div className="flex flex-col gap-4">
           <div>
-            <h3 className="text-h4 text-foreground">Reminder windows</h3>
-            <p className="mt-1 mb-4 text-caption text-muted-foreground">
+            <h3 className="text-heading-md text-foreground">Reminder windows</h3>
+            <p className="mt-1 mb-4 max-w-[65ch] text-body text-muted-foreground">
               How long before an assignment is due a reminder is sent (email and in-app). Add one chip per window.
             </p>
             <ReminderWindowsField
