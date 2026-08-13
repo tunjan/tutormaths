@@ -98,9 +98,9 @@ export default async function NewAssignmentPage({
             {tips.map(({ icon: Icon, title, body }) => (
               <li
                 key={title}
-                className="flex gap-3 rounded-2xl border border-border bg-card p-6"
+                className="flex gap-3 rounded-md border border-border bg-card p-6"
               >
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-bg-subtle text-content-default">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-bg-subtle text-content-default">
                   <Icon className="size-5" aria-hidden />
                 </span>
                 <div className="flex flex-col gap-1">

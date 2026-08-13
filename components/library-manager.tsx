@@ -42,12 +42,19 @@ export function LibraryManager({ categories }: { categories: CategoryRow[] }) {
   const [uploadOpen, setUploadOpen] = useState(false);
 
   return (
-    <div className="flex items-center gap-2">
-      <Button variant="secondary" onClick={() => setCatOpen(true)}>
-        <FolderPlus /> New topic
+    <div className="grid w-full grid-cols-1 gap-2 min-[420px]:grid-cols-2 sm:flex sm:w-auto">
+      <Button
+        variant="outline"
+        className="w-full sm:w-auto"
+        onClick={() => setCatOpen(true)}
+      >
+        <FolderPlus data-icon="inline-start" /> New topic
       </Button>
-      <Button onClick={() => setUploadOpen(true)}>
-        <Upload /> Upload document
+      <Button
+        className="w-full sm:w-auto"
+        onClick={() => setUploadOpen(true)}
+      >
+        <Upload data-icon="inline-start" /> Upload document
       </Button>
 
       <NewCategoryModal open={catOpen} onClose={() => setCatOpen(false)} />
@@ -70,10 +77,19 @@ function NewCategoryModal({
   const router = useRouter();
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  function close() {
+    if (busy) return;
+    setName("");
+    setError("");
+    onClose();
+  }
 
   async function submit() {
     const clean = name.trim();
     if (!clean) return;
+    setError("");
     setBusy(true);
     try {
       await createCategory(clean);
@@ -82,7 +98,7 @@ function NewCategoryModal({
       onClose();
       router.refresh();
     } catch (err) {
-      toast.error((err as Error).message);
+      setError((err as Error).message);
     } finally {
       setBusy(false);
     }
@@ -91,39 +107,59 @@ function NewCategoryModal({
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={close}
       title="New topic"
       description="Topics group your Library documents and tag assignments."
       footer={
         <>
-          <Button variant="minimal" onClick={onClose} disabled={busy}>
+          <Button type="button" variant="ghost" onClick={close} disabled={busy}>
             Cancel
           </Button>
-          <Button onClick={submit} disabled={busy || !name.trim()}>
+          <Button
+            type="submit"
+            form="new-library-topic-form"
+            disabled={busy || !name.trim()}
+          >
             {busy ? "Creating…" : "Create topic"}
           </Button>
         </>
       }
     >
-      <Field>
-        <FieldLabel htmlFor="cat-name">Topic name</FieldLabel>
-        <Input
-          id="cat-name"
-          value={name}
-          autoFocus
-          placeholder="Calculus"
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              submit();
-            }
-          }}
-        />
-      </Field>
+      <form
+        id="new-library-topic-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void submit();
+        }}
+      >
+        <Field>
+          <FieldLabel htmlFor="cat-name">Topic name</FieldLabel>
+          <Input
+            id="cat-name"
+            value={name}
+            autoFocus
+            autoComplete="off"
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? "new-topic-error" : undefined}
+            placeholder="Calculus"
+            onChange={(event) => {
+              setName(event.target.value);
+              if (error) setError("");
+            }}
+          />
+        </Field>
+        {error ? (
+          <Alert variant="destructive" role="alert" className="mt-4">
+            <AlertCircle aria-hidden />
+            <AlertDescription id="new-topic-error">{error}</AlertDescription>
+          </Alert>
+        ) : null}
+      </form>
     </Modal>
   );
 }
+
+type UploadField = "topic" | "new-topic" | "title" | "file";
 
 function UploadModal({
   open,
@@ -141,7 +177,10 @@ function UploadModal({
   const [title, setTitle] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<{
+    message: string;
+    field?: UploadField;
+  } | null>(null);
 
   const creatingNew = categoryId === NEW_CATEGORY;
 
@@ -150,21 +189,29 @@ function UploadModal({
     setNewCategory("");
     setTitle("");
     setFile(null);
-    setError("");
+    setError(null);
   }
 
   async function submit() {
-    setError("");
+    setError(null);
     const cleanTitle = title.trim();
-    if (!categoryId) return setError("Choose a topic.");
+    if (!categoryId)
+      return setError({ message: "Choose a topic.", field: "topic" });
     if (creatingNew && !newCategory.trim())
-      return setError("Name the new topic.");
-    if (!cleanTitle) return setError("Give the document a title.");
-    if (!file) return setError("Attach a file.");
+      return setError({ message: "Name the new topic.", field: "new-topic" });
+    if (!cleanTitle)
+      return setError({ message: "Give the document a title.", field: "title" });
+    if (!file) return setError({ message: "Attach a file.", field: "file" });
     if (!accept.includes(file.type))
-      return setError("Allowed types: PDF, JPG, PNG.");
+      return setError({
+        message: "Allowed types: PDF, JPG, PNG.",
+        field: "file",
+      });
     if (file.size > MAX_FILE_BYTES)
-      return setError("That file is larger than 20 MB.");
+      return setError({
+        message: "That file is larger than 20 MB.",
+        field: "file",
+      });
 
     setBusy(true);
     try {
@@ -202,7 +249,7 @@ function UploadModal({
       onClose();
       router.refresh();
     } catch (err) {
-      setError((err as Error).message);
+      setError({ message: (err as Error).message });
     } finally {
       setBusy(false);
     }
@@ -222,7 +269,8 @@ function UploadModal({
       footer={
         <>
           <Button
-            variant="minimal"
+            type="button"
+            variant="ghost"
             disabled={busy}
             onClick={() => {
               reset();
@@ -231,79 +279,119 @@ function UploadModal({
           >
             Cancel
           </Button>
-          <Button onClick={submit} disabled={busy}>
+          <Button
+            type="submit"
+            form="upload-library-document-form"
+            disabled={busy}
+          >
             {busy ? "Uploading…" : "Upload"}
           </Button>
         </>
       }
     >
-      <FieldGroup>
-        <Field>
-          <FieldLabel id="upload-topic-label">Topic</FieldLabel>
-          <Select
-            value={categoryId}
-            onValueChange={(v) => setCategoryId(v ?? "")}
-          >
-            <SelectTrigger
-              aria-labelledby="upload-topic-label"
-              className="w-full"
+      <form
+        id="upload-library-document-form"
+        aria-describedby={error ? "upload-document-error" : undefined}
+        onSubmit={(event) => {
+          event.preventDefault();
+          void submit();
+        }}
+      >
+        <FieldGroup>
+          <Field>
+            <FieldLabel id="upload-topic-label">Topic</FieldLabel>
+            <Select
+              value={categoryId}
+              onValueChange={(value) => {
+                setCategoryId(value ?? "");
+                if (error?.field === "topic") setError(null);
+              }}
             >
-              <SelectValue placeholder="Choose a topic…">
-                {creatingNew
-                  ? "New topic…"
-                  : categories.find((c) => c.id === categoryId)?.name}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {categories.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.name}
+              <SelectTrigger
+                aria-labelledby="upload-topic-label"
+                aria-invalid={error?.field === "topic"}
+                className="w-full"
+              >
+                <SelectValue placeholder="Choose a topic…">
+                  {creatingNew
+                    ? "New topic…"
+                    : categories.find((c) => c.id === categoryId)?.name}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {categories.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value={NEW_CATEGORY}>
+                    <Plus /> Create new topic…
                   </SelectItem>
-                ))}
-                <SelectItem value={NEW_CATEGORY}>
-                  <Plus /> Create new topic…
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          {creatingNew && (
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            {creatingNew ? (
+              <div className="mt-2 flex flex-col gap-2">
+                <FieldLabel htmlFor="new-upload-topic-name">
+                  New topic name
+                </FieldLabel>
+                <Input
+                  id="new-upload-topic-name"
+                  value={newCategory}
+                  autoFocus
+                  autoComplete="off"
+                  aria-invalid={error?.field === "new-topic"}
+                  placeholder="Trigonometry"
+                  onChange={(event) => {
+                    setNewCategory(event.target.value);
+                    if (error?.field === "new-topic") setError(null);
+                  }}
+                />
+              </div>
+            ) : null}
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="doc-title">Title</FieldLabel>
             <Input
-              value={newCategory}
-              autoFocus
-              placeholder="New topic name"
-              onChange={(e) => setNewCategory(e.target.value)}
+              id="doc-title"
+              value={title}
+              aria-invalid={error?.field === "title"}
+              placeholder="Differentiation — formula sheet"
+              onChange={(event) => {
+                setTitle(event.target.value);
+                if (error?.field === "title") setError(null);
+              }}
             />
-          )}
-        </Field>
+          </Field>
 
-        <Field>
-          <FieldLabel htmlFor="doc-title">Title</FieldLabel>
-          <Input
-            id="doc-title"
-            value={title}
-            placeholder="Differentiation — formula sheet"
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </Field>
+          <Field>
+            <FieldLabel>File</FieldLabel>
+            <FileDropzone
+              accept={accept.join(",")}
+              hint="PDF, JPG or PNG, up to 20 MB"
+              selectedName={file?.name}
+              className={
+                error?.field === "file" ? "border-destructive" : undefined
+              }
+              onFile={(nextFile) => {
+                setFile(nextFile ?? null);
+                if (error?.field === "file") setError(null);
+              }}
+            />
+          </Field>
 
-        <Field>
-          <FieldLabel>File</FieldLabel>
-          <FileDropzone
-            accept={accept.join(",")}
-            hint="PDF, JPG or PNG, up to 20 MB"
-            selectedName={file?.name}
-            onFile={(f) => setFile(f ?? null)}
-          />
-        </Field>
-
-        {error && (
-          <Alert variant="destructive" role="alert">
-            <AlertCircle aria-hidden />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-      </FieldGroup>
+          {error ? (
+            <Alert variant="destructive" role="alert">
+              <AlertCircle aria-hidden />
+              <AlertDescription id="upload-document-error">
+                {error.message}
+              </AlertDescription>
+            </Alert>
+          ) : null}
+        </FieldGroup>
+      </form>
     </Modal>
   );
 }

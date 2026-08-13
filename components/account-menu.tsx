@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -34,18 +35,24 @@ export function AccountMenu({
       <PopoverTrigger
         render={
           <Button
-            variant="minimal"
-            size="default"
-            className="min-w-0 max-w-52"
+            variant="ghost"
+            size="sm"
+            className="min-w-0 max-w-72 px-2"
             aria-label={`Open ${accountLabel} account menu`}
             title={accountLabel}
           >
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-bg-subtle text-micro text-content-default">
+            <span className="grid size-6 shrink-0 place-items-center rounded-full border border-border bg-card text-caption text-content-default">
               {accountInitial(userEmail, roleLabel)}
             </span>
             <span className="hidden min-w-0 truncate text-left lg:block">
               {accountLabel}
             </span>
+            <ChevronDown
+              data-icon="inline-end"
+              className="hidden text-content-muted lg:block"
+              strokeWidth={1.75}
+              aria-hidden
+            />
           </Button>
         }
       />

@@ -55,7 +55,7 @@ export function PendingInviteActions({
       </Button>
       <Button
         type="button"
-        variant="minimal"
+        variant="ghost"
         size="icon-sm"
         disabled={pending}
         onClick={revoke}

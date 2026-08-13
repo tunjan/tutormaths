@@ -94,15 +94,15 @@ export function AssignmentCalendar({
     <div className="flex flex-col gap-6">
       {/* Toolbar */}
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-h3 text-foreground">
+        <h2 className="text-heading-md text-foreground">
           {monthLabel.format(cursor)}
         </h2>
         <div className="flex items-center gap-2">
-          <Button variant="minimal" size="sm" onClick={goToday}>
+          <Button variant="ghost" size="sm" onClick={goToday}>
             Today
           </Button>
           <Button
-            variant="secondary"
+            variant="outline"
             size="icon-sm"
             aria-label="Previous month"
             onClick={() => shiftMonth(-1)}
@@ -110,7 +110,7 @@ export function AssignmentCalendar({
             <ChevronLeft />
           </Button>
           <Button
-            variant="secondary"
+            variant="outline"
             size="icon-sm"
             aria-label="Next month"
             onClick={() => shiftMonth(1)}
@@ -121,12 +121,12 @@ export function AssignmentCalendar({
       </div>
 
       {/* Grid */}
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="overflow-hidden rounded-md border border-border bg-card">
         <div className="grid grid-cols-7 border-b border-border-subtle bg-bg-muted">
           {WEEKDAYS.map((d) => (
             <div
               key={d}
-              className="px-2 py-2 text-center text-micro text-content-subtle"
+              className="px-2 py-2 text-center font-eyebrow text-content-subtle"
             >
               <span className="hidden sm:inline">{d}</span>
               <span className="sm:hidden">{d[0]}</span>
@@ -154,12 +154,12 @@ export function AssignmentCalendar({
                   i >= 35 && "border-b-0",
                   inMonth ? "bg-surface-raised" : "bg-surface-muted/55",
                   "hover:bg-surface-hover",
-                  isSelected && "bg-surface-selected ring-1 ring-inset ring-primary",
+                  isSelected && "bg-surface-selected ring-1 ring-inset ring-content-info",
                 )}
               >
                 <span
                   className={cn(
-                    "flex size-6 shrink-0 items-center justify-center rounded-full text-micro tabular-nums",
+                    "flex size-6 shrink-0 items-center justify-center rounded-full text-caption tabular-nums",
                     isToday
                       ? "bg-foreground font-semibold text-background"
                       : inMonth
@@ -177,7 +177,7 @@ export function AssignmentCalendar({
                         <CalendarChip key={a.id} a={a} unread={unreadSet.has(a.id)} />
                       ))}
                       {items.length > 3 && (
-                        <span className="px-1 text-micro text-text-subtle">
+                        <span className="px-1 text-caption text-text-subtle">
                           +{items.length - 3} more
                         </span>
                       )}
@@ -209,7 +209,7 @@ export function AssignmentCalendar({
             <EmptyDescription>Nothing due this day.</EmptyDescription>
           </Empty>
         ) : (
-          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
             {selected.map((a) => {
               const TypeIcon = a.type === "reading_notes" ? BookOpen : FileText;
               return (
@@ -219,7 +219,7 @@ export function AssignmentCalendar({
                   className="group flex items-center justify-between gap-4 px-6 py-3 transition-colors duration-fast hover:bg-surface-hover"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-surface-muted text-muted-foreground group-hover:text-foreground">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-sm border border-border bg-surface-muted text-muted-foreground group-hover:text-foreground">
                       <TypeIcon className="size-4" strokeWidth={1.5} />
                     </span>
                     <div className="min-w-0 flex-1">
@@ -268,7 +268,7 @@ function CalendarChip({
       onClick={(e) => e.stopPropagation()}
       title={a.title}
       className={cn(
-        "flex w-full items-center gap-1 rounded-xs border border-transparent px-2 py-1 text-micro transition-colors duration-fast",
+        "flex w-full items-center gap-1 rounded-sm border border-transparent px-2 py-1 text-caption transition-colors duration-fast",
         done
           ? "bg-surface-hover text-text-subtle line-through hover:bg-surface-selected"
           : "bg-bg-muted text-text-heading hover:bg-bg-subtle",

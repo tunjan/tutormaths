@@ -18,7 +18,7 @@ export function AssignTaskButton({
   students,
   categories = [],
   defaultStudentId,
-  variant = "primary",
+  variant = "default",
   size = "default",
   label = "Assign task",
   ariaLabel,
@@ -27,8 +27,8 @@ export function AssignTaskButton({
   students: StudentOption[];
   categories?: CategoryRow[];
   defaultStudentId?: string;
-  variant?: "primary" | "secondary" | "minimal" | "soft" | "destructive";
-  size?: "default" | "sm" | "lg" | "icon" | "icon-xs" | "icon-sm" | "icon-lg";
+  variant?: "default" | "outline" | "secondary" | "ghost" | "soft" | "destructive";
+  size?: "default" | "sm" | "md" | "lg" | "xl" | "icon" | "icon-xs" | "icon-sm" | "icon-lg";
   label?: string;
   ariaLabel?: string;
   className?: string;

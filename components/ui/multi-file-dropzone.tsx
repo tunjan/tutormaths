@@ -61,7 +61,7 @@ export function MultiFileDropzone({
         aria-disabled={!interactive}
         aria-live="polite"
         className={cn(
-          "flex flex-col items-center justify-center gap-2 rounded-control border border-dashed px-6 py-8 text-center text-body transition-[background-color,border-color,box-shadow] duration-base focus-within:outline-none",
+          "flex flex-col items-center justify-center gap-2 rounded-md border border-dashed px-6 py-8 text-center text-body transition-[background-color,border-color,box-shadow] duration-base focus-within:border-content-info focus-within:shadow-[var(--focus-ring)] focus-within:outline-none",
           interactive ? "cursor-pointer" : "cursor-default opacity-80",
           dragging
             ? "border-accent-ink bg-accent-ink-subtle text-foreground"
@@ -94,7 +94,7 @@ export function MultiFileDropzone({
           {existing.map((f) => (
             <li
               key={f.id}
-              className="flex min-h-10 items-center gap-2 rounded-control border border-border bg-card px-3 py-2 text-body"
+              className="flex min-h-9 items-center gap-2 rounded-sm border border-border-subtle bg-card px-3 py-2 text-body"
             >
               {isImage(f.mimeType) ? (
                 <ImageIcon className="size-4 shrink-0 text-content-subtle" />
@@ -108,7 +108,7 @@ export function MultiFileDropzone({
                   aria-label={`Remove ${f.name}`}
                   disabled={!interactive}
                   onClick={() => onRemoveExisting(f.id)}
-                  className="grid size-8 shrink-0 place-items-center rounded-control text-content-subtle transition-colors duration-fast hover:bg-bg-muted hover:text-foreground"
+                  className="grid size-8 shrink-0 place-items-center rounded-sm text-content-subtle transition-colors duration-fast hover:bg-bg-muted hover:text-foreground"
                 >
                   <X className="size-4" />
                 </button>
@@ -118,7 +118,7 @@ export function MultiFileDropzone({
           {files.map((f, i) => (
             <li
               key={`${f.name}-${i}`}
-              className="flex min-h-10 items-center gap-2 rounded-sm border border-border bg-card px-3 py-2 text-body"
+              className="flex min-h-9 items-center gap-2 rounded-sm border border-border-subtle bg-card px-3 py-2 text-body"
             >
               {f.type.startsWith("image/") ? (
                 <ImageIcon className="size-4 shrink-0 text-content-subtle" />

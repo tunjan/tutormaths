@@ -20,7 +20,7 @@ export function TutorSettingsDialog({
     <>
       {presentation === "menu" ? (
         <Button
-          variant="minimal"
+          variant="ghost"
           size="default"
           className="w-full justify-start"
           onClick={() => setOpen(true)}
@@ -30,7 +30,7 @@ export function TutorSettingsDialog({
         </Button>
       ) : (
         <Button
-          variant="minimal"
+          variant="ghost"
           size="icon-sm"
           aria-label="Settings"
           title="Settings"
@@ -45,11 +45,6 @@ export function TutorSettingsDialog({
         onClose={() => setOpen(false)}
         title="Settings"
         description="Configure your tutor workspace."
-        footer={
-          <Button type="submit" form="reminder-windows-form">
-            Save
-          </Button>
-        }
       >
         <div className="flex flex-col gap-4">
           <div>

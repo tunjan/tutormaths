@@ -69,7 +69,6 @@ export default async function TutorDashboard() {
   }));
 
   const awaiting = all.filter((a) => a.review_status === "submitted").length;
-  const approved = all.filter((a) => a.review_status === "approved").length;
   const activeItems = items.filter((a) => a.review_status !== "approved");
   const active = activeItems.length;
   // eslint-disable-next-line react-hooks/purity
@@ -103,18 +102,18 @@ export default async function TutorDashboard() {
   ];
   const hasStudents = studentOptions.length > 0;
   const needsAttention = awaiting + overdue;
-  const tutorName = tutorProfile?.full_name.trim();
-  const fallbackName = ctx.email?.split("@")[0]?.split(/[._-]/)[0];
-  const firstName = tutorName?.split(/\s+/)[0] || fallbackName;
+  const tutorName = tutorProfile?.full_name?.trim();
+  const firstName = tutorName?.split(/\s+/)[0];
   const displayName = firstName
     ? `${firstName.charAt(0).toUpperCase()}${firstName.slice(1)}`
     : null;
 
   return (
-    <div className="animate-rise">
+    <div className="w-full">
       <PageHeader
-        eyebrow={displayName ? `Welcome back, ${displayName}` : "Tutor workspace"}
+        eyebrow={displayName ? `Welcome back, ${displayName}` : "Welcome back"}
         title="Teaching overview"
+        className="mb-5 gap-4 pb-5"
         description={
           !hasStudents
             ? "Start by inviting your first student."
@@ -127,11 +126,12 @@ export default async function TutorDashboard() {
         actions={
           hasStudents ? (
             <div className="flex flex-wrap gap-2">
-              <AddStudentButton variant="secondary" />
+              <AddStudentButton variant="outline" size="sm" />
               <AssignTaskButton
                 students={studentOptions}
                 categories={categories ?? []}
                 label="New assignment"
+                size="sm"
               />
             </div>
           ) : undefined
@@ -145,12 +145,9 @@ export default async function TutorDashboard() {
             activeItems={activeItems}
             activeCount={active}
             awaitingCount={awaiting}
-            approvedCount={approved}
             overdueCount={overdue}
-            studentCount={(students ?? []).length}
             pendingInviteCount={(invites ?? []).length}
             averageProgress={averageProgress}
-            totalAssignmentCount={all.length}
           />
           <TutorAssignmentBrowser items={items} nowMs={nowMs} />
         </>
@@ -163,7 +160,7 @@ export default async function TutorDashboard() {
 
 function Onboarding() {
   return (
-    <Empty className="animate-fade-in">
+    <Empty>
       <EmptyHeader>
         <EmptyTitle>Start with one student</EmptyTitle>
         <EmptyDescription>

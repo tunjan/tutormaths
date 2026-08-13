@@ -4,29 +4,43 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-[color,background-color,border-color,box-shadow,opacity] outline-none select-none active-press active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 gap-2",
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-sm border text-button transition-[background-color,border-color,color,box-shadow,transform] duration-fast ease-[var(--ease-standard)] active:translate-y-px active:shadow-[inset_0_1px_2px_rgb(0_0_0_/_8%)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-transparent disabled:bg-[var(--color-surface-strong)] disabled:text-content-muted disabled:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 focus-visible:outline-none",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 active:bg-primary/95",
-        primary: "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 active:bg-primary/95",
-        secondary: "border border-border bg-secondary text-secondary-foreground shadow-xs hover:bg-muted active:bg-muted/80",
-        soft: "border border-border bg-muted/60 text-foreground hover:bg-muted active:bg-muted/80",
-        outline: "border border-border bg-card text-foreground shadow-xs hover:bg-muted active:bg-muted/80",
-        ghost: "border border-transparent text-muted-foreground hover:border-border hover:bg-muted hover:text-foreground",
-        minimal: "border border-transparent text-muted-foreground hover:border-border hover:bg-muted hover:text-foreground",
-        destructive: "border border-border bg-destructive/10 text-destructive shadow-xs hover:bg-destructive/20 focus-visible:ring-destructive",
-        link: "text-primary underline-offset-4 hover:underline",
+        default:
+          "border-transparent bg-primary text-primary-foreground shadow-xs-inverted hover:bg-[var(--color-ink-hover)] hover:shadow-md-inverted",
+        outline:
+          "border-border-default bg-card text-content-emphasis shadow-xs hover:border-border-emphasis hover:bg-bg-muted hover:shadow-sm",
+        secondary:
+          "border-border-default bg-card text-content-emphasis shadow-xs hover:border-border-emphasis hover:bg-bg-muted hover:shadow-sm",
+        ghost:
+          "border-transparent bg-transparent text-content-emphasis hover:bg-bg-muted",
+        soft:
+          "border-transparent bg-bg-subtle text-content-emphasis hover:bg-border-subtle",
+        destructive:
+          "border-[var(--color-error-border)] bg-transparent text-content-error hover:bg-bg-error",
+        link:
+          "h-auto rounded-none border-transparent bg-transparent px-0 text-content-info underline-offset-4 hover:underline",
+        marketing:
+          "h-11! rounded-pill border-transparent bg-primary px-3.5 text-button-lg text-primary-foreground hover:bg-[var(--color-ink-hover)]",
+        "marketing-secondary":
+          "h-11! rounded-pill border-border bg-card px-3.5 text-button-lg text-content-emphasis hover:bg-bg-muted",
+        category:
+          "rounded-pill-category border-border bg-card px-4 text-button hover:bg-bg-muted",
+        icon:
+          "rounded-full border-border-default bg-card text-content-emphasis shadow-xs hover:border-border-emphasis hover:bg-bg-muted hover:shadow-sm",
       },
       size: {
-        default: "h-9 px-3 py-1.5 text-sm",
-        xs: "h-8 px-2.5 py-1 text-xs rounded-md [&_svg:not([class*='size-'])]:size-3.5",
-        sm: "h-8 px-2.5 py-1 text-xs rounded-md",
-        lg: "h-10 px-4 py-2 text-sm rounded-md",
-        icon: "size-9 p-0 rounded-md",
-        "icon-xs": "size-8 p-0 rounded-md [&_svg:not([class*='size-'])]:size-3.5",
-        "icon-sm": "size-8 p-0 rounded-md",
-        "icon-lg": "size-10 p-0 rounded-md",
+        default: "h-11 px-3.5 sm:h-10",
+        sm: "h-11 px-3 sm:h-8 [&_svg]:size-4",
+        md: "h-11 px-3.5 sm:h-10",
+        lg: "h-11 px-4 text-button-lg",
+        xl: "h-12 px-5 text-button-lg",
+        icon: "size-11 px-0 sm:size-10",
+        "icon-xs": "size-11 px-0 sm:size-8 [&_svg]:size-4",
+        "icon-sm": "size-11 px-0 sm:size-9 [&_svg]:size-4",
+        "icon-lg": "size-11 px-0 sm:size-10 [&_svg]:size-5",
       },
     },
     defaultVariants: {
@@ -45,6 +59,7 @@ function Button({
   return (
     <ButtonPrimitive
       data-slot="button"
+      data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
@@ -52,4 +67,3 @@ function Button({
 }
 
 export { Button, buttonVariants }
-

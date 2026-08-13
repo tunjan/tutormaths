@@ -2,50 +2,58 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <div className="flex flex-col gap-10">
-      {/* Back link + title block */}
-      <div>
-        <Skeleton className="mb-4 h-4 w-28" />
-        <div className="flex items-start justify-between gap-4">
+    <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-8">
+      <header>
+        <Skeleton className="mb-4 h-9 w-28" />
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="mt-1 h-4 w-56" />
+            <Skeleton className="h-9 w-48" />
+            <Skeleton className="mt-1.5 h-4 w-56" />
           </div>
-          <Skeleton className="h-9 w-36 shrink-0" />
+          <Skeleton className="h-8 w-36 shrink-0" />
         </div>
-      </div>
+      </header>
 
-      {/* Stat cards */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="gap-1 rounded-2xl border border-border bg-card py-6">
-            <div className="px-6">
-              <Skeleton className="h-9 w-16" />
-              <Skeleton className="mt-1 h-4 w-20" />
-            </div>
+      <div className="grid overflow-hidden rounded-md border border-border-subtle bg-card sm:grid-cols-3 sm:divide-x sm:divide-border-subtle">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div
+            key={index}
+            className="border-b border-border-subtle px-4 py-3.5 last:border-b-0 sm:border-b-0 sm:px-5 sm:py-4"
+          >
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="mt-2 h-7 w-14" />
           </div>
         ))}
       </div>
 
-      {/* Active assignments section */}
-      <section className="flex flex-col gap-4">
-        <Skeleton className="h-5 w-40" />
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-24 rounded-md" />
-          ))}
-        </div>
-      </section>
-
-      {/* History section */}
-      <section className="flex flex-col gap-4">
-        <Skeleton className="h-5 w-20" />
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-          {Array.from({ length: 2 }).map((_, i) => (
-            <Skeleton key={i} className="h-24 rounded-md" />
-          ))}
-        </div>
-      </section>
+      <AssignmentSectionSkeleton rows={2} />
+      <AssignmentSectionSkeleton rows={1} />
     </div>
+  );
+}
+
+function AssignmentSectionSkeleton({ rows }: { rows: number }) {
+  return (
+    <section className="flex flex-col gap-3">
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-6 w-40" />
+        <Skeleton className="h-4 w-3" />
+      </div>
+      <div className="overflow-hidden rounded-md border border-border-subtle bg-card">
+        {Array.from({ length: rows }).map((_, index) => (
+          <div
+            key={index}
+            className="flex items-center gap-3 border-b border-border-subtle px-4 py-3.5 last:border-b-0 sm:px-5"
+          >
+            <Skeleton className="size-8 shrink-0" />
+            <div className="min-w-0 flex-1">
+              <Skeleton className="h-5 w-48 max-w-full" />
+              <Skeleton className="mt-1.5 h-4 w-64 max-w-full" />
+            </div>
+            <Skeleton className="hidden h-6 w-20 sm:block" />
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

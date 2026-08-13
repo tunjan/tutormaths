@@ -91,7 +91,7 @@ export function AddStudentModal({
             </code>
             <Button
               type="button"
-              variant="secondary"
+              variant="outline"
               onClick={async () => {
                 await navigator.clipboard.writeText(created.link);
                 toast.success("Link copied.");
@@ -129,7 +129,7 @@ export function AddStudentModal({
           )}
 
             <div className="flex items-center justify-end gap-2 pt-1">
-            <Button type="button" variant="minimal" onClick={close}>
+            <Button type="button" variant="ghost" onClick={close}>
               Cancel
             </Button>
             <Button type="submit" disabled={busy}>

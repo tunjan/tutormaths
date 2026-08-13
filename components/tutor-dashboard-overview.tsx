@@ -8,9 +8,7 @@ import {
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   Progress,
@@ -20,18 +18,13 @@ import {
 import type { BrowserItem } from "@/components/tutor-assignment-browser";
 import { cn } from "@/lib/utils";
 
-type BadgeTone =
-  | "default"
-  | "info"
-  | "success"
-  | "warning"
-  | "destructive";
+type MetricTone = "neutral" | "warning" | "danger";
 
-type ChartPoint = {
-  item: BrowserItem;
-  x: number;
-  y: number;
+type DashboardMetric = {
   label: string;
+  value: number | string;
+  detail: string;
+  tone?: MetricTone;
 };
 
 export function TutorDashboardOverview({
@@ -39,235 +32,91 @@ export function TutorDashboardOverview({
   activeItems,
   activeCount,
   awaitingCount,
-  approvedCount,
   overdueCount,
-  studentCount,
   pendingInviteCount,
   averageProgress,
-  totalAssignmentCount,
 }: {
   focusItems: BrowserItem[];
   activeItems: BrowserItem[];
   activeCount: number;
   awaitingCount: number;
-  approvedCount: number;
   overdueCount: number;
-  studentCount: number;
   pendingInviteCount: number;
   averageProgress: number;
-  totalAssignmentCount: number;
 }) {
-  const queue = (focusItems.length > 0 ? focusItems : activeItems).slice(0, 3);
   const startedCount = activeItems.filter(
     (item) => item.completion_pct > 0 || item.review_status !== "assigned",
   ).length;
-  const chartItems = [...activeItems]
-    .sort(
-      (a, b) =>
-        new Date(a.due_at).getTime() - new Date(b.due_at).getTime(),
-    )
-    .slice(0, 7);
-  const chartPoints = makeChartPoints(chartItems);
+  const hasPriorityWork = focusItems.length > 0;
+  const queue = (hasPriorityWork ? focusItems : activeItems).slice(0, 4);
   const learnerProgress = summarizeLearners(activeItems).slice(0, 4);
-  const flowStages = [
-    { label: "Active", value: activeCount },
-    { label: "In progress", value: startedCount },
-    { label: "In review", value: awaitingCount },
-    { label: "Approved", value: approvedCount },
+
+  // Student count and average progress live in the learner card below, so the
+  // metric row carries only what the tutor can act on.
+  const metrics: DashboardMetric[] = [
+    {
+      label: "Active work",
+      value: activeCount,
+      detail: `${startedCount} started`,
+    },
+    {
+      label: "Awaiting review",
+      value: awaitingCount,
+      detail: awaitingCount > 0 ? "Feedback needed" : "Nothing waiting",
+      tone: awaitingCount > 0 ? "warning" : "neutral",
+    },
+    {
+      label: "Overdue",
+      value: overdueCount,
+      detail: overdueCount > 0 ? "Follow up needed" : "On schedule",
+      tone: overdueCount > 0 ? "danger" : "neutral",
+    },
   ];
 
   return (
-    <section className="mb-6 flex flex-col gap-4" aria-label="Tutor dashboard overview">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        <MetricCard
-          label="Active work"
-          value={activeCount}
-          badge={activeCount > 0 ? "Live" : "Clear"}
-          badgeTone={activeCount > 0 ? "info" : "success"}
-          caption={`${startedCount} currently in progress`}
-        />
-        <MetricCard
-          label="Awaiting review"
-          value={awaitingCount}
-          badge={awaitingCount > 0 ? "Action" : "Clear"}
-          badgeTone={awaitingCount > 0 ? "warning" : "success"}
-          caption={
-            awaitingCount > 0
-              ? `${awaitingCount} submission${awaitingCount === 1 ? "" : "s"} ready for feedback`
-              : "No submissions waiting"
-          }
-        />
-        <MetricCard
-          label="Overdue"
-          value={overdueCount}
-          badge={overdueCount > 0 ? "Follow up" : "Clear"}
-          badgeTone={overdueCount > 0 ? "destructive" : "success"}
-          caption={
-            overdueCount > 0
-              ? `${overdueCount} task${overdueCount === 1 ? "" : "s"} past the due date`
-              : "Everything is on schedule"
-          }
-        />
-        <MetricCard
-          label="Students"
-          value={studentCount}
-          badge={pendingInviteCount > 0 ? `${pendingInviteCount} pending` : "Connected"}
-          badgeTone={pendingInviteCount > 0 ? "default" : "success"}
-          caption={`${studentCount} active learner${studentCount === 1 ? "" : "s"}`}
-        />
-        <MetricCard
-          label="Average progress"
-          value={`${averageProgress}%`}
-          badge="Active work"
-          badgeTone="default"
-          caption="Across all open assignments"
-        />
-      </div>
+    <section
+      className="mb-8 flex flex-col gap-4"
+      aria-labelledby="dashboard-overview-heading"
+    >
+      <h2 id="dashboard-overview-heading" className="sr-only">
+        Dashboard overview
+      </h2>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(20rem,0.9fr)]">
-        <Card className="min-w-0">
-          <CardHeader>
-            <CardTitle>Assignment progress</CardTitle>
-            <CardDescription>
-              Completion across the next {chartItems.length} active assignment{chartItems.length === 1 ? "" : "s"}, ordered by due date.
-            </CardDescription>
-            <CardAction className="hidden gap-8 sm:flex">
-              <InlineMetric label="Average" value={`${averageProgress}%`} />
-              <InlineMetric label="Open" value={activeCount} />
-            </CardAction>
-          </CardHeader>
+      <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-3">
+        {metrics.map((metric) => (
+          <Metric key={metric.label} metric={metric} />
+        ))}
+      </dl>
 
-          <CardContent className="mt-3">
-            {chartPoints.length > 0 ? (
-              <ProgressChart points={chartPoints} />
-            ) : (
-              <EmptyChart />
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="min-w-0">
-          <CardHeader>
-            <CardTitle>Review flow</CardTitle>
-            <CardDescription>
-              Where the current assignment set sits right now.
+      <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(19rem,0.85fr)]">
+        <Card
+          className="min-w-0 gap-0 rounded-md border-border bg-surface-raised p-0 shadow-none"
+          aria-labelledby="priority-queue-heading"
+        >
+          <CardHeader className="border-b border-border px-5 py-4">
+            <h3
+              id="priority-queue-heading"
+              className="whitespace-nowrap text-heading-md text-foreground"
+            >
+              Priority queue
+            </h3>
+            <CardDescription className="text-pretty text-body">
+              {hasPriorityWork
+                ? "Submissions and overdue work to handle first."
+                : "The next active assignments by due date."}
             </CardDescription>
             <CardAction>
-              <InlineMetric label="Total" value={totalAssignmentCount} />
-            </CardAction>
-          </CardHeader>
-
-          <CardContent className="mt-6 flex min-h-60 items-end justify-between gap-3">
-            {flowStages.map((stage) => {
-              const percentage = percentageOf(stage.value, totalAssignmentCount);
-              return (
-                <div key={stage.label} className="flex min-w-0 flex-1 flex-col items-center gap-3">
-                  <span className="text-micro tabular-nums text-content-emphasis">
-                    {percentage}%
-                  </span>
-                  <div className="flex h-28 w-full max-w-12 items-end rounded-md bg-bg-muted p-1">
-                    <span
-                      className="w-full rounded-xs bg-accent-ink"
-                      style={{ height: `${Math.max(percentage, stage.value > 0 ? 8 : 0)}%` }}
-                      aria-hidden="true"
-                    />
-                  </div>
-                  <div className="min-w-0 text-center">
-                    <p className="truncate text-micro text-content-subtle">{stage.label}</p>
-                    <p className="mt-1 text-label tabular-nums text-content-emphasis">
-                      {stage.value}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-[0.72fr_1fr_1.12fr]">
-        <Card className="min-w-0">
-          <CardHeader>
-            <CardTitle>Class progress</CardTitle>
-            <CardDescription>Average completion for active work.</CardDescription>
-          </CardHeader>
-
-          <CardContent className="mt-2 flex flex-1 items-center justify-center">
-            <ProgressGauge value={averageProgress} />
-          </CardContent>
-
-          <CardFooter className="justify-between gap-4">
-            <span className="text-caption text-content-subtle">Active assignments</span>
-            <span className="text-label tabular-nums text-content-emphasis">
-              {activeCount}
-            </span>
-          </CardFooter>
-        </Card>
-
-        <Card className="min-w-0">
-          <CardHeader>
-            <CardTitle>Learner pulse</CardTitle>
-            <CardDescription>Average progress by student.</CardDescription>
-            <CardAction>
-              <Link
-                href="/tutor/students"
-                className={cn(buttonVariants({ variant: "minimal", size: "sm" }))}
-              >
-                Students
-              </Link>
-            </CardAction>
-          </CardHeader>
-
-          <CardContent className="mt-3 flex flex-1 flex-col gap-4">
-            {learnerProgress.length > 0 ? (
-              learnerProgress.map((learner) => (
-                <Progress
-                  key={learner.name}
-                  value={learner.average}
-                  className="gap-2"
-                  aria-label={`${learner.name} average progress`}
-                >
-                  <ProgressLabel className="min-w-0 truncate text-micro text-content-subtle">
-                    {learner.name}
-                  </ProgressLabel>
-                  <ProgressValue className="text-micro text-content-emphasis" />
-                </Progress>
-              ))
-            ) : (
-              <div className="flex min-h-36 items-center justify-center text-center">
-                <p className="max-w-52 text-body text-content-subtle">
-                  Learner progress will appear when assignments are active.
-                </p>
-              </div>
-            )}
-          </CardContent>
-
-          <CardFooter className="justify-between gap-4">
-            <span className="text-caption text-content-subtle">Connected students</span>
-            <span className="text-label tabular-nums text-content-emphasis">
-              {studentCount}
-            </span>
-          </CardFooter>
-        </Card>
-
-        <Card className="min-w-0">
-          <CardHeader>
-            <CardTitle>Priority queue</CardTitle>
-            <CardDescription>
-              {focusItems.length > 0
-                ? "Reviews and overdue work to handle first."
-                : "The next active assignments in your schedule."}
-            </CardDescription>
-            <CardAction>
-              <Badge variant={focusItems.length > 0 ? "warning" : "success"}>
-                {focusItems.length > 0 ? `${focusItems.length} to check` : "On track"}
+              {/* Neutral: the count is already tallied in the metrics above,
+                  and the rows below carry their own status colour. */}
+              <Badge variant={hasPriorityWork ? "secondary" : "outline"}>
+                {hasPriorityWork ? `${focusItems.length} to check` : "On track"}
               </Badge>
             </CardAction>
           </CardHeader>
 
-          <CardContent className="-mx-6 mt-1 flex-1">
+          <CardContent className="min-w-0 flex-1 p-0">
             {queue.length > 0 ? (
-              <div className="divide-y divide-border-muted">
+              <div className="divide-y divide-border-muted border-b border-border">
                 {queue.map((item) => (
                   <AssignmentRow
                     key={item.id}
@@ -279,221 +128,168 @@ export function TutorDashboardOverview({
                     reviewStatus={item.review_status}
                     student={item.student}
                     unread={item.unread}
+                    className="px-5 py-3"
                   />
                 ))}
               </div>
             ) : (
-              <div className="flex min-h-36 items-center justify-center gap-3 px-6 text-center">
-                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-bg-success text-content-success">
+              <div className="flex min-h-28 items-center gap-3 border-b border-border px-5 py-4">
+                <span className="grid size-8 shrink-0 place-items-center rounded-sm bg-bg-success text-content-success">
                   <CircleCheck className="size-4" strokeWidth={1.75} aria-hidden />
                 </span>
-                <p className="text-left text-body text-content-subtle">Nothing is waiting on you.</p>
+                <div>
+                  <p className="text-label text-foreground">Nothing is waiting</p>
+                  <p className="mt-1 text-pretty text-caption text-muted-foreground">
+                    New assignments will appear here automatically.
+                  </p>
+                </div>
               </div>
             )}
           </CardContent>
 
-          <CardFooter className="justify-end">
+          <div className="mt-auto flex items-center justify-between gap-4 px-5 py-2.5">
+            <span className="text-caption text-content-subtle">
+              Sorted by urgency
+            </span>
             <Link
               href="#assignments-heading"
-              className={cn(buttonVariants({ variant: "minimal", size: "sm" }))}
+              className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
             >
-              View all
+              View assignments
               <ArrowDown data-icon="inline-end" aria-hidden />
             </Link>
-          </CardFooter>
+          </div>
+        </Card>
+
+        <Card
+          className="min-w-0 gap-0 rounded-md border-border bg-surface-raised p-0 shadow-none"
+          aria-labelledby="learner-progress-heading"
+        >
+          <CardHeader className="border-b border-border px-5 py-4">
+            <h3
+              id="learner-progress-heading"
+              className="whitespace-nowrap text-heading-md text-foreground"
+            >
+              Learner progress
+            </h3>
+            <CardDescription className="text-body">
+              Average across active assignments.
+            </CardDescription>
+            <CardAction>
+              <Link
+                href="/tutor/students"
+                className={cn(
+                  buttonVariants({ variant: "ghost", size: "sm" }),
+                  "px-2 text-caption",
+                )}
+              >
+                {pendingInviteCount > 0
+                  ? `Students · ${pendingInviteCount} pending`
+                  : "Students"}
+              </Link>
+            </CardAction>
+          </CardHeader>
+
+          <CardContent className="flex flex-1 flex-col p-5">
+            {learnerProgress.length > 0 ? (
+              <>
+                <div className="border-b border-border pb-4">
+                  <div className="flex items-end justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="font-eyebrow text-content-subtle">
+                        Class average
+                      </p>
+                      <p className="mt-0.5 truncate text-caption text-content-muted">
+                        {activeCount} active assignment
+                        {activeCount === 1 ? "" : "s"}
+                      </p>
+                    </div>
+                    <p className="text-heading-md tabular-nums text-foreground">
+                      {averageProgress}%
+                    </p>
+                  </div>
+                  <Progress
+                    value={averageProgress}
+                    className="mt-2.5 gap-0 [&_[data-slot=progress-track]]:h-1 [&_[data-slot=progress-track]]:bg-border"
+                    aria-label={`${averageProgress}% class average progress`}
+                  />
+                </div>
+
+                <div className="mt-4">
+                  <div className="flex items-center justify-between gap-4">
+                    <p className="font-eyebrow text-content-subtle">
+                      Student
+                    </p>
+                    <p className="font-eyebrow text-content-subtle">
+                      Average
+                    </p>
+                  </div>
+                  <div className="mt-1.5 divide-y divide-border-muted">
+                    {learnerProgress.map((learner) => (
+                      <Progress
+                        key={learner.name}
+                        value={learner.average}
+                        className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-1 py-2.5 [&_[data-slot=progress-track]]:col-span-2 [&_[data-slot=progress-track]]:h-1 [&_[data-slot=progress-track]]:bg-border"
+                        aria-label={`${learner.name} average progress`}
+                      >
+                        <ProgressLabel className="flex min-w-0 items-baseline gap-1.5">
+                          <span className="truncate text-caption text-foreground">
+                            {learner.name}
+                          </span>
+                          <span className="shrink-0 text-caption text-content-muted">
+                            · {learner.assignments} active
+                          </span>
+                        </ProgressLabel>
+                        <ProgressValue className="self-start text-caption text-foreground" />
+                      </Progress>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex min-h-32 flex-1 items-center justify-center text-center">
+                <p className="max-w-56 text-pretty text-body text-muted-foreground">
+                  Learner progress will appear when assignments are active.
+                </p>
+              </div>
+            )}
+          </CardContent>
         </Card>
       </div>
     </section>
   );
 }
 
-function MetricCard({
-  label,
-  value,
-  badge,
-  badgeTone,
-  caption,
-}: {
-  label: string;
-  value: number | string;
-  badge: string;
-  badgeTone: BadgeTone;
-  caption: string;
-}) {
+function Metric({ metric }: { metric: DashboardMetric }) {
   return (
-    <Card size="sm" className="min-h-36">
-      <CardHeader>
-        <CardDescription className="font-medium">{label}</CardDescription>
-        <CardAction>
-          <Badge variant={badgeTone}>{badge}</Badge>
-        </CardAction>
-      </CardHeader>
-      <CardContent className="mt-auto flex flex-col gap-2">
-        <p className="text-stat-md tabular-nums text-content-emphasis">
-          {value}
-        </p>
-        <p className="text-caption text-content-subtle">{caption}</p>
-      </CardContent>
-    </Card>
-  );
-}
-
-function InlineMetric({ label, value }: { label: string; value: number | string }) {
-  return (
-    <div className="text-right">
-      <p className="text-micro text-content-subtle">{label}</p>
-      <p className="mt-1 text-stat-sm tabular-nums text-content-emphasis">
-        {value}
-      </p>
-    </div>
-  );
-}
-
-function ProgressChart({ points }: { points: ChartPoint[] }) {
-  const baseline = 158;
-  const linePoints = points.map((point) => `${point.x},${point.y}`).join(" ");
-  const areaPoints = `42,${baseline} ${linePoints} 704,${baseline}`;
-  const gridValues = [100, 75, 50, 25, 0];
-
-  return (
-    <svg
-      viewBox="0 0 720 190"
-      className="h-auto w-full overflow-visible"
-      role="img"
-      aria-label="Assignment completion percentage by due date"
-    >
-      <title>Assignment completion percentage by due date</title>
-      {gridValues.map((value) => {
-        const y = 12 + ((100 - value) / 100) * 146;
-        return (
-          <g key={value}>
-            <line
-              x1="42"
-              y1={y}
-              x2="704"
-              y2={y}
-              stroke="var(--chart-grid)"
-              strokeDasharray="4 6"
-            />
-            <text
-              x="0"
-              y={y + 4}
-              fill="var(--content-subtle)"
-              fontSize="12"
-              fontWeight="500"
-            >
-              {value}%
-            </text>
-          </g>
-        );
-      })}
-
-      <polygon points={areaPoints} fill="var(--bg-info)" />
-      <polyline
-        points={linePoints}
-        fill="none"
-        stroke="var(--chart-primary)"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      {points.map((point) => (
-        <g key={point.item.id}>
-          <circle cx={point.x} cy={point.y} r="7" fill="var(--bg-default)" />
-          <circle cx={point.x} cy={point.y} r="4" fill="var(--chart-primary)" />
-          <text
-            x={point.x}
-            y="181"
-            textAnchor="middle"
-            fill="var(--content-subtle)"
-            fontSize="12"
-            fontWeight="500"
-          >
-            {point.label}
-          </text>
-        </g>
-      ))}
-    </svg>
-  );
-}
-
-function EmptyChart() {
-  return (
-    <div className="flex min-h-52 items-center justify-center text-center">
-      <div>
-        <p className="text-label text-content-emphasis">No active work to chart</p>
-        <p className="mt-1 text-body text-content-subtle">
-          New assignments will appear here automatically.
+    <div className="min-w-0 bg-surface-raised px-4 py-3.5">
+      <dt className="font-eyebrow text-muted-foreground">{metric.label}</dt>
+      {/* The value carries the tone on its own — a coloured dot and a coloured
+          caption alongside it made every tile read as an alarm. */}
+      <div className="mt-2 flex min-w-0 items-baseline justify-between gap-3 lg:block xl:flex">
+        <dd
+          className={cn(
+            "text-heading-md tabular-nums",
+            metric.tone === "warning"
+              ? "text-content-warning"
+              : metric.tone === "danger"
+                ? "text-content-error"
+                : "text-foreground",
+          )}
+        >
+          {metric.value}
+        </dd>
+        <p className="min-w-0 text-caption text-muted-foreground lg:mt-0.5 xl:mt-0">
+          {metric.detail}
         </p>
       </div>
     </div>
   );
-}
-
-function ProgressGauge({ value }: { value: number }) {
-  const clampedValue = Math.max(0, Math.min(100, value));
-
-  return (
-    <div className="relative w-full max-w-64">
-      <svg viewBox="0 0 220 126" className="h-auto w-full" role="img" aria-label={`${clampedValue}% average class progress`}>
-        <title>{clampedValue}% average class progress</title>
-        <path
-          d="M 20 108 A 90 90 0 0 1 200 108"
-          fill="none"
-          stroke="var(--bg-subtle)"
-          strokeWidth="10"
-          strokeLinecap="round"
-          pathLength="100"
-        />
-        <path
-          d="M 20 108 A 90 90 0 0 1 200 108"
-          fill="none"
-          stroke="var(--chart-secondary)"
-          strokeWidth="10"
-          strokeLinecap="round"
-          pathLength="100"
-          strokeDasharray={`${clampedValue} ${100 - clampedValue}`}
-        />
-      </svg>
-      <div className="absolute inset-x-0 bottom-1 text-center">
-        <p className="text-stat-md tabular-nums text-content-emphasis">
-          {clampedValue}%
-        </p>
-        <p className="mt-2 text-caption text-content-subtle">Average completion</p>
-      </div>
-    </div>
-  );
-}
-
-function makeChartPoints(items: BrowserItem[]): ChartPoint[] {
-  if (items.length === 0) return [];
-  const left = 42;
-  const right = 704;
-  const top = 12;
-  const chartHeight = 146;
-  const formatter = new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "short",
-  });
-
-  return items.map((item, index) => {
-    const x =
-      items.length === 1
-        ? (left + right) / 2
-        : left + (index / (items.length - 1)) * (right - left);
-    const progress = Math.max(0, Math.min(100, item.completion_pct));
-    return {
-      item,
-      x,
-      y: top + ((100 - progress) / 100) * chartHeight,
-      label: formatter.format(new Date(item.due_at)),
-    };
-  });
 }
 
 function summarizeLearners(items: BrowserItem[]) {
   const totals = new Map<string, { count: number; progress: number }>();
+
   items.forEach((item) => {
     const current = totals.get(item.student) ?? { count: 0, progress: 0 };
     current.count += 1;
@@ -505,10 +301,8 @@ function summarizeLearners(items: BrowserItem[]) {
     name,
     assignments: value.count,
     average: Math.round(value.progress / value.count),
-  })).sort((a, b) => b.assignments - a.assignments || a.name.localeCompare(b.name));
-}
-
-function percentageOf(value: number, total: number) {
-  if (total === 0) return 0;
-  return Math.round((value / total) * 100);
+  })).sort(
+    (a, b) =>
+      b.assignments - a.assignments || a.name.localeCompare(b.name),
+  );
 }

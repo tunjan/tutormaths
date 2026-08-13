@@ -1,10 +1,5 @@
 import { Link } from "next-view-transitions";
-import {
-  ArrowRight,
-  BookOpenText,
-  CalendarClock,
-  ListChecks,
-} from "lucide-react";
+import { ArrowRight, BookOpenText, CalendarClock } from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { unreadAssignmentIds } from "@/lib/queries";
@@ -14,16 +9,11 @@ import { AssignmentRow } from "@/components/assignment-row";
 import { AssignmentStatusBadge } from "@/components/ui/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  Progress,
-  ProgressLabel,
-  ProgressValue,
-} from "@/components/ui/progress";
+import { Progress } from "@/components/ui/progress";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -62,13 +52,13 @@ export default async function StudentDashboard() {
     : [];
 
   return (
-    <div className="mx-auto w-full max-w-6xl">
+    <div className="mx-auto w-full max-w-5xl">
       <PageHeader
         title="My practice"
         description="Your assignments, with progress you control."
         actions={
           nextAssignment ? (
-            <RequestHomeworkButton variant="secondary" />
+            <RequestHomeworkButton variant="outline" />
           ) : undefined
         }
       />
@@ -112,7 +102,7 @@ export default async function StudentDashboard() {
               {remainingActive.length}
             </Badge>
           </div>
-          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
             {remainingActive.map((a) => (
               <AssignmentRow
                 key={a.id}
@@ -143,7 +133,7 @@ export default async function StudentDashboard() {
               {completed.length}
             </Badge>
           </div>
-          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
             {completed.map((a) => (
               <AssignmentRow
                 key={a.id}
@@ -178,8 +168,6 @@ function UpNextCard({
   };
   unread: boolean;
 }) {
-  const AssignmentTypeIcon =
-    assignment.type === "reading_notes" ? BookOpenText : ListChecks;
   const heroLabel =
     assignment.review_status === "submitted" ? "In review" : "Up next";
   const actionLabel =
@@ -188,70 +176,87 @@ function UpNextCard({
       : assignment.review_status === "needs_work"
         ? "Continue revisions"
         : "Continue task";
+  const progressLabel =
+    assignment.completion_pct === 0
+      ? "Not started"
+      : assignment.completion_pct === 100
+        ? "Complete"
+        : "In progress";
 
   return (
-    <Card role="region" aria-labelledby={`up-next-${assignment.id}`}>
-      <CardHeader className="grid gap-4 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-6">
-        <span className="grid size-10 place-items-center rounded-lg bg-bg-subtle text-content-default">
-          <AssignmentTypeIcon className="size-5" aria-hidden />
-        </span>
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">
-              <CalendarClock aria-hidden />
-              {heroLabel}
-            </Badge>
-            {unread && <Badge variant="info">New activity</Badge>}
-            <AssignmentStatusBadge
-              reviewStatus={assignment.review_status}
-              dueAt={assignment.due_at}
+    <Card
+      role="region"
+      aria-labelledby={`up-next-${assignment.id}`}
+      className="gap-0 border-border p-0 shadow-sm"
+    >
+      <div className="grid xl:grid-cols-[minmax(0,1fr)_17rem]">
+        <CardHeader className="p-5 sm:p-6">
+          <div className="flex min-w-0 items-start gap-4">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="secondary">
+                  <CalendarClock aria-hidden />
+                  {heroLabel}
+                </Badge>
+                {unread && <Badge variant="info">New activity</Badge>}
+                <AssignmentStatusBadge
+                  reviewStatus={assignment.review_status}
+                  dueAt={assignment.due_at}
+                />
+              </div>
+
+              <CardTitle
+                id={`up-next-${assignment.id}`}
+                role="heading"
+                aria-level={2}
+                className="mt-5 max-w-2xl text-balance text-h2"
+              >
+                {assignment.title}
+              </CardTitle>
+              <CardDescription className="mt-1.5 text-pretty">
+                {typeLabel(assignment.type)}
+              </CardDescription>
+
+              <p className="mt-6 flex min-w-0 items-center gap-2 text-pretty text-caption text-content-subtle">
+                <CalendarClock className="size-4 shrink-0" aria-hidden />
+                <span>
+                  Due {relativeTime(assignment.due_at)}
+                  <span className="hidden sm:inline">
+                    {" "}/ {formatDateTime(assignment.due_at)}
+                  </span>
+                </span>
+              </p>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="flex flex-col justify-between gap-6 border-t border-border bg-bg-subtle p-5 sm:p-6 xl:border-l xl:border-t-0">
+          <div>
+            <p className="font-eyebrow text-content-muted">Progress</p>
+            <div className="mt-2 flex items-baseline justify-between gap-4">
+              <p className="text-h2 tabular-nums text-content-emphasis">
+                {assignment.completion_pct}%
+              </p>
+              <p className="text-caption text-content-subtle">
+                {progressLabel}
+              </p>
+            </div>
+            <Progress
+              value={assignment.completion_pct}
+              aria-label={`${assignment.title} progress`}
+              className="mt-3"
             />
           </div>
-          <CardTitle
-            id={`up-next-${assignment.id}`}
-            role="heading"
-            aria-level={2}
-            className="mt-4 max-w-3xl text-h2"
+
+          <Link
+            href={`/student/assignments/${assignment.id}`}
+            className={cn(buttonVariants({ size: "lg" }), "w-full")}
           >
-            {assignment.title}
-          </CardTitle>
-          <CardDescription className="mt-2 text-pretty">
-            {typeLabel(assignment.type)}
-          </CardDescription>
-        </div>
-      </CardHeader>
-
-      <CardContent>
-        <Progress
-          value={assignment.completion_pct}
-          aria-label={`${assignment.title} progress`}
-          className="gap-2"
-        >
-          <ProgressLabel className="text-micro text-content-subtle">
-            Progress
-          </ProgressLabel>
-          <ProgressValue className="text-micro text-content-emphasis" />
-        </Progress>
-      </CardContent>
-
-      <CardFooter className="flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="flex min-w-0 items-center gap-2 text-pretty text-caption text-content-subtle">
-          <CalendarClock className="size-4 shrink-0" aria-hidden />
-          <span>
-            Due {relativeTime(assignment.due_at)}
-            <span className="hidden sm:inline">
-              {" "}/ {formatDateTime(assignment.due_at)}
-            </span>
-          </span>
-        </p>
-        <Link
-          href={`/student/assignments/${assignment.id}`}
-          className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto")}
-        >
-          {actionLabel}
-          <ArrowRight data-icon="inline-end" aria-hidden />
-        </Link>
-      </CardFooter>
+            {actionLabel}
+            <ArrowRight data-icon="inline-end" aria-hidden />
+          </Link>
+        </CardContent>
+      </div>
     </Card>
   );
 }

@@ -7,12 +7,12 @@ import { AddStudentModal } from "@/components/add-student-modal";
 
 /** "Add student" button that opens the invite dialog. */
 export function AddStudentButton({
-  variant = "primary",
+  variant = "default",
   label = "Add student",
   size = "default",
   className,
 }: {
-  variant?: "primary" | "secondary" | "soft" | "minimal";
+  variant?: "default" | "outline" | "soft" | "ghost";
   label?: string;
   size?: "default" | "sm";
   className?: string;

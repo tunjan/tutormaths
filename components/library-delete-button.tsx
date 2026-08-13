@@ -42,7 +42,7 @@ export function LibraryDeleteButton({
       <AlertDialogTrigger
         render={
           <Button
-            variant="minimal"
+            variant="ghost"
             size="icon-sm"
             disabled={pending}
             aria-label={triggerLabel}

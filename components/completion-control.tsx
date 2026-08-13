@@ -100,7 +100,7 @@ export function CompletionControl({
         </Button>
       ) : (
         <Button
-          variant="secondary"
+          variant="outline"
           size="sm"
           onClick={() => save(100, { focusUpload: !hasSubmissions })}
           disabled={doneWithSubmission || pending}

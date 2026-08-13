@@ -17,9 +17,9 @@ export function Modal({
   children,
   footer,
   className,
+  contentClassName,
   style,
   titleClassName,
-  contentClassName,
 }: {
   open: boolean;
   onClose: () => void;
@@ -28,9 +28,9 @@ export function Modal({
   children: ReactNode;
   footer?: ReactNode;
   className?: string;
+  contentClassName?: string;
   style?: React.CSSProperties;
   titleClassName?: string;
-  contentClassName?: string;
 }) {
   return (
     <Dialog.Root
@@ -40,45 +40,45 @@ export function Modal({
       }}
     >
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-50 bg-[var(--overlay)] duration-slow ease-[var(--ease-standard)] data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
+        <Dialog.Backdrop className="fixed inset-0 z-overlay bg-[var(--color-overlay)] duration-slow ease-[var(--ease-standard)] data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
         <Dialog.Popup
           className={cn(
-            "fixed top-1/2 left-1/2 z-50 flex max-h-[85dvh] w-[calc(100%-2rem)] max-w-3xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-y-auto rounded-xl border border-border bg-card p-6 text-card-foreground shadow-md outline-none",
-            "duration-base ease-[var(--ease-standard)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-[0.98] data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-[0.98]",
+            "fixed inset-x-0 bottom-0 z-modal flex max-h-[85dvh] w-full flex-col overflow-y-auto overscroll-contain rounded-t-modal border border-border bg-card p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-card-foreground shadow-xl outline-hidden sm:top-1/2 sm:right-auto sm:bottom-auto sm:left-1/2 sm:w-[calc(100%-2rem)] sm:max-w-[480px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-modal sm:pb-6",
+            "duration-slow ease-[var(--ease-out)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-[0.98] data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-[0.98]",
             className,
           )}
           style={style}
         >
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex shrink-0 items-start justify-between gap-4">
             <div className="min-w-0">
               <Dialog.Title
                 className={cn(
-                  "text-lg font-semibold text-foreground",
+                  "text-heading-md text-content-emphasis",
                   titleClassName,
                 )}
               >
                 {title}
               </Dialog.Title>
               {description && (
-                <Dialog.Description className="mt-1 text-sm text-muted-foreground">
+                <Dialog.Description className="mt-2 max-w-[65ch] text-body text-content-subtle">
                   {description}
                 </Dialog.Description>
               )}
             </div>
             <Dialog.Close
               aria-label="Close"
-              className="grid size-8 shrink-0 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="grid size-9 shrink-0 place-items-center rounded-sm text-content-subtle transition-colors duration-fast hover:bg-bg-subtle hover:text-content-emphasis focus-visible:outline-none"
             >
-              <X className="size-4" aria-hidden />
+              <X className="size-5" aria-hidden />
             </Dialog.Close>
           </div>
 
-          <div className="my-5 h-px shrink-0 bg-border" aria-hidden />
+          <div className="my-6 h-px shrink-0 bg-border-subtle" aria-hidden />
 
           <div className={contentClassName}>{children}</div>
 
           {footer && (
-            <div className="-mx-6 -mb-6 mt-6 flex flex-wrap items-center justify-end gap-2 rounded-b-xl border-t border-border bg-muted/40 px-6 py-4">
+            <div className="mt-6 flex flex-wrap items-center justify-end gap-2">
               {footer}
             </div>
           )}

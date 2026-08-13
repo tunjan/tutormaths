@@ -29,7 +29,7 @@ const MAX_MESSAGE_LENGTH = 500;
 export function RequestHomeworkButton({
   label = "Request more practice",
   icon,
-  variant = "primary",
+  variant = "default",
   className,
 }: {
   label?: string;

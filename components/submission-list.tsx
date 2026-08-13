@@ -86,7 +86,7 @@ function SubmissionItem({
               href={s.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={cn(buttonVariants({ variant: "minimal", size: "icon-sm" }))}
+              className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }))}
               aria-label="Open in a new tab"
             >
               <ExternalLink />
@@ -98,7 +98,7 @@ function SubmissionItem({
                 render={
                   <Button
                     type="button"
-                    variant="minimal"
+                    variant="ghost"
                     size="icon-sm"
                     disabled={deleting}
                     aria-label="Delete submission"

@@ -20,10 +20,10 @@ export function ProblemMaterialCard({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="group flex w-full items-center justify-between gap-4 rounded-2xl border border-border bg-card p-6 text-left transition-[background-color,border-color,box-shadow] duration-base hover:border-border-default hover:bg-surface-muted hover:shadow-sm"
+        className="group flex w-full items-center justify-between gap-4 rounded-md border border-border bg-card p-6 text-left transition-[background-color,border-color,transform] duration-base hover:border-border-emphasis hover:bg-surface-muted active:translate-y-px"
       >
         <span className="flex min-w-0 flex-col gap-1">
-          <span className="text-caption text-muted-foreground">
+          <span className="font-eyebrow text-muted-foreground">
             Assignment brief
           </span>
           <span className="text-label text-foreground">View problem</span>

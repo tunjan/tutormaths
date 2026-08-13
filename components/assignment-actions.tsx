@@ -208,7 +208,7 @@ export function AssignmentActions({
     <>
       <div className="flex gap-2">
         <Button
-          variant="secondary"
+          variant="outline"
           size="sm"
           onClick={() => setEditOpen(true)}
         >
@@ -218,7 +218,7 @@ export function AssignmentActions({
           <AlertDialogTrigger
             render={
               <Button
-                variant="minimal"
+                variant="ghost"
                 size="sm"
                 className="text-destructive hover:bg-bg-error hover:text-destructive"
                 disabled={deleting}
@@ -390,7 +390,7 @@ export function AssignmentActions({
           <div className="flex flex-wrap justify-end gap-2 pt-2">
             <Button
               type="button"
-              variant="minimal"
+              variant="ghost"
               disabled={busy}
               onClick={() => {
                 setEditOpen(false);

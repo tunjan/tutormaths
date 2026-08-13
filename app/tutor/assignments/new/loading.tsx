@@ -7,7 +7,7 @@ export default function Loading() {
       <Skeleton className="h-8 w-44" />
 
       {/* Card with form fields */}
-      <div className="rounded-2xl border border-border bg-card p-6">
+      <div className="rounded-md border border-border bg-card p-6">
         <div className="flex flex-col gap-6">
           {/* Student select */}
           <div className="flex flex-col gap-2">
