@@ -19,6 +19,7 @@ export function Modal({
   className,
   style,
   titleClassName,
+  contentClassName,
 }: {
   open: boolean;
   onClose: () => void;
@@ -29,6 +30,7 @@ export function Modal({
   className?: string;
   style?: React.CSSProperties;
   titleClassName?: string;
+  contentClassName?: string;
 }) {
   return (
     <Dialog.Root
@@ -73,7 +75,7 @@ export function Modal({
 
           <div className="my-5 h-px shrink-0 bg-border" aria-hidden />
 
-          <div>{children}</div>
+          <div className={contentClassName}>{children}</div>
 
           {footer && (
             <div className="-mx-6 -mb-6 mt-6 flex flex-wrap items-center justify-end gap-2 rounded-b-xl border-t border-border bg-muted/40 px-6 py-4">
