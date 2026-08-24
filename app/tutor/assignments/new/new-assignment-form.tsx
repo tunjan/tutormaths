@@ -180,7 +180,12 @@ export function NewAssignmentForm({
     const dueTime = new Date(dueLocal).getTime();
 
     const next: FieldErrors = {};
-    if (!studentId) next.student = "Choose a student.";
+    if (!studentId) {
+      next.student =
+        students.length === 0
+          ? "Invite a student before creating an assignment."
+          : "Choose a student.";
+    }
     if (!title) next.title = "Give the assignment a title.";
     if (!dueLocal) next.due = "Set a due date.";
     else if (!Number.isFinite(dueTime)) next.due = "Enter a valid due date.";
@@ -409,9 +414,12 @@ export function NewAssignmentForm({
                       ref={initialFocusRef}
                       aria-labelledby="student-label"
                       aria-invalid={!!errors.student}
-                      aria-describedby={
-                        errors.student ? "student-error" : undefined
-                      }
+                      aria-describedby={[
+                        students.length === 0 ? "student-empty" : null,
+                        errors.student ? "student-error" : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" ") || undefined}
                       className="w-full min-w-0"
                     >
                       <SelectValue placeholder="Choose a student…">
@@ -434,6 +442,12 @@ export function NewAssignmentForm({
                       </SelectGroup>
                     </SelectContent>
                   </Select>
+                  {students.length === 0 && (
+                    <FieldDescription id="student-empty">
+                      No students are available yet.{" "}
+                      <Link href="/tutor/students">Invite a student…</Link>
+                    </FieldDescription>
+                  )}
                   <FieldError id="student-error">{errors.student}</FieldError>
                 </Field>
 
@@ -809,7 +823,7 @@ export function NewAssignmentForm({
         )}
         <Button
           type="submit"
-          disabled={busy || students.length === 0}
+          disabled={busy}
           aria-busy={busy}
           className="w-full sm:w-auto"
         >
