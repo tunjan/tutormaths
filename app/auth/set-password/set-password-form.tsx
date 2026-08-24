@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Field,
   FieldError,
@@ -84,7 +85,8 @@ export function SetPasswordForm() {
           />
         </Field>
         <Button type="submit" disabled={pending} className="w-full">
-          {pending ? "Saving…" : "Set password"}
+          {pending && <Spinner data-icon="inline-start" />}
+          Set password
         </Button>
         {error && <FieldError className="text-center">{error}</FieldError>}
       </FieldGroup>

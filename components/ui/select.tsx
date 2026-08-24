@@ -88,7 +88,7 @@ function SelectContent({
           data-slot="select-content"
           data-align-trigger={alignItemWithTrigger}
           className={cn(
-            "relative isolate max-h-(--available-height) w-(--anchor-width) min-w-36 origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-md border border-border bg-card p-1 text-foreground shadow-lg",
+            "relative isolate max-h-(--available-height) w-(--anchor-width) min-w-36 origin-(--transform-origin) overflow-x-hidden overflow-y-auto overscroll-contain rounded-md border border-border bg-card p-1 text-card-foreground shadow-lg",
             "duration-base ease-[var(--ease-out)] data-[side=bottom]:slide-in-from-top-1 data-[side=inline-end]:slide-in-from-left-1 data-[side=inline-start]:slide-in-from-right-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
             className
           )}
@@ -127,7 +127,7 @@ function SelectItem({
       data-slot="select-item"
       label={resolvedLabel}
       className={cn(
-        "relative flex min-h-10 w-full cursor-default items-center gap-2 rounded-sm py-2 pr-8 pl-3 text-body outline-hidden select-none",
+        "relative flex min-h-11 w-full cursor-default items-center gap-2 rounded-sm py-2 pr-8 pl-3 text-body outline-hidden select-none sm:min-h-9",
         "focus:bg-bg-muted focus:text-content-emphasis",
         "data-disabled:pointer-events-none data-disabled:text-content-muted [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className

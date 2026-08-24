@@ -40,11 +40,11 @@ export function Modal({
       }}
     >
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-overlay bg-[var(--color-overlay)] duration-slow ease-[var(--ease-standard)] data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
+        <Dialog.Backdrop className="fixed inset-0 z-overlay bg-[var(--color-overlay)] duration-base ease-[var(--ease-standard)] data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
         <Dialog.Popup
           className={cn(
             "fixed inset-x-0 bottom-0 z-modal flex max-h-[85dvh] w-full flex-col overflow-y-auto overscroll-contain rounded-t-modal border border-border bg-card p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-card-foreground shadow-xl outline-hidden sm:top-1/2 sm:right-auto sm:bottom-auto sm:left-1/2 sm:w-[calc(100%-2rem)] sm:max-w-[480px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-modal sm:pb-6",
-            "duration-slow ease-[var(--ease-out)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-[0.98] data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-[0.98]",
+            "duration-base ease-[var(--ease-out)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-[0.98] data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-[0.98]",
             className,
           )}
           style={style}
@@ -67,7 +67,7 @@ export function Modal({
             </div>
             <Dialog.Close
               aria-label="Close"
-              className="grid size-9 shrink-0 place-items-center rounded-sm text-content-subtle transition-colors duration-fast hover:bg-bg-subtle hover:text-content-emphasis focus-visible:outline-none"
+              className="grid size-11 shrink-0 place-items-center rounded-sm text-content-subtle transition-colors duration-fast hover:bg-bg-subtle hover:text-content-emphasis focus-visible:outline-none sm:size-9"
             >
               <X className="size-5" aria-hidden />
             </Dialog.Close>
@@ -78,7 +78,7 @@ export function Modal({
           <div className={contentClassName}>{children}</div>
 
           {footer && (
-            <div className="mt-6 flex flex-wrap items-center justify-end gap-2">
+            <div className="mt-6 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end [&_[data-slot=button]]:w-full sm:[&_[data-slot=button]]:w-auto">
               {footer}
             </div>
           )}

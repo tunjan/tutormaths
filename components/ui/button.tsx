@@ -4,14 +4,14 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-sm border text-button transition-[background-color,border-color,color,box-shadow,transform] duration-fast ease-[var(--ease-standard)] active:translate-y-px active:shadow-[inset_0_1px_2px_rgb(0_0_0_/_8%)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-transparent disabled:bg-[var(--color-surface-strong)] disabled:text-content-muted disabled:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 focus-visible:outline-none",
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-sm border text-button transition-[background-color,border-color,color,box-shadow,transform] duration-fast ease-[var(--ease-standard)] active:translate-y-px disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-transparent disabled:bg-bg-muted disabled:text-content-muted disabled:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 focus-visible:outline-none",
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground shadow-xs-inverted hover:bg-[var(--color-ink-hover)] hover:shadow-md-inverted",
+          "border-transparent bg-primary text-primary-foreground shadow-xs hover:bg-[var(--color-accent-brand-hover)] hover:shadow-sm active:bg-[var(--color-accent-brand-active)]",
         outline:
-          "border-border-default bg-card text-content-emphasis shadow-xs hover:border-border-emphasis hover:bg-bg-muted hover:shadow-sm",
+          "border-border-default bg-transparent text-content-emphasis hover:border-border-emphasis hover:bg-bg-muted",
         secondary:
           "border-border-default bg-card text-content-emphasis shadow-xs hover:border-border-emphasis hover:bg-bg-muted hover:shadow-sm",
         ghost:
@@ -23,7 +23,7 @@ const buttonVariants = cva(
         link:
           "h-auto rounded-none border-transparent bg-transparent px-0 text-content-info underline-offset-4 hover:underline",
         marketing:
-          "h-11! rounded-pill border-transparent bg-primary px-3.5 text-button-lg text-primary-foreground hover:bg-[var(--color-ink-hover)]",
+          "h-11! rounded-pill border-transparent bg-primary px-3.5 text-button-lg text-primary-foreground shadow-xs hover:bg-[var(--color-accent-brand-hover)] hover:shadow-sm active:bg-[var(--color-accent-brand-active)]",
         "marketing-secondary":
           "h-11! rounded-pill border-border bg-card px-3.5 text-button-lg text-content-emphasis hover:bg-bg-muted",
         category:

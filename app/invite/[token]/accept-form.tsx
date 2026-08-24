@@ -5,6 +5,7 @@ import { Mail } from "lucide-react";
 import { acceptInvite, type AcceptInviteState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Field,
   FieldError,
@@ -39,7 +40,7 @@ export function AcceptInviteForm({ token }: { token: string }) {
             type="email"
             autoComplete="email"
             required
-            placeholder="you@example.com"
+            placeholder="you@example.com…"
           />
         </Field>
 
@@ -75,7 +76,8 @@ export function AcceptInviteForm({ token }: { token: string }) {
         </Alert>
 
         <Button type="submit" disabled={pending} className="w-full">
-          {pending ? "Creating your account…" : "Create account"}
+          {pending && <Spinner data-icon="inline-start" />}
+          Create account
         </Button>
 
         {state.error && <FieldError className="text-center">{state.error}</FieldError>}

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ResetForm } from "./reset-form";
 import {
@@ -5,17 +6,22 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "Reset password — Maths Tasks",
+  description: "Request a secure Maths Tasks password-reset link.",
+};
 
 export default function ResetPage() {
   return (
-    <main id="main-content" className="auth-canvas flex min-h-dvh items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-[480px]">
-        <CardHeader className="text-center">
-          <CardTitle className="text-h2">
-            Forgot your password?
-          </CardTitle>
+    <main
+      id="main-content"
+      className="auth-canvas flex min-h-dvh items-center justify-center px-4 py-8 sm:py-12"
+    >
+      <Card className="w-full max-w-md gap-6 p-6 shadow-sm sm:p-8">
+        <CardHeader className="gap-2 text-center">
+          <h1 className="text-h2">Forgot your password?</h1>
           <CardDescription>
             Enter your email and we&rsquo;ll send a link to set a new one.
           </CardDescription>

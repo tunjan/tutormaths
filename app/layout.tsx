@@ -33,7 +33,7 @@ export default function RootLayout({
       className={`${geist.variable} ${geistMono.variable} font-sans`}
       suppressHydrationWarning
     >
-      <body className="bg-background text-content-default antialiased">
+      <body className="bg-background text-content-default">
         <a href="#main-content" className="skip-link">Skip to content</a>
         <ViewTransitions>
           <ThemeProvider

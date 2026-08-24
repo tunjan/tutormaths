@@ -71,6 +71,7 @@ export function AssignmentRow({
   return (
     <Link
       href={href}
+      title={title}
       className={cn(
         "group relative flex items-center justify-between gap-3 px-4 py-3 transition-colors duration-fast hover:bg-bg-muted sm:px-5",
         className,
@@ -103,7 +104,7 @@ export function AssignmentRow({
           {unread && (
             <span
               className="absolute -right-1 -top-1 size-2 rounded-full border-2 border-card bg-status-review"
-              aria-label="Unread activity"
+              aria-hidden
             />
           )}
         </div>
@@ -111,8 +112,9 @@ export function AssignmentRow({
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <h3 className="truncate text-label text-text-heading">
             {title}
+            {unread && <span className="sr-only"> — unread activity</span>}
           </h3>
-          <span className="truncate text-caption text-content-subtle">
+          <span className="truncate text-caption text-content-subtle font-metric">
             {meta}
           </span>
         </div>

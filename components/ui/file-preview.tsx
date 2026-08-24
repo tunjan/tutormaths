@@ -24,17 +24,23 @@ export function FilePreview({
       )}
     >
       {isPdf ? (
-        <iframe
-          src={url}
-          title={title ?? "PDF preview"}
-          className="h-[70vh] w-full lg:h-[calc(100vh-9rem)]"
-        />
+        <>
+          <div className="flex min-h-48 items-center justify-center p-6 text-center text-body text-muted-foreground sm:hidden">
+            Open the PDF in a new tab to read it comfortably on a small screen.
+          </div>
+          <iframe
+            src={url}
+            title={title ?? "PDF preview"}
+            className="hidden h-[36rem] w-full sm:block lg:h-[calc(100vh-12rem)]"
+          />
+        </>
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={url}
           alt={title ?? "Submitted work"}
-          className="max-h-[70vh] w-full object-contain lg:max-h-[calc(100vh-9rem)]"
+          className="min-h-64 max-h-[70vh] w-full object-contain lg:max-h-[calc(100vh-12rem)]"
+          decoding="async"
         />
       )}
     </div>

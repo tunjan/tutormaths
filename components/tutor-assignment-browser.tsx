@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { Search, Trash2, X } from "lucide-react";
 import { Link } from "next-view-transitions";
 import { toast } from "sonner";
@@ -11,7 +11,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -21,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Tooltip,
   TooltipContent,
@@ -37,6 +37,7 @@ import { formatDate, formatDateTime, type ReviewStatus } from "@/lib/format";
 
 export interface BrowserItem {
   id: string;
+  studentId: string;
   title: string;
   type: "problem_set" | "reading_notes";
   due_at: string;
@@ -46,27 +47,29 @@ export interface BrowserItem {
   unread: boolean;
 }
 
-type AssignmentFilter = "focus" | "active" | "completed" | "all";
+export type AssignmentFilter = "attention" | "active" | "completed" | "all";
 
 const filterOptions = [
-  { value: "focus", label: "Attention" },
+  { value: "attention", label: "Attention" },
   { value: "active", label: "Active" },
-  { value: "completed", label: "Done" },
+  { value: "completed", label: "Approved" },
   { value: "all", label: "All" },
 ] satisfies { value: AssignmentFilter; label: string }[];
 
 const filterDescriptions: Record<AssignmentFilter, string> = {
-  focus: "Overdue work and submissions awaiting review.",
+  attention: "Overdue work and submissions awaiting review.",
   active: "Open assignments that are not overdue.",
   completed: "Approved assignments.",
   all: "All assignments.",
 };
 
 function isOpen(item: BrowserItem) {
-  return item.review_status === "assigned" || item.review_status === "needs_work";
+  return (
+    item.review_status === "assigned" || item.review_status === "needs_work"
+  );
 }
 
-function needsFocus(item: BrowserItem, nowMs: number) {
+function needsAttention(item: BrowserItem, nowMs: number) {
   return (
     item.review_status === "submitted" ||
     (isOpen(item) && new Date(item.due_at).getTime() < nowMs)
@@ -74,7 +77,7 @@ function needsFocus(item: BrowserItem, nowMs: number) {
 }
 
 function defaultFilter(items: BrowserItem[], nowMs: number): AssignmentFilter {
-  if (items.some((item) => needsFocus(item, nowMs))) return "focus";
+  if (items.some((item) => needsAttention(item, nowMs))) return "attention";
   if (
     items.some(
       (item) =>
@@ -89,26 +92,50 @@ function defaultFilter(items: BrowserItem[], nowMs: number): AssignmentFilter {
   return "all";
 }
 
+function parseFilter(value: string | null): AssignmentFilter | undefined {
+  return filterOptions.some((option) => option.value === value)
+    ? (value as AssignmentFilter)
+    : undefined;
+}
+
 export function TutorAssignmentBrowser({
   items,
   nowMs,
+  initialFilter,
+  initialQuery = "",
 }: {
   items: BrowserItem[];
   nowMs: number;
+  initialFilter?: AssignmentFilter;
+  initialQuery?: string;
 }) {
   const [filter, setFilter] = useState<AssignmentFilter>(() =>
-    defaultFilter(items, nowMs),
+    initialFilter ?? defaultFilter(items, nowMs),
   );
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(initialQuery);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [deleteIds, setDeleteIds] = useState<string[]>([]);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleting, startDelete] = useTransition();
   const searchRef = useRef<HTMLInputElement>(null);
   const selectAllRef = useRef<HTMLElement>(null);
 
+  useEffect(() => {
+    function restoreUrlState() {
+      const params = new URLSearchParams(window.location.search);
+      const nextFilter = parseFilter(params.get("view"));
+      setFilter(nextFilter ?? defaultFilter(items, nowMs));
+      setQuery(params.get("q") ?? "");
+      setSelected(new Set());
+    }
+
+    window.addEventListener("popstate", restoreUrlState);
+    return () => window.removeEventListener("popstate", restoreUrlState);
+  }, [items, nowMs]);
+
   const visible = useMemo(() => {
     const source = items.filter((item) => {
-      if (filter === "focus") return needsFocus(item, nowMs);
+      if (filter === "attention") return needsAttention(item, nowMs);
       if (filter === "active") {
         return isOpen(item) && new Date(item.due_at).getTime() >= nowMs;
       }
@@ -138,9 +165,33 @@ export function TutorAssignmentBrowser({
     ? `${visible.length} of ${items.length} assignment${items.length === 1 ? "" : "s"}`
     : `${visible.length} assignment${visible.length === 1 ? "" : "s"}`;
 
+  function updateUrl(
+    nextFilter: AssignmentFilter,
+    nextQuery: string,
+    mode: "push" | "replace",
+  ) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("view", nextFilter);
+    const trimmedQuery = nextQuery.trim();
+    if (trimmedQuery) url.searchParams.set("q", trimmedQuery);
+    else url.searchParams.delete("q");
+    window.history[mode === "push" ? "pushState" : "replaceState"](
+      {},
+      "",
+      url.toString(),
+    );
+  }
+
   function changeFilter(nextFilter: AssignmentFilter) {
     setFilter(nextFilter);
     setSelected(new Set());
+    updateUrl(nextFilter, query, "push");
+  }
+
+  function changeQuery(nextQuery: string) {
+    setQuery(nextQuery);
+    setSelected(new Set());
+    updateUrl(filter, nextQuery, "replace");
   }
 
   function toggle(id: string) {
@@ -153,6 +204,7 @@ export function TutorAssignmentBrowser({
   }
 
   function confirmDelete(ids: string[]) {
+    setDeleteError(null);
     setDeleteIds(ids);
   }
 
@@ -169,10 +221,11 @@ export function TutorAssignmentBrowser({
         toast.success(
           `${ids.length} assignment${ids.length === 1 ? "" : "s"} deleted.`,
         );
-      } catch (error) {
-        toast.error((error as Error).message);
-      } finally {
         setDeleteIds([]);
+      } catch (error) {
+        const message = (error as Error).message || "Deletion failed. Try again.";
+        setDeleteError(message);
+        toast.error(message);
       }
     });
   }
@@ -186,9 +239,9 @@ export function TutorAssignmentBrowser({
         <div className="min-w-0">
           <h2
             id="assignments-heading"
-            className="text-heading-md text-foreground"
+            className="text-section-title text-foreground"
           >
-            Assignments
+            Assignment list
           </h2>
           <p className="mt-1 text-pretty text-body text-muted-foreground">
             {filterDescriptions[filter]}
@@ -209,11 +262,10 @@ export function TutorAssignmentBrowser({
               type="search"
               value={query}
               onChange={(event) => {
-                setQuery(event.target.value);
-                setSelected(new Set());
+                changeQuery(event.target.value);
               }}
               placeholder="Search assignments…"
-              className="h-9 w-full pl-9 pr-9 text-body-lg sm:w-60 sm:text-body-sm"
+              className="w-full pl-9 pr-9 text-body-lg sm:w-60 sm:text-body-sm"
             />
             <Search
               className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-content-subtle"
@@ -227,8 +279,7 @@ export function TutorAssignmentBrowser({
                 size="icon-xs"
                 className="absolute right-0.5 top-1/2 -translate-y-1/2 text-content-subtle hover:text-content-emphasis"
                 onClick={() => {
-                  setQuery("");
-                  setSelected(new Set());
+                  changeQuery("");
                   searchRef.current?.focus();
                 }}
                 aria-label="Clear search"
@@ -255,7 +306,7 @@ export function TutorAssignmentBrowser({
         )}
       >
         {visible.length > 0 ? (
-          <div className="flex items-center gap-2.5 text-caption text-content-subtle">
+          <div className="flex items-center gap-2.5 text-caption text-content-subtle font-metric">
             <Checkbox
               ref={selectAllRef}
               checked={allVisibleSelected}
@@ -294,7 +345,7 @@ export function TutorAssignmentBrowser({
           </div>
         ) : (
           <span
-            className="text-caption text-content-subtle"
+            className="text-caption text-content-subtle font-metric"
             aria-live="polite"
             aria-atomic="true"
           >
@@ -342,37 +393,51 @@ export function TutorAssignmentBrowser({
           query={query}
           filter={filter}
           onReset={() => {
-            if (query.trim()) setQuery("");
-            else setFilter("all");
+            if (query.trim()) changeQuery("");
+            else changeFilter("all");
           }}
         />
       )}
 
       <AlertDialog
         open={deleteIds.length > 0}
-        onOpenChange={(open) => !open && setDeleteIds([])}
+        onOpenChange={(open) => {
+          if (!open && !deleting) {
+            setDeleteIds([]);
+            setDeleteError(null);
+          }
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Delete {deleteIds.length === 1 ? "this assignment" : `${deleteIds.length} assignments`}?
+              Delete{" "}
+              {deleteIds.length === 1
+                ? "this assignment"
+                : `${deleteIds.length} assignments`}
+              ?
             </AlertDialogTitle>
             <AlertDialogDescription>
               Submissions, comments and uploaded files will be permanently
               removed. This can&rsquo;t be undone.
             </AlertDialogDescription>
+            {deleteError && (
+              <p role="alert" className="text-body text-content-error">
+                {deleteError}
+              </p>
+            )}
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <Button
               variant="destructive"
               disabled={deleting}
               onClick={runDelete}
+              aria-busy={deleting}
             >
-              {deleting
-                ? "Deleting…"
-                : `Delete ${deleteIds.length === 1 ? "assignment" : "assignments"}`}
-            </AlertDialogAction>
+              {deleting && <Spinner data-icon="inline-start" />}
+              Delete {deleteIds.length === 1 ? "assignment" : "assignments"}
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -408,17 +473,17 @@ function AssignmentList({
             <th scope="col" className="pr-4 font-medium">
               Assignment
             </th>
-            <th scope="col" className="hidden w-36 pr-4 font-medium md:table-cell">
+            <th scope="col" className="hidden w-32 pr-4 font-medium md:table-cell">
               Student
             </th>
-            <th scope="col" className="hidden w-36 pr-4 font-medium md:table-cell">
+            <th scope="col" className="hidden w-28 pr-4 font-medium md:table-cell">
               Due
             </th>
             <th scope="col" className="hidden w-28 pr-4 font-medium lg:table-cell">
               Progress
             </th>
-            <th scope="col" className="hidden w-36 pr-4 font-medium md:table-cell">
-              Status
+            <th scope="col" className="hidden w-32 pr-4 font-medium md:table-cell">
+              Workflow
             </th>
             <th scope="col" className="w-12 pr-2 text-right">
               <span className="sr-only">Actions</span>
@@ -459,6 +524,7 @@ function AssignmentList({
                     )}
                     <Link
                       href={`/tutor/assignments/${item.id}`}
+                      title={item.title}
                       className="min-w-0 truncate rounded-sm text-label text-content-emphasis decoration-border-emphasis underline-offset-4 hover:underline focus-visible:outline-none focus-visible:shadow-[var(--focus-ring)]"
                     >
                       {item.title}
@@ -471,14 +537,14 @@ function AssignmentList({
                     {item.student} · {due.mobileLabel} · {workflow.label}
                   </span>
                 </th>
-                <td className="hidden truncate py-2.5 pr-4 align-middle text-caption text-content-default md:table-cell">
+                <td className="hidden truncate py-2.5 pr-4 align-middle text-body text-content-default md:table-cell">
                   {item.student}
                 </td>
                 <td className="hidden py-2.5 pr-4 align-middle md:table-cell">
                   <time
                     dateTime={item.due_at}
                     title={formatDateTime(item.due_at)}
-                    className="block text-caption text-content-default tabular-nums"
+                    className="block text-body text-content-default tabular-nums"
                   >
                     {formatDate(item.due_at)}
                   </time>
@@ -501,7 +567,7 @@ function AssignmentList({
                       className="w-14 flex-none gap-0"
                     />
                     <span
-                      className="w-8 text-right text-caption text-content-subtle tabular-nums"
+                      className="w-8 text-right text-body text-content-subtle tabular-nums"
                       aria-hidden
                     >
                       {item.completion_pct}%
@@ -614,12 +680,12 @@ function EmptyState({
 }) {
   const message = query.trim()
     ? "No assignments match your search."
-    : filter === "focus"
+    : filter === "attention"
       ? "Nothing needs your attention."
       : filter === "active"
         ? "No active assignments yet."
         : filter === "completed"
-          ? "No completed assignments yet."
+          ? "No approved assignments yet."
           : "No assignments yet.";
 
   return (
@@ -635,7 +701,7 @@ function EmptyState({
             href="/tutor/assignments/new"
             className={cn(buttonVariants({ size: "sm" }))}
           >
-            New assignment
+            New assignment…
           </Link>
         )}
       </EmptyContent>

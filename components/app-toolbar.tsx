@@ -27,7 +27,7 @@ export function AppShell({
   return (
     <div className="flex min-h-dvh w-full flex-col bg-background">
       <header className="sticky top-0 z-40 border-b border-border bg-card">
-        <div className="mx-auto flex h-14 w-full max-w-[1200px] items-center gap-3 px-4 sm:px-6">
+        <div className="mx-auto flex h-14 w-full max-w-[1248px] items-center gap-3 px-4 sm:px-6">
           <Link
             href={homeHref}
             aria-label={homeLabel}
@@ -55,7 +55,7 @@ export function AppShell({
       <main
         id="main-content"
         tabIndex={-1}
-        className="mx-auto w-full max-w-[1200px] flex-1 px-4 py-8 sm:px-6 sm:py-10"
+        className="mx-auto w-full max-w-[1248px] flex-1 px-4 py-8 sm:px-6 sm:py-10"
       >
         {children}
       </main>

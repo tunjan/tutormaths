@@ -1,13 +1,19 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AcceptInviteForm } from "./accept-form";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "Accept invitation — Maths Tasks",
+  description: "Finish setting up your private Maths Tasks workspace.",
+};
 
 /**
  * Public landing for an invite link. Looks the token up with the admin client.
@@ -30,14 +36,17 @@ export default async function InvitePage({
   const firstName = invite?.full_name?.trim().split(/\s+/)[0] ?? "";
 
   return (
-    <main id="main-content" className="auth-canvas flex min-h-dvh items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-[480px] gap-6">
+    <main
+      id="main-content"
+      className="auth-canvas flex min-h-dvh items-center justify-center px-4 py-8 sm:py-12"
+    >
+      <Card className="w-full max-w-md gap-6 p-6 shadow-sm sm:p-8">
         {valid ? (
           <>
-            <CardHeader className="text-center">
-              <CardTitle className="text-h2">
+            <CardHeader className="gap-2 text-center">
+              <h1 className="text-h2">
                 {firstName ? `Welcome, ${firstName}` : "Welcome"}
-              </CardTitle>
+              </h1>
               <CardDescription>
                 Choose your email and a password to finish setting up your
                 account.
@@ -49,10 +58,10 @@ export default async function InvitePage({
           </>
         ) : (
           <>
-            <CardHeader className="text-center">
-              <CardTitle className="text-h2 text-content-error">
+            <CardHeader className="gap-2 text-center">
+              <h1 className="text-h2 text-content-error">
                 This link is no longer valid
-              </CardTitle>
+              </h1>
               <CardDescription>
                 It may have already been used or been cancelled. Ask your tutor
                 to send you a new invite link.
@@ -61,7 +70,7 @@ export default async function InvitePage({
             <CardContent className="text-center">
               <Link
                 href="/login"
-                className="text-label text-content-info underline underline-offset-4"
+                className={buttonVariants()}
               >
                 Go to sign in
               </Link>

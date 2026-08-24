@@ -37,19 +37,16 @@ export function AccountMenu({
           <Button
             variant="ghost"
             size="sm"
-            className="min-w-0 max-w-72 px-2"
+            className="px-2"
             aria-label={`Open ${accountLabel} account menu`}
             title={accountLabel}
           >
             <span className="grid size-6 shrink-0 place-items-center rounded-full border border-border bg-card text-caption text-content-default">
               {accountInitial(userEmail, roleLabel)}
             </span>
-            <span className="hidden min-w-0 truncate text-left lg:block">
-              {accountLabel}
-            </span>
             <ChevronDown
               data-icon="inline-end"
-              className="hidden text-content-muted lg:block"
+              className="text-content-muted"
               strokeWidth={1.75}
               aria-hidden
             />

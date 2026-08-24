@@ -4,7 +4,7 @@ import { Link } from "next-view-transitions";
 export function AppFooter({ homeHref }: { homeHref: string }) {
   return (
     <footer className="mt-auto border-t border-border bg-background">
-      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-2 px-4 py-8 text-caption text-content-subtle sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div className="mx-auto flex w-full max-w-[1248px] flex-col gap-2 px-4 py-8 text-caption text-content-subtle sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <div className="flex items-center gap-3">
           <Link
             href={homeHref}

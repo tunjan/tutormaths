@@ -14,21 +14,24 @@ function Checkbox({
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       className={cn(
-        "peer relative flex size-[18px] shrink-0 cursor-pointer items-center justify-center rounded-sm border border-border-subtle bg-card shadow-xs transition-[background-color,border-color,color,box-shadow] duration-fast outline-none after:absolute after:-inset-[13px] sm:after:-inset-3",
-        "hover:border-border-emphasis focus-visible:border-accent-ink focus-visible:shadow-[var(--focus-ring)]",
+        "group peer relative flex size-[18px] shrink-0 cursor-pointer items-center justify-center rounded-sm text-primary-foreground outline-none after:absolute after:-inset-[3px]",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        "data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground data-indeterminate:border-primary data-indeterminate:bg-primary data-indeterminate:text-primary-foreground",
         className
       )}
       indeterminate={indeterminate}
       {...props}
     >
-      <CheckboxPrimitive.Indicator
-        data-slot="checkbox-indicator"
-        className="grid place-content-center text-current transition-none [&>svg]:size-3.5"
+      <span
+        aria-hidden
+        className="pointer-events-none grid size-[18px] place-content-center rounded-sm border border-border-default bg-card text-current shadow-xs transition-[background-color,border-color,color,box-shadow] duration-fast group-hover:border-border-emphasis group-focus-visible:border-accent-ink group-data-checked:border-primary group-data-checked:bg-primary group-data-indeterminate:border-primary group-data-indeterminate:bg-primary"
       >
-        {indeterminate ? <MinusIcon aria-hidden /> : <CheckIcon aria-hidden />}
-      </CheckboxPrimitive.Indicator>
+        <CheckboxPrimitive.Indicator
+          data-slot="checkbox-indicator"
+          className="grid place-content-center transition-none [&>svg]:size-3.5"
+        >
+          {indeterminate ? <MinusIcon /> : <CheckIcon />}
+        </CheckboxPrimitive.Indicator>
+      </span>
     </CheckboxPrimitive.Root>
   )
 }

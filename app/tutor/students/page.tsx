@@ -102,7 +102,7 @@ export default async function StudentsPage() {
           </EmptyContent>
         </Empty>
       ) : (
-        <div className="space-y-5">
+        <div className="flex flex-col gap-5">
           {studentCount > 0 && (
             <section
               aria-labelledby="active-students-heading"

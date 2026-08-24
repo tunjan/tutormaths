@@ -2,7 +2,13 @@
 
 import { Link } from "next-view-transitions";
 import { usePathname } from "next/navigation";
-import { BookOpenText, LayoutDashboard, Menu, UsersRound } from "lucide-react";
+import {
+  BookOpenText,
+  LayoutDashboard,
+  ListChecks,
+  Menu,
+  UsersRound,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +19,7 @@ import {
 
 const links = [
   { href: "/tutor", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/tutor/assignments", label: "Assignments", icon: ListChecks },
   { href: "/tutor/students", label: "Students", icon: UsersRound },
   { href: "/tutor/library", label: "Library", icon: BookOpenText },
 ];

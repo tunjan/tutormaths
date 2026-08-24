@@ -26,20 +26,20 @@ export function PageHeader({
     >
       <div className="min-w-0">
         {eyebrow && (
-          <p className="font-eyebrow text-text-subtle">
+          <p className="text-caption font-medium tracking-normal text-text-subtle">
             {eyebrow}
           </p>
         )}
         <h1
           className={cn(
-            "text-heading-lg text-text-heading",
+            "break-words text-balance text-page-title text-text-heading",
             eyebrow && "mt-2",
           )}
         >
           {title}
         </h1>
         {description && (
-          <p className="mt-1.5 max-w-2xl text-body-sm text-content-subtle">
+          <p className="mt-1.5 max-w-[65ch] break-words text-pretty text-body-sm text-content-subtle">
             {description}
           </p>
         )}

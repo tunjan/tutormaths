@@ -6,6 +6,7 @@ import { signIn, type LoginState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Field,
   FieldError,
@@ -29,7 +30,7 @@ export function LoginForm() {
             type="email"
             autoComplete="email"
             required
-            placeholder="you@example.com"
+            placeholder="you@example.com…"
           />
         </Field>
 
@@ -63,7 +64,8 @@ export function LoginForm() {
         </Field>
 
         <Button type="submit" disabled={pending} className="w-full">
-          {pending ? "Signing in…" : "Sign in"}
+          {pending && <Spinner data-icon="inline-start" />}
+          Sign in
         </Button>
 
         {state.error && <FieldError className="text-center">{state.error}</FieldError>}

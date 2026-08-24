@@ -316,6 +316,7 @@ export async function updateAssignment(
 
   revalidatePath(`/tutor/assignments/${id}`);
   revalidatePath("/tutor");
+  revalidatePath("/tutor/assignments");
 }
 
 /**
@@ -391,4 +392,5 @@ export async function deleteAssignments(ids: string[]): Promise<void> {
   if (error) throw new Error(error.message);
 
   revalidatePath("/tutor");
+  revalidatePath("/tutor/assignments");
 }

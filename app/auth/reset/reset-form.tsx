@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Field,
   FieldGroup,
@@ -52,11 +53,12 @@ export function ResetForm() {
             type="email"
             autoComplete="email"
             required
-            placeholder="you@example.com"
+            placeholder="you@example.com…"
           />
         </Field>
         <Button type="submit" disabled={pending} className="w-full">
-          {pending ? "Sending…" : "Send reset link"}
+          {pending && <Spinner data-icon="inline-start" />}
+          Send reset link
         </Button>
       </FieldGroup>
     </form>
