@@ -71,7 +71,7 @@ function defaultDue(): string {
 function FieldError({ message, id }: { message?: string; id?: string }) {
   if (!message) return null;
   return (
-    <p id={id} className="text-caption text-destructive" role="alert">
+    <p id={id} className="text-caption text-content-error" role="alert">
       {message}
     </p>
   );

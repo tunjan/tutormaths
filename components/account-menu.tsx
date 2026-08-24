@@ -41,7 +41,7 @@ export function AccountMenu({
             aria-label={`Open ${accountLabel} account menu`}
             title={accountLabel}
           >
-            <span className="grid size-6 shrink-0 place-items-center rounded-full border border-border bg-card text-caption text-content-default">
+            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-bg-subtle text-caption text-content-default">
               {accountInitial(userEmail, roleLabel)}
             </span>
             <ChevronDown

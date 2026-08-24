@@ -63,7 +63,7 @@ export default async function StudentDetailPage({
 
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
-            <h1 className="truncate text-heading-lg text-content-emphasis">
+            <h1 className="break-words text-balance text-heading-lg text-content-emphasis">
               {displayName}
             </h1>
             <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-content-subtle">
@@ -92,7 +92,7 @@ export default async function StudentDetailPage({
         <h2 id="student-summary-heading" className="sr-only">
           Student summary
         </h2>
-        <dl className="grid overflow-hidden rounded-md border border-border-subtle bg-card shadow-[var(--design-shadow-card)] sm:grid-cols-3 sm:divide-x sm:divide-border-subtle">
+        <dl className="grid gap-3 sm:grid-cols-3">
           <SummaryMetric label="Active assignments" value={active.length} />
           <SummaryMetric label="Completed assignments" value={completed.length} />
           <SummaryMetric
@@ -128,7 +128,7 @@ function SummaryMetric({
   detail?: string;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-border-subtle px-4 py-3.5 last:border-b-0 sm:block sm:border-b-0 sm:px-5 sm:py-4">
+    <div className="flex items-center justify-between gap-4 rounded-md bg-card px-4 py-3.5 shadow-xs sm:block sm:px-5 sm:py-4">
       <dt className="text-caption text-content-subtle">{label}</dt>
       <dd className="mt-0.5 flex items-baseline gap-1.5 font-metric text-title-lg tabular-nums text-content-emphasis">
         {value}
@@ -190,7 +190,7 @@ function AssignmentList({ items }: { items: AssignmentItem[] }) {
         <span />
       </div>
 
-      <ul className="divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card shadow-[var(--design-shadow-card)]">
+      <ul className="divide-y divide-border-subtle overflow-hidden rounded-md bg-card shadow-xs">
         {items.map((assignment) => (
           <li key={assignment.id}>
             <StudentAssignmentRow assignment={assignment} />
@@ -217,7 +217,7 @@ function StudentAssignmentRow({
     >
       <div className="flex min-w-0 items-center gap-3">
         <span
-          className="grid size-8 shrink-0 place-items-center rounded-md border border-border-subtle bg-bg-subtle text-content-default"
+          className="grid size-8 shrink-0 place-items-center rounded-sm bg-bg-subtle text-content-default"
           aria-hidden
         >
           <AssignmentTypeIcon className="size-4" strokeWidth={1.75} />
@@ -284,9 +284,9 @@ function CompactEmpty({ kind }: { kind: "active" | "history" }) {
   const EmptyIcon = isHistory ? CheckCircle2 : ListChecks;
 
   return (
-    <div className="flex min-h-16 items-center gap-3 rounded-md border border-border-subtle bg-card px-4 py-3.5 text-caption sm:px-5">
+    <div className="flex min-h-16 items-center gap-3 rounded-md bg-bg-subtle/60 px-4 py-3.5 text-caption sm:px-5">
       <span
-        className="grid size-8 shrink-0 place-items-center rounded-md border border-border-subtle bg-bg-subtle text-content-subtle"
+        className="grid size-8 shrink-0 place-items-center rounded-sm bg-card text-content-subtle shadow-xs"
         aria-hidden
       >
         <EmptyIcon className="size-4" strokeWidth={1.75} />

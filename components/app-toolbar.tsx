@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { Link } from "next-view-transitions";
 import { AccountMenu } from "@/components/account-menu";
 import { AppFooter } from "@/components/app-footer";
-import { Logo } from "@/components/logo";
 
 export function AppShell({
   homeHref,
@@ -32,9 +31,8 @@ export function AppShell({
           <Link
             href={homeHref}
             aria-label={homeLabel}
-            className="flex min-w-0 items-center gap-2 rounded-sm text-content-emphasis focus-visible:outline-none"
+            className="flex min-w-0 items-center rounded-sm text-content-emphasis focus-visible:outline-none"
           >
-            <Logo />
             <span className="truncate text-title-sm" translate="no">
               Maths Tasks
             </span>

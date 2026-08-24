@@ -81,10 +81,8 @@ export function AssignmentRow({
         <div className="relative shrink-0">
           <span
             className={cn(
-              "grid size-8 place-items-center border text-caption font-medium",
-              showTypeMarker
-                ? "rounded-sm border-transparent bg-bg-subtle text-content-default"
-                : "rounded-sm border-border-subtle bg-bg-subtle text-content-default",
+              "grid size-8 place-items-center rounded-sm bg-bg-subtle text-caption font-medium text-content-default",
+              !showTypeMarker && "text-content-subtle",
             )}
             aria-hidden
           >

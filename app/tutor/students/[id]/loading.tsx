@@ -14,11 +14,11 @@ export default function Loading() {
         </div>
       </header>
 
-      <div className="grid overflow-hidden rounded-md border border-border-subtle bg-card sm:grid-cols-3 sm:divide-x sm:divide-border-subtle">
+      <div className="grid gap-3 sm:grid-cols-3">
         {Array.from({ length: 3 }).map((_, index) => (
           <div
             key={index}
-            className="border-b border-border-subtle px-4 py-3.5 last:border-b-0 sm:border-b-0 sm:px-5 sm:py-4"
+            className="rounded-md bg-card px-4 py-3.5 shadow-xs sm:px-5 sm:py-4"
           >
             <Skeleton className="h-4 w-28" />
             <Skeleton className="mt-2 h-7 w-14" />
@@ -39,7 +39,7 @@ function AssignmentSectionSkeleton({ rows }: { rows: number }) {
         <Skeleton className="h-6 w-40" />
         <Skeleton className="h-4 w-3" />
       </div>
-      <div className="overflow-hidden rounded-md border border-border-subtle bg-card">
+      <div className="overflow-hidden rounded-md bg-card shadow-xs">
         {Array.from({ length: rows }).map((_, index) => (
           <div
             key={index}

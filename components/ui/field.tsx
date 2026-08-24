@@ -216,7 +216,7 @@ function FieldError({
     <div
       role="alert"
       data-slot="field-error"
-      className={cn("text-caption text-destructive", className)}
+      className={cn("text-caption text-content-error", className)}
       {...props}
     >
       {content}

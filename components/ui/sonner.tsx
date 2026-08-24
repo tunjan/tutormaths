@@ -43,7 +43,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           title: "!text-label",
           description: "!text-caption !text-content-subtle",
           actionButton: "!rounded-sm !bg-primary !text-primary-foreground",
-          cancelButton: "!rounded-sm !border !border-border !bg-card !text-content-emphasis",
+          cancelButton: "!rounded-sm !border !border-border-default !bg-card !text-content-emphasis",
         },
       }}
       {...props}

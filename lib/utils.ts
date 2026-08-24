@@ -10,6 +10,7 @@ const FONT_SIZES = [
   "display-md",
   "display-sm",
   "display",
+  "page-title",
   "heading-lg",
   "heading-md",
   "section-title",
