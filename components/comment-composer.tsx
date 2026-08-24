@@ -108,7 +108,11 @@ export function CommentComposer({
               variant={value.trim() ? "default" : "soft"}
               className="shrink-0"
             >
-              {pending ? <Spinner aria-hidden /> : <Send aria-hidden />}
+              {pending ? (
+                <Spinner data-icon="inline-start" aria-hidden />
+              ) : (
+                <Send data-icon="inline-start" aria-hidden />
+              )}
             </Button>
           </div>
           {error && <FieldError id={errorId}>{error}</FieldError>}

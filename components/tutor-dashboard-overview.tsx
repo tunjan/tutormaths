@@ -51,14 +51,14 @@ export function TutorDashboardOverview({
 
   return (
     <section
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-6"
       aria-labelledby="dashboard-overview-heading"
     >
       <h2 id="dashboard-overview-heading" className="sr-only">
         Dashboard overview
       </h2>
 
-      <dl className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1.35fr)_minmax(0,0.8fr)]">
+      <dl className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
         <Metric
           label="Need attention"
           value={focusItems.length}
@@ -89,10 +89,10 @@ export function TutorDashboardOverview({
 
       <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(20rem,1fr)]">
         <Card
-          className="min-w-0 gap-0 bg-surface-raised p-0"
+          className="min-w-0 gap-0 p-0"
           aria-labelledby="priority-queue-heading"
         >
-          <CardHeader className="px-5 pt-4 pb-3">
+          <CardHeader className="border-b border-border bg-bg-subtle px-5 py-4">
             <h3
               id="priority-queue-heading"
               className="text-heading-md text-foreground"
@@ -106,7 +106,13 @@ export function TutorDashboardOverview({
             </CardDescription>
             <CardAction>
               <Badge
-                variant={hasPriorityWork ? "secondary" : "outline"}
+                variant={
+                  overdueCount > 0
+                    ? "destructive"
+                    : hasPriorityWork
+                      ? "info"
+                      : "success"
+                }
                 className="font-metric"
               >
                 {hasPriorityWork
@@ -118,7 +124,7 @@ export function TutorDashboardOverview({
 
           <CardContent className="min-w-0 flex-1 p-0">
             {queue.length > 0 ? (
-              <div className="divide-y divide-border-muted">
+              <div className="divide-y divide-border">
                 {queue.map((item) => (
                   <AssignmentRow
                     key={item.id}
@@ -130,6 +136,7 @@ export function TutorDashboardOverview({
                     reviewStatus={item.review_status}
                     student={item.student}
                     unread={item.unread}
+                    headingLevel="h4"
                     className="px-5 py-2"
                   />
                 ))}
@@ -149,7 +156,7 @@ export function TutorDashboardOverview({
             )}
           </CardContent>
 
-          <div className="mt-auto flex min-h-12 items-center justify-between gap-4 px-5 py-2">
+          <div className="mt-auto flex min-h-12 flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-border bg-bg-subtle px-5 py-2">
             <span className="text-caption text-content-muted">
               {hasPriorityWork
                 ? "Reviews first · then oldest overdue"
@@ -166,10 +173,10 @@ export function TutorDashboardOverview({
         </Card>
 
         <Card
-          className="min-w-0 gap-0 bg-surface-raised p-0"
+          className="min-w-0 gap-0 p-0"
           aria-labelledby="learner-progress-heading"
         >
-          <CardHeader className="px-5 pt-4 pb-3">
+          <CardHeader className="border-b border-border bg-bg-subtle px-5 py-4">
             <h3
               id="learner-progress-heading"
               className="text-heading-md text-foreground"
@@ -189,6 +196,7 @@ export function TutorDashboardOverview({
                 )}
               >
                 View all
+                <ArrowRight data-icon="inline-end" aria-hidden />
               </Link>
             </CardAction>
           </CardHeader>
@@ -196,7 +204,7 @@ export function TutorDashboardOverview({
           <CardContent className="flex flex-1 flex-col px-5 py-4">
             {learnerProgress.length > 0 ? (
               <>
-                <div className="border-b border-border-muted pb-3">
+                <div className="border-b border-border pb-4">
                   <div className="flex items-end justify-between gap-4">
                     <div className="min-w-0">
                       <p className="font-eyebrow text-content-subtle">
@@ -213,12 +221,12 @@ export function TutorDashboardOverview({
                   </div>
                   <Progress
                     value={averageProgress}
-                    className="mt-2.5 gap-0 [&_[data-slot=progress-track]]:h-1.5 [&_[data-slot=progress-track]]:bg-border"
+                    className="mt-3 gap-0"
                     aria-label={`${averageProgress}% class average progress`}
                   />
                 </div>
 
-                <div className="mt-3">
+                <div className="mt-4">
                   <div className="flex items-center justify-between gap-4">
                     <p className="font-eyebrow text-content-subtle">
                       Student
@@ -227,16 +235,16 @@ export function TutorDashboardOverview({
                       Average
                     </p>
                   </div>
-                  <div className="mt-1 divide-y divide-border-muted">
+                  <div className="mt-1 divide-y divide-border">
                     {learnerProgress.map((learner) => (
                       <Progress
                         key={learner.id}
                         value={learner.average}
-                        className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-1 py-2 [&_[data-slot=progress-track]]:col-span-2 [&_[data-slot=progress-track]]:h-1.5 [&_[data-slot=progress-track]]:bg-border"
+                        className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-1 py-2 [&_[data-slot=progress-track]]:col-span-2"
                         aria-label={`${learner.name} average progress`}
                       >
-                        <ProgressLabel className="flex min-w-0 items-baseline gap-1.5">
-                          <span className="truncate text-body text-foreground">
+                        <ProgressLabel className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0">
+                          <span className="min-w-0 break-words text-body text-foreground">
                             {learner.name}
                           </span>
                           <span className="shrink-0 text-caption text-content-muted font-metric">
@@ -273,12 +281,14 @@ function Metric({
   detail: ReactNode;
 }) {
   return (
-    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1 rounded-md bg-surface-raised px-5 py-4 shadow-xs">
-      <dt className="col-span-2 text-caption font-medium text-content-subtle">
+    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1 rounded-md border border-card-edge bg-card px-5 py-4 shadow-xs">
+      <dt className="col-span-2 text-label text-content-default">
         {label}
       </dt>
-      <dd className="text-metric font-metric text-foreground">{value}</dd>
-      <dd className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 text-caption text-muted-foreground font-metric">
+      <dd className="text-section-title font-metric text-foreground">
+        {value}
+      </dd>
+      <dd className="flex min-w-0 flex-wrap items-baseline gap-x-1.5 text-body text-content-subtle font-metric">
         {detail}
       </dd>
     </div>

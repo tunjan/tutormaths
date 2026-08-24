@@ -58,7 +58,7 @@ function statusContent(status: AssignmentStatus): StatusContent {
   return {
     label: "Upcoming",
     variant: "default",
-    dot: "bg-content-subtle/60",
+    dot: "bg-content-subtle",
   };
 }
 

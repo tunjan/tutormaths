@@ -58,6 +58,8 @@
   --color-canvas-elevated: var(--neutral-0);
   --color-surface-subtle: var(--neutral-100);
   --color-surface-card: var(--neutral-0);
+  --color-surface-card-border: var(--neutral-300);
+  --color-surface-card-border-hover: var(--neutral-400);
   --color-surface-strong: var(--neutral-200);
   --color-surface-dark: var(--neutral-950);
   --color-surface-dark-elevated: var(--neutral-800);
@@ -232,9 +234,12 @@
   --surface-muted: var(--color-surface-subtle);
   --surface-raised: var(--color-canvas-elevated);
   --surface-inset: var(--color-surface-subtle);
-  --surface-hover: var(--color-surface-subtle);
+  --surface-hover: var(--neutral-150);
   --surface-selected: var(--color-link-soft);
   --surface-paper: var(--color-canvas-elevated);
+  --card-edge: var(--color-surface-card-border);
+  --card-edge-hover: var(--color-surface-card-border-hover);
+  --progress-track: var(--neutral-300);
 
   /* Blue is reserved for interactive emphasis; statuses retain labeled semantics. */
   --accent-ink: var(--color-link);
@@ -260,6 +265,7 @@
   --status-review: var(--color-link);
   --status-review-bg: var(--color-link-soft);
   --status-review-border: var(--color-info-border);
+  --status-success-border: var(--color-success-border);
   --status-overdue: var(--color-error-deep);
   --status-overdue-bg: var(--color-error-soft);
   --status-overdue-border: var(--color-error-border);
@@ -353,6 +359,9 @@
   --color-surface-hover: var(--surface-hover);
   --color-surface-selected: var(--surface-selected);
   --color-surface-paper: var(--surface-paper);
+  --color-card-edge: var(--card-edge);
+  --color-card-edge-hover: var(--card-edge-hover);
+  --color-progress-track: var(--progress-track);
   --color-accent-ink: var(--accent-ink);
   --color-accent-solid: var(--accent-solid);
   --color-accent-ink-light: var(--accent-ink-light);
@@ -371,6 +380,7 @@
   --color-status-review: var(--status-review);
   --color-status-review-bg: var(--status-review-bg);
   --color-status-review-border: var(--status-review-border);
+  --color-status-success-border: var(--status-success-border);
   --color-status-overdue: var(--status-overdue);
   --color-status-overdue-bg: var(--status-overdue-bg);
   --color-status-overdue-border: var(--status-overdue-border);
@@ -621,7 +631,11 @@
   [role="radio"],
   [role="switch"] {
     touch-action: manipulation;
-    -webkit-tap-highlight-color: rgb(0 112 243 / 12%);
+    -webkit-tap-highlight-color: color-mix(
+      in srgb,
+      var(--color-focus) 12%,
+      transparent
+    );
   }
 
   a {

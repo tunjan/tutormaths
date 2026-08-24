@@ -16,10 +16,10 @@ function Card({
       data-slot="card"
       data-size={size}
       className={cn(
-        "group/card flex flex-col gap-4 overflow-hidden rounded-md border border-transparent bg-card p-6 text-body text-card-foreground shadow-xs transition-[background-color,border-color,box-shadow] duration-base ease-[var(--ease-standard)]",
+        "group/card flex flex-col gap-4 overflow-hidden rounded-md border border-card-edge bg-card p-6 text-body text-card-foreground shadow-xs transition-[background-color,border-color,box-shadow] duration-base ease-[var(--ease-standard)]",
         "has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:p-4",
         interactive &&
-          "cursor-pointer hover:bg-card hover:shadow-md",
+          "cursor-pointer hover:border-card-edge-hover hover:bg-card hover:shadow-md",
         className
       )}
       {...props}

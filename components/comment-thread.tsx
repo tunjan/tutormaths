@@ -83,6 +83,7 @@ function CommentItem({
   const [editError, setEditError] = useState("");
   const [pending, startTransition] = useTransition();
   const actionsButtonRef = useRef<HTMLButtonElement>(null);
+  const menuActionRef = useRef<"edit" | "delete" | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const textareaId = `comment-${comment.id}-body`;
   const errorId = `${textareaId}-error`;
@@ -170,7 +171,22 @@ function CommentItem({
           </div>
 
           {canManage && !editing && (
-            <DropdownMenu>
+            <DropdownMenu
+              onOpenChangeComplete={(open) => {
+                if (open) return;
+
+                const action = menuActionRef.current;
+                menuActionRef.current = null;
+                if (action === "edit") {
+                  setDraft(comment.body);
+                  setEditError("");
+                  setEditing(true);
+                }
+                if (action === "delete") {
+                  onRequestDelete(comment, actionsButtonRef.current);
+                }
+              }}
+            >
               <DropdownMenuTrigger
                 render={
                   <Button
@@ -183,7 +199,7 @@ function CommentItem({
                     title="Message actions"
                     className="-mt-1 -mr-1 shrink-0"
                   >
-                    <Ellipsis aria-hidden />
+                    <Ellipsis data-icon="inline-start" aria-hidden />
                   </Button>
                 }
               />
@@ -191,9 +207,7 @@ function CommentItem({
                 <DropdownMenuGroup>
                   <DropdownMenuItem
                     onClick={() => {
-                      setDraft(comment.body);
-                      setEditError("");
-                      setEditing(true);
+                      menuActionRef.current = "edit";
                     }}
                   >
                     <Pencil aria-hidden />
@@ -201,9 +215,9 @@ function CommentItem({
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     variant="destructive"
-                    onClick={() =>
-                      onRequestDelete(comment, actionsButtonRef.current)
-                    }
+                    onClick={() => {
+                      menuActionRef.current = "delete";
+                    }}
                   >
                     <Trash2 aria-hidden />
                     Delete
@@ -393,11 +407,17 @@ export function CommentThread({
         onOpenChangeComplete={(open) => {
           if (open) return;
 
+          const returnFocus = deleteReturnFocusRef.current;
           if (deleteSucceededRef.current && deleteTarget) {
             const deletedId = deleteTarget.id;
             deleteSucceededRef.current = false;
             onDeleted(deletedId);
             requestAnimationFrame(() => composerElement()?.focus());
+          } else {
+            requestAnimationFrame(() => {
+              if (returnFocus?.isConnected) returnFocus.focus();
+              else composerElement()?.focus();
+            });
           }
 
           setDeleteTarget(null);

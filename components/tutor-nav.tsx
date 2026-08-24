@@ -25,7 +25,9 @@ const links = [
 ];
 
 function isActive(pathname: string, href: string, exact?: boolean) {
-  return exact ? pathname === href : pathname.startsWith(href);
+  return exact
+    ? pathname === href
+    : pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function TutorNav({
@@ -37,10 +39,7 @@ export function TutorNav({
 
   if (presentation === "header") {
     return (
-      <nav
-        className="flex items-center gap-0.5"
-        aria-label="Primary"
-      >
+      <nav className="flex items-center gap-1" aria-label="Primary">
         {links.map((l) => {
           const active = isActive(pathname, l.href, l.exact);
           const Icon = l.icon;
@@ -50,13 +49,13 @@ export function TutorNav({
               href={l.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-body transition-[background-color,color] duration-fast hover:bg-bg-subtle hover:text-content-emphasis focus-visible:outline-none",
+                "inline-flex h-8 items-center gap-2 rounded-sm px-3 text-label transition-[background-color,color] duration-fast focus-visible:outline-none",
                 active
-                  ? "bg-bg-subtle font-medium text-content-emphasis"
-                  : "text-content-default",
+                  ? "bg-surface-selected font-medium text-accent-ink hover:bg-surface-selected"
+                  : "text-content-default hover:bg-surface-hover hover:text-content-emphasis",
               )}
             >
-              <Icon className="size-3.5" strokeWidth={1.75} aria-hidden />
+              <Icon className="size-4" strokeWidth={1.75} aria-hidden />
               {l.label}
             </Link>
           );
@@ -90,10 +89,10 @@ export function TutorNav({
                   href={l.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "flex min-h-11 items-center gap-2 rounded-sm px-3 text-label transition-[background-color,color] duration-fast hover:bg-bg-subtle hover:text-content-emphasis focus-visible:outline-none",
+                    "relative flex min-h-11 items-center gap-2.5 rounded-sm px-3 text-label transition-[background-color,color] duration-fast focus-visible:outline-none",
                     active
-                      ? "bg-bg-subtle font-medium text-content-emphasis"
-                      : "text-content-default",
+                      ? "bg-surface-selected font-medium text-accent-ink hover:bg-surface-selected"
+                      : "text-content-default hover:bg-surface-hover hover:text-content-emphasis",
                   )}
                 >
                   <Icon className="size-4" strokeWidth={1.75} aria-hidden />

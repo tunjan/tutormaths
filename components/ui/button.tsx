@@ -4,20 +4,20 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-sm border text-button transition-[background-color,border-color,color,box-shadow,transform] duration-fast ease-[var(--ease-standard)] active:translate-y-px disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-transparent disabled:bg-bg-muted disabled:text-content-muted disabled:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 focus-visible:outline-none",
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-sm border text-button transition-[background-color,border-color,color,box-shadow,transform] duration-fast ease-[var(--ease-standard)] active:translate-y-px disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-border-strong disabled:bg-bg-muted disabled:text-content-muted disabled:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 focus-visible:outline-none",
   {
     variants: {
       variant: {
         default:
           "border-transparent bg-primary text-primary-foreground shadow-xs hover:bg-[var(--color-accent-brand-hover)] hover:shadow-sm active:bg-[var(--color-accent-brand-active)]",
         outline:
-          "border-border-default bg-transparent text-content-emphasis hover:border-border-emphasis hover:bg-bg-muted",
+          "border-border-default bg-card text-content-emphasis hover:border-border-emphasis hover:bg-surface-hover",
         secondary:
-          "border-transparent bg-bg-subtle text-content-emphasis shadow-none hover:bg-border-subtle",
+          "border-border-strong bg-bg-subtle text-content-emphasis shadow-none hover:border-border-default hover:bg-surface-hover",
         ghost:
-          "border-transparent bg-transparent text-content-emphasis hover:bg-bg-muted",
+          "border-transparent bg-transparent text-content-emphasis hover:bg-surface-hover",
         soft:
-          "border-transparent bg-bg-subtle text-content-emphasis hover:bg-border",
+          "border-border-strong bg-bg-subtle text-content-emphasis hover:border-border-default hover:bg-surface-hover",
         destructive:
           "border-[var(--color-error-border)] bg-transparent text-content-error hover:bg-bg-error",
         link:
@@ -25,11 +25,11 @@ const buttonVariants = cva(
         marketing:
           "h-11! rounded-pill border-transparent bg-primary px-3.5 text-button-lg text-primary-foreground shadow-xs hover:bg-[var(--color-accent-brand-hover)] hover:shadow-sm active:bg-[var(--color-accent-brand-active)]",
         "marketing-secondary":
-          "h-11! rounded-pill border-border-default bg-card px-3.5 text-button-lg text-content-emphasis hover:border-border-emphasis hover:bg-bg-muted",
+          "h-11! rounded-pill border-border-default bg-card px-3.5 text-button-lg text-content-emphasis hover:border-border-emphasis hover:bg-surface-hover",
         category:
-          "rounded-pill-category border-transparent bg-bg-subtle px-4 text-button hover:bg-border-subtle",
+          "rounded-pill-category border-border-strong bg-bg-subtle px-4 text-button hover:border-border-default hover:bg-surface-hover",
         icon:
-          "rounded-full border-transparent bg-bg-subtle text-content-emphasis shadow-none hover:bg-border-subtle",
+          "rounded-full border-border-strong bg-bg-subtle text-content-emphasis shadow-none hover:border-border-default hover:bg-surface-hover",
       },
       size: {
         default: "h-11 px-3.5 sm:h-10",

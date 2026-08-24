@@ -15,7 +15,6 @@ import {
   EmptyContent,
   EmptyDescription,
   EmptyHeader,
-  EmptyTitle,
 } from "@/components/ui/empty";
 import { cn } from "@/lib/utils";
 
@@ -144,7 +143,7 @@ export default async function TutorDashboard() {
       <PageHeader
         eyebrow={displayName ? `Welcome back, ${displayName}` : undefined}
         title="Teaching overview"
-        className="mb-6 gap-4 border-b-0 pb-0"
+        className="mb-8 gap-5 border-b-0 pb-0 sm:mb-10"
         description={
           !hasStudents
             ? "Start by inviting your first student."
@@ -160,7 +159,10 @@ export default async function TutorDashboard() {
               {needsAttention > 0 && (
                 <Link
                   href="/tutor/assignments?view=attention"
-                  className={cn(buttonVariants({ size: "sm" }))}
+                  className={cn(
+                    buttonVariants({ size: "sm" }),
+                    "flex-auto sm:flex-none",
+                  )}
                 >
                   <ListChecks data-icon="inline-start" aria-hidden />
                   Review priorities
@@ -172,6 +174,7 @@ export default async function TutorDashboard() {
                 label="New assignment…"
                 size="sm"
                 variant={needsAttention > 0 ? "outline" : "default"}
+                className="flex-auto sm:flex-none"
               />
             </>
           ) : undefined
@@ -195,9 +198,11 @@ export default async function TutorDashboard() {
 
 function Onboarding() {
   return (
-    <Empty>
+    <Empty className="border border-card-edge bg-card shadow-xs">
       <EmptyHeader>
-        <EmptyTitle>Start with one student</EmptyTitle>
+        <h2 className="text-heading-md text-content-emphasis">
+          Start with one student
+        </h2>
         <EmptyDescription>
           Get set up in two steps: invite a student, then send them their first
           assignment. You&rsquo;ll review their work and track progress right

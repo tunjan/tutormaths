@@ -10,11 +10,11 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-transparent bg-bg-subtle text-content-default [a]:hover:bg-border-subtle",
+          "border-border-strong bg-bg-subtle text-content-default [a]:hover:bg-surface-hover",
         secondary:
-          "border-transparent bg-bg-subtle text-content-default [a]:hover:bg-border-subtle",
+          "border-border-strong bg-bg-subtle text-content-default [a]:hover:bg-surface-hover",
         destructive:
-          "border-transparent bg-bg-error text-content-error [a]:hover:bg-bg-error/70",
+          "border-status-overdue-border bg-bg-error text-content-error [a]:hover:border-content-error",
         outline:
           "border-border bg-card text-content-default [a]:hover:bg-bg-muted",
         ghost:
@@ -22,15 +22,15 @@ const badgeVariants = cva(
         link:
           "border-transparent text-content-info underline-offset-4 hover:underline",
         accent:
-          "border-transparent bg-accent-ink-subtle text-accent-ink",
+          "border-status-review-border bg-accent-ink-subtle text-accent-ink",
         "accent-alt":
-          "border-transparent bg-bg-attention text-content-attention",
+          "border-status-due-border bg-bg-attention text-content-attention",
         success:
-          "border-transparent bg-bg-success text-content-success",
+          "border-status-success-border bg-bg-success text-content-success",
         warning:
-          "border-transparent bg-bg-warning text-content-warning",
+          "border-status-due-border bg-bg-warning text-content-warning",
         info:
-          "border-transparent bg-bg-info text-content-info",
+          "border-status-review-border bg-bg-info text-content-info",
       },
     },
     defaultVariants: {

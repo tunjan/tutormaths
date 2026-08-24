@@ -26,12 +26,12 @@ export function AppShell({
 }) {
   return (
     <div className="flex min-h-dvh w-full flex-col bg-background">
-      <header className="sticky top-0 z-40 bg-card shadow-xs">
-        <div className="mx-auto flex h-14 w-full max-w-[1248px] items-center gap-3 px-4 sm:px-6">
+      <header className="sticky top-0 z-40 border-b border-border-strong bg-card pt-[env(safe-area-inset-top)] shadow-xs">
+        <div className="mx-auto flex h-14 w-full max-w-[1248px] items-center gap-3 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:pl-[max(1.5rem,env(safe-area-inset-left))] sm:pr-[max(1.5rem,env(safe-area-inset-right))]">
           <Link
             href={homeHref}
             aria-label={homeLabel}
-            className="flex min-w-0 items-center rounded-sm text-content-emphasis focus-visible:outline-none"
+            className="flex min-h-8 min-w-0 items-center rounded-sm text-content-emphasis focus-visible:outline-none"
           >
             <span className="truncate text-title-sm" translate="no">
               Maths Tasks
@@ -55,7 +55,7 @@ export function AppShell({
       <main
         id="main-content"
         tabIndex={-1}
-        className="mx-auto w-full max-w-[1248px] flex-1 px-4 py-8 sm:px-6 sm:py-10"
+        className="mx-auto w-full max-w-[1248px] flex-1 py-8 pl-[max(1rem,env(safe-area-inset-left))] pr-[max(1rem,env(safe-area-inset-right))] sm:py-10 sm:pl-[max(1.5rem,env(safe-area-inset-left))] sm:pr-[max(1.5rem,env(safe-area-inset-right))]"
       >
         {children}
       </main>

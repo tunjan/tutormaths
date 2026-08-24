@@ -20,6 +20,7 @@ export interface AssignmentRowProps {
   student?: string;
   unread?: boolean;
   showTypeMarker?: boolean;
+  headingLevel?: "h3" | "h4";
   className?: string;
 }
 
@@ -43,8 +44,10 @@ export function AssignmentRow({
   student,
   unread,
   showTypeMarker = false,
+  headingLevel = "h3",
   className,
 }: AssignmentRowProps) {
+  const Title = headingLevel;
   const AssignmentTypeIcon =
     type === "reading_notes" ? BookOpenText : ListChecks;
   const dueText =
@@ -73,7 +76,7 @@ export function AssignmentRow({
       href={href}
       title={title}
       className={cn(
-        "group relative flex items-center justify-between gap-3 px-4 py-3 transition-colors duration-fast hover:bg-bg-muted sm:px-5",
+        "group relative flex min-h-14 items-center justify-between gap-3 px-4 py-3 transition-colors duration-fast hover:bg-surface-hover focus-visible:z-10 focus-visible:bg-surface-hover sm:px-5",
         className,
       )}
     >
@@ -81,13 +84,13 @@ export function AssignmentRow({
         <div className="relative shrink-0">
           <span
             className={cn(
-              "grid size-8 place-items-center rounded-sm bg-bg-subtle text-caption font-medium text-content-default",
+              "grid size-8 place-items-center rounded-sm border border-border-strong bg-bg-subtle text-caption font-medium text-content-default",
               !showTypeMarker && "text-content-subtle",
             )}
             aria-hidden
           >
             {student ? (
-              initials(student)
+              initials(student) || "—"
             ) : showTypeMarker ? (
               <AssignmentTypeIcon
                 className="size-4"
@@ -108,11 +111,11 @@ export function AssignmentRow({
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <h3 className="truncate text-label text-text-heading">
+          <Title className="break-words text-label text-text-heading">
             {title}
             {unread && <span className="sr-only"> — unread activity</span>}
-          </h3>
-          <span className="truncate text-caption text-content-subtle font-metric">
+          </Title>
+          <span className="break-words text-caption text-content-subtle font-metric">
             {meta}
           </span>
         </div>
@@ -123,7 +126,7 @@ export function AssignmentRow({
           <AssignmentStatusBadge reviewStatus={reviewStatus} dueAt={dueAt} />
         </div>
 
-        <span className="hidden size-6 place-items-center text-content-subtle transition-[color,transform] duration-fast group-hover:translate-x-0.5 group-hover:text-foreground sm:grid">
+        <span className="grid size-6 place-items-center text-content-subtle transition-[color,transform] duration-fast group-hover:translate-x-0.5 group-hover:text-foreground group-focus-visible:translate-x-0.5 group-focus-visible:text-foreground">
           <ChevronRight
             className="size-4"
             strokeWidth={1.75}
