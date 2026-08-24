@@ -21,18 +21,21 @@ export function SegmentedControl<T extends string>({
   options,
   className,
   ariaLabel,
+  disabled = false,
 }: {
   value: T;
   onValueChange: (value: T) => void;
   options: SegmentedOption<T>[];
   className?: string;
   ariaLabel?: string;
+  disabled?: boolean;
 }) {
   return (
     <ToggleGroup
       aria-label={ariaLabel}
       value={[value]}
       size="sm"
+      disabled={disabled}
       onValueChange={(nextValues) => {
         const nextValue = nextValues.at(-1) as T | undefined;
         if (nextValue) onValueChange(nextValue);

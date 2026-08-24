@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AssignTaskModal } from "@/components/assign-task-modal";
@@ -34,9 +34,11 @@ export function AssignTaskButton({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
   return (
     <>
       <Button
+        ref={triggerRef}
         variant={variant}
         size={size}
         aria-label={ariaLabel}
@@ -51,6 +53,7 @@ export function AssignTaskButton({
         students={students}
         categories={categories}
         defaultStudentId={defaultStudentId}
+        finalFocusRef={triggerRef}
       />
     </>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import "katex/dist/katex.min.css";
+import { memo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
@@ -10,7 +11,7 @@ import { cn } from "@/lib/utils";
  * Renders Markdown with inline ($...$) and display ($$...$$) maths via KaTeX.
  * Shared by assignment previews, assignment detail pages, and comments.
  */
-export function LatexContent({
+export const LatexContent = memo(function LatexContent({
   source,
   className,
 }: {
@@ -42,4 +43,4 @@ export function LatexContent({
       </ReactMarkdown>
     </div>
   );
-}
+});
