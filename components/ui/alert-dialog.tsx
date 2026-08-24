@@ -27,7 +27,7 @@ function AlertDialogContent({
       <AlertDialogPrimitive.Popup
         data-slot="alert-dialog-content"
         className={cn(
-          "fixed inset-x-0 bottom-0 z-modal flex max-h-[85dvh] w-full flex-col gap-4 overflow-y-auto overscroll-contain rounded-t-modal border border-border bg-card p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-card-foreground shadow-xl outline-hidden sm:top-1/2 sm:right-auto sm:bottom-auto sm:left-1/2 sm:w-[calc(100%-2rem)] sm:max-w-[480px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-modal sm:pb-6",
+          "fixed inset-x-0 bottom-0 z-modal flex max-h-[85dvh] w-full flex-col gap-5 overflow-y-auto overscroll-contain rounded-t-modal border border-transparent bg-card p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-card-foreground shadow-xl outline-hidden sm:top-1/2 sm:right-auto sm:bottom-auto sm:left-1/2 sm:w-[calc(100%-2rem)] sm:max-w-[480px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-modal sm:pb-6",
           "duration-base ease-[var(--ease-out)] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-[0.98] data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-[0.98]",
           className,
         )}
@@ -52,7 +52,7 @@ function AlertDialogFooter({ className, ...props }: React.ComponentProps<"div">)
     <div
       data-slot="alert-dialog-footer"
       className={cn(
-        "mt-2 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end [&_[data-slot=button]]:w-full sm:[&_[data-slot=button]]:w-auto",
+        "flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end [&_[data-slot=button]]:w-full sm:[&_[data-slot=button]]:w-auto",
         className,
       )}
       {...props}

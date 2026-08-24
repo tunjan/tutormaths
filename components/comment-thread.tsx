@@ -6,6 +6,7 @@ import { formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { LatexContent } from "@/components/ui/latex-content";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -237,9 +238,10 @@ function CommentItem({
             </FieldGroup>
           </form>
         ) : (
-          <div className="mt-1 whitespace-pre-wrap text-body text-foreground">
-            {comment.body}
-          </div>
+          <LatexContent
+            source={comment.body}
+            className="mt-1 text-body"
+          />
         )}
       </div>
     </li>

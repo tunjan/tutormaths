@@ -9,6 +9,7 @@
   --neutral-0: #ffffff;
   --neutral-50: #fafafa;
   --neutral-100: #f4f4f5;
+  --neutral-150: #eeeef0;
   --neutral-200: #e4e4e7;
   --neutral-300: #d4d4d8;
   --neutral-400: #a1a1aa;
@@ -47,10 +48,12 @@
   --color-mute: var(--neutral-600);
   --color-faint: var(--neutral-550);
   --color-muted-text: var(--color-faint);
-  --color-hairline: var(--neutral-300);
-  --color-hairline-soft: var(--neutral-200);
+  --color-hairline: var(--neutral-200);
+  --color-hairline-soft: var(--neutral-150);
+  --color-hairline-strong: var(--neutral-300);
   --color-control-border: var(--neutral-500);
   --color-control-border-hover: var(--neutral-600);
+  --color-scrollbar-thumb: var(--neutral-300);
   --color-canvas: var(--neutral-50);
   --color-canvas-elevated: var(--neutral-0);
   --color-surface-subtle: var(--neutral-100);
@@ -90,12 +93,8 @@
   --color-error-soft: var(--red-100);
   --color-overlay: rgb(24 24 27 / 0.42);
 
-  /* A single, low-chroma ambient field replaces the decorative multi-accent mesh. */
-  --gradient-mesh: radial-gradient(
-    circle at 50% -10%,
-    color-mix(in srgb, var(--blue-600) 5%, transparent),
-    transparent 42%
-  );
+  /* Compatibility alias retained; auth surfaces now use the same flat canvas. */
+  --gradient-mesh: none;
 
   /* DESIGN.md — 4px spacing grid and nested shape scale. */
   --space-unit: 4px;
@@ -131,20 +130,20 @@
   --radius-full: var(--shape-radius-full);
 
   /* Elevation borrows the ink hue so shadows stay coherent with the palette. */
-  --design-shadow-direct: color-mix(in srgb, var(--color-ink) 10%, transparent);
-  --design-shadow-ambient: color-mix(in srgb, var(--color-ink) 6%, transparent);
-  --design-shadow-overlay: color-mix(in srgb, var(--color-ink) 14%, transparent);
+  --design-shadow-direct: color-mix(in srgb, var(--color-ink) 8%, transparent);
+  --design-shadow-ambient: color-mix(in srgb, var(--color-ink) 5%, transparent);
+  --design-shadow-overlay: color-mix(in srgb, var(--color-ink) 12%, transparent);
   --design-shadow-flat: none;
   --design-shadow-rested: 0 1px 2px var(--design-shadow-ambient);
   --design-shadow-hover:
     0 1px 2px var(--design-shadow-direct),
-    0 6px 12px -6px var(--design-shadow-ambient);
+    0 6px 14px -10px var(--design-shadow-overlay);
   --design-shadow-raised:
     0 1px 2px var(--design-shadow-direct),
-    0 10px 24px -10px var(--design-shadow-overlay);
+    0 12px 28px -16px var(--design-shadow-overlay);
   --design-shadow-dialog:
-    0 2px 4px var(--design-shadow-direct),
-    0 18px 44px -16px var(--design-shadow-overlay);
+    0 1px 3px var(--design-shadow-direct),
+    0 20px 48px -20px var(--design-shadow-overlay);
   --design-shadow-active: inset 0 1px 2px var(--design-shadow-direct);
 
   /* Compatibility aliases for the previous elevation vocabulary. */
@@ -171,7 +170,10 @@
   --motion-distance-sm: 4px;
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
-  --focus-ring: 0 0 0 var(--focus-ring-width) var(--color-focus);
+  --focus-ring:
+    0 0 0 var(--focus-ring-offset) var(--color-canvas-elevated),
+    0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width))
+      var(--color-focus);
   --hit-target-min: 24px;
   --hit-target-coarse: 44px;
 
@@ -210,7 +212,7 @@
   --border-default: var(--color-control-border);
   --border-emphasis: var(--color-control-border-hover);
   --border-soft: var(--color-hairline-soft);
-  --border-strong: var(--color-hairline);
+  --border-strong: var(--color-hairline-strong);
 
   --content-emphasis: var(--color-ink);
   --content-default: var(--color-body);
@@ -296,7 +298,7 @@
   --default-transition-timing-function: var(--ease-standard);
 
   --sidebar-width: 0px;
-  --content-width: 1200px;
+  --content-width: 1248px;
 }
 
 @theme inline {
@@ -436,7 +438,7 @@
   --text-display-sm--line-height: 1.15;
   --text-display-sm--font-weight: 600;
   --text-display-sm--letter-spacing: -0.03em;
-  --text-page-title: clamp(28px, calc(24px + 1vw), 32px);
+  --text-page-title: 32px;
   --text-page-title--line-height: 1.125;
   --text-page-title--font-weight: 600;
   --text-page-title--letter-spacing: -0.035em;
@@ -632,7 +634,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--color-hairline);
+    background: var(--color-scrollbar-thumb);
     border: 2px solid var(--color-canvas);
     border-radius: var(--radius-full);
   }
@@ -786,6 +788,12 @@ time {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 639px) {
+  :root {
+    --text-page-title: 28px;
   }
 }
 

@@ -12,9 +12,9 @@ const badgeVariants = cva(
         default:
           "border-transparent bg-bg-subtle text-content-default [a]:hover:bg-border-subtle",
         secondary:
-          "border-border bg-card text-content-default [a]:hover:bg-bg-muted",
+          "border-transparent bg-bg-subtle text-content-default [a]:hover:bg-border-subtle",
         destructive:
-          "border-content-error/20 bg-bg-error text-content-error [a]:hover:bg-bg-error/70",
+          "border-transparent bg-bg-error text-content-error [a]:hover:bg-bg-error/70",
         outline:
           "border-border bg-card text-content-default [a]:hover:bg-bg-muted",
         ghost:
@@ -22,15 +22,15 @@ const badgeVariants = cva(
         link:
           "border-transparent text-content-info underline-offset-4 hover:underline",
         accent:
-          "border-border-subtle bg-accent-ink-subtle text-accent-ink",
+          "border-transparent bg-accent-ink-subtle text-accent-ink",
         "accent-alt":
-          "border-content-attention/20 bg-bg-attention text-content-attention",
+          "border-transparent bg-bg-attention text-content-attention",
         success:
-          "border-content-success/20 bg-bg-success text-content-success",
+          "border-transparent bg-bg-success text-content-success",
         warning:
-          "border-content-warning/20 bg-bg-warning text-content-warning",
+          "border-transparent bg-bg-warning text-content-warning",
         info:
-          "border-content-info/20 bg-bg-info text-content-info",
+          "border-transparent bg-bg-info text-content-info",
       },
     },
     defaultVariants: {

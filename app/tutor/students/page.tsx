@@ -106,9 +106,9 @@ export default async function StudentsPage() {
           {studentCount > 0 && (
             <section
               aria-labelledby="active-students-heading"
-              className="overflow-hidden rounded-lg border border-border-subtle bg-[var(--color-canvas-elevated)]"
+              className="overflow-hidden rounded-md bg-card shadow-xs"
             >
-              <div className="border-b border-border-subtle px-4 py-3 sm:px-5">
+              <div className="px-4 pt-4 pb-3 sm:px-5">
                 <div className="flex items-baseline gap-2">
                   <h2
                     id="active-students-heading"
@@ -148,7 +148,7 @@ export default async function StudentsPage() {
                       >
                         <span
                           aria-hidden="true"
-                          className="grid size-9 shrink-0 place-items-center rounded-md border border-border-subtle bg-bg-subtle text-caption text-content-emphasis"
+                          className="grid size-9 shrink-0 place-items-center rounded-sm bg-bg-subtle text-caption text-content-emphasis"
                         >
                           {initials(name)}
                         </span>
@@ -194,9 +194,9 @@ export default async function StudentsPage() {
           {inviteCount > 0 && (
             <section
               aria-labelledby="pending-invitations-heading"
-              className="overflow-hidden rounded-lg border border-border-subtle bg-[var(--color-canvas-elevated)]"
+              className="overflow-hidden rounded-md bg-card shadow-xs"
             >
-              <div className="border-b border-border-subtle px-4 py-3 sm:px-5">
+              <div className="px-4 pt-4 pb-3 sm:px-5">
                 <div className="flex items-baseline gap-2">
                   <h2
                     id="pending-invitations-heading"
@@ -233,7 +233,7 @@ export default async function StudentsPage() {
                       <div className="flex min-w-0 items-center gap-3">
                         <span
                           aria-hidden="true"
-                          className="grid size-9 shrink-0 place-items-center rounded-md border border-border-subtle bg-bg-subtle text-caption text-content-subtle"
+                          className="grid size-9 shrink-0 place-items-center rounded-sm bg-bg-subtle text-caption text-content-subtle"
                         >
                           {initials(name)}
                         </span>

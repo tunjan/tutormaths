@@ -51,7 +51,7 @@ export function LibraryView({
   const columnCount = canManage ? 4 : 3;
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-card">
+    <div className="overflow-hidden rounded-md bg-card shadow-xs">
       <table className="w-full table-auto border-collapse sm:table-fixed">
         <caption className="sr-only">
           Library documents grouped by topic
@@ -84,11 +84,8 @@ export function LibraryView({
           </tr>
         </thead>
 
-        {categories.map((category, categoryIndex) => (
-          <tbody
-            key={category.id}
-            className={categoryIndex === 0 ? undefined : "border-t border-border-subtle"}
-          >
+        {categories.map((category) => (
+          <tbody key={category.id}>
             <tr className="bg-bg-subtle">
               <th
                 scope="rowgroup"
@@ -135,7 +132,7 @@ export function LibraryView({
                         rel="noopener noreferrer"
                         className="group/link flex min-w-0 items-center gap-3 rounded-sm focus-visible:outline-none"
                       >
-                        <span className="grid size-8 shrink-0 place-items-center rounded-sm border border-border-subtle bg-bg-default text-content-subtle">
+                        <span className="grid size-8 shrink-0 place-items-center rounded-sm bg-bg-subtle text-content-subtle">
                           <FileText
                             className="size-4"
                             strokeWidth={1.75}
@@ -161,7 +158,7 @@ export function LibraryView({
                       </a>
                     ) : (
                       <div className="flex min-w-0 items-center gap-3 text-content-subtle">
-                        <span className="grid size-8 shrink-0 place-items-center rounded-sm border border-border-subtle bg-bg-default">
+                        <span className="grid size-8 shrink-0 place-items-center rounded-sm bg-bg-subtle">
                           <FileText
                             className="size-4"
                             strokeWidth={1.75}

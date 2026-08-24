@@ -233,9 +233,9 @@ export function TutorAssignmentBrowser({
   return (
     <section
       aria-labelledby="assignments-heading"
-      className="overflow-hidden rounded-md border border-border bg-surface-raised"
+      className="overflow-hidden rounded-md bg-surface-raised shadow-xs"
     >
-      <div className="grid gap-3 border-b border-border px-4 py-4 sm:px-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+      <div className="grid gap-3 px-4 pt-4 pb-3 sm:px-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <div className="min-w-0">
           <h2
             id="assignments-heading"
@@ -301,8 +301,8 @@ export function TutorAssignmentBrowser({
 
       <div
         className={cn(
-          "flex min-h-11 items-center justify-between gap-3 border-b border-border px-3 py-1.5 transition-colors sm:px-4",
-          selectedVisibleCount > 0 ? "bg-bg-info/55" : "bg-bg-subtle/55",
+          "mx-3 mb-2 flex min-h-11 items-center justify-between gap-3 rounded-sm px-3 py-1.5 transition-colors sm:mx-4",
+          selectedVisibleCount > 0 ? "bg-bg-info" : "bg-bg-subtle",
         )}
       >
         {visible.length > 0 ? (
@@ -465,7 +465,7 @@ function AssignmentList({
           Assignment queue. Use the checkboxes to select assignments for bulk
           actions.
         </caption>
-        <thead className="border-b border-border bg-bg-subtle/35">
+        <thead className="border-b border-border-subtle bg-bg-subtle/55">
           <tr className="h-9 text-left font-eyebrow text-content-subtle">
             <th scope="col" className="w-12 px-3">
               <span className="sr-only">Select</span>
@@ -583,7 +583,7 @@ function AssignmentList({
                       type="button"
                       className={cn(
                         buttonVariants({ variant: "ghost", size: "icon-sm" }),
-                        "relative z-10 text-content-subtle opacity-45 transition-opacity after:absolute after:-inset-1 hover:text-destructive hover:opacity-100 focus-visible:text-destructive focus-visible:opacity-100 group-hover/row:opacity-100 group-focus-within/row:opacity-100",
+                        "relative z-10 text-content-muted opacity-70 transition-opacity after:absolute after:-inset-1 hover:text-destructive hover:opacity-100 focus-visible:text-destructive focus-visible:opacity-100 group-hover/row:opacity-100 group-focus-within/row:opacity-100",
                       )}
                       onClick={() => onDelete(item.id)}
                       aria-label={`Delete ${item.title}`}
@@ -689,7 +689,7 @@ function EmptyState({
           : "No assignments yet.";
 
   return (
-    <Empty className="min-h-44 gap-4 rounded-none border-0 p-6">
+    <Empty className="min-h-44 gap-4 rounded-none bg-transparent p-6 shadow-none">
       <EmptyDescription>{message}</EmptyDescription>
       <EmptyContent>
         {query.trim() || filter !== "all" ? (

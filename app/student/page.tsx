@@ -102,7 +102,7 @@ export default async function StudentDashboard() {
               {remainingActive.length}
             </Badge>
           </div>
-          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
+          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md bg-card shadow-xs">
             {remainingActive.map((a) => (
               <AssignmentRow
                 key={a.id}
@@ -133,7 +133,7 @@ export default async function StudentDashboard() {
               {completed.length}
             </Badge>
           </div>
-          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
+          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md bg-card shadow-xs">
             {completed.map((a) => (
               <AssignmentRow
                 key={a.id}
@@ -187,7 +187,7 @@ function UpNextCard({
     <Card
       role="region"
       aria-labelledby={`up-next-${assignment.id}`}
-      className="gap-0 border-border p-0 shadow-sm"
+      className="gap-0 p-0"
     >
       <div className="grid xl:grid-cols-[minmax(0,1fr)_17rem]">
         <CardHeader className="p-5 sm:p-6">
@@ -230,7 +230,7 @@ function UpNextCard({
           </div>
         </CardHeader>
 
-        <CardContent className="flex flex-col justify-between gap-6 border-t border-border bg-bg-subtle p-5 sm:p-6 xl:border-l xl:border-t-0">
+        <CardContent className="flex flex-col justify-between gap-6 bg-bg-subtle p-5 sm:p-6">
           <div>
             <p className="font-eyebrow text-content-muted">Progress</p>
             <div className="mt-2 flex items-baseline justify-between gap-4">

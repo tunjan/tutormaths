@@ -8,8 +8,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Renders Markdown with inline ($...$) and display ($$...$$) maths via KaTeX.
- * Used both for the live preview in the assignment dialog and for displaying
- * a LaTeX-bodied assignment on the detail pages.
+ * Shared by assignment previews, assignment detail pages, and comments.
  */
 export function LatexContent({
   source,

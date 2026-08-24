@@ -20,7 +20,7 @@ export function ProblemMaterialCard({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="group flex w-full items-center justify-between gap-4 rounded-md border border-border bg-card p-6 text-left transition-[background-color,border-color,transform] duration-base hover:border-border-emphasis hover:bg-surface-muted active:translate-y-px"
+        className="group flex w-full items-center justify-between gap-4 rounded-md border border-transparent bg-card p-5 text-left shadow-xs transition-[background-color,box-shadow,transform] duration-base hover:bg-card hover:shadow-md active:translate-y-px"
       >
         <span className="flex min-w-0 flex-col gap-1">
           <span className="font-eyebrow text-muted-foreground">
@@ -28,7 +28,7 @@ export function ProblemMaterialCard({
           </span>
           <span className="text-label text-foreground">View problem</span>
         </span>
-        <span className="shrink-0 text-label text-muted-foreground transition-colors duration-fast group-hover:text-foreground">
+        <span className="shrink-0 text-label text-content-info transition-colors duration-fast group-hover:text-accent-ink-dark">
           Open
         </span>
       </button>

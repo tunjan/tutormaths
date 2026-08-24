@@ -12,10 +12,10 @@ export default function Loading() {
       </header>
 
       <section
-        className="overflow-hidden rounded-md border border-border bg-surface-raised"
+        className="overflow-hidden rounded-md bg-surface-raised shadow-xs"
         aria-label="Loading assignments"
       >
-        <div className="grid gap-3 border-b border-border px-4 py-4 sm:px-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <div className="grid gap-3 px-4 pt-4 pb-3 sm:px-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <div>
             <Skeleton className="h-7 w-40" />
             <Skeleton className="mt-1 h-4 w-64 max-w-full" />
@@ -25,10 +25,10 @@ export default function Loading() {
             <Skeleton className="h-10 w-full sm:h-8 sm:w-72" />
           </div>
         </div>
-        <div className="flex min-h-11 items-center border-b border-border bg-bg-subtle/55 px-4">
+        <div className="mx-3 mb-2 flex min-h-11 items-center rounded-sm bg-bg-subtle px-3 sm:mx-4">
           <Skeleton className="h-4 w-36" />
         </div>
-        <div className="hidden h-9 items-center border-b border-border bg-bg-subtle/35 px-4 md:flex">
+        <div className="hidden h-9 items-center border-b border-border-subtle bg-bg-subtle/55 px-4 md:flex">
           <Skeleton className="ml-12 h-3 w-24" />
         </div>
         <div className="divide-y divide-border-muted">

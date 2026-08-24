@@ -8,12 +8,14 @@ import { ViewTransitions } from "next-view-transitions";
 
 const geist = Geist({
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
   variable: "--font-geist",
   display: "swap",
 });
 
 const geistMono = Geist_Mono({
   subsets: ["latin"],
+  weight: ["400", "500"],
   variable: "--font-geist-mono",
   display: "swap",
 });
@@ -33,8 +35,10 @@ export default function RootLayout({
       className={`${geist.variable} ${geistMono.variable} font-sans`}
       suppressHydrationWarning
     >
-      <body className="bg-background text-content-default">
-        <a href="#main-content" className="skip-link">Skip to content</a>
+      <body className="bg-background font-sans text-content-default">
+        <a href="#main-content" className="skip-link">
+          Skip to content
+        </a>
         <ViewTransitions>
           <ThemeProvider
             attribute="class"

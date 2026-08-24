@@ -121,7 +121,7 @@ export function AssignmentCalendar({
       </div>
 
       {/* Grid */}
-      <div className="overflow-hidden rounded-md border border-border bg-card">
+      <div className="overflow-hidden rounded-md border border-border-subtle bg-card">
         <div className="grid grid-cols-7 border-b border-border-subtle bg-bg-muted">
           {WEEKDAYS.map((d) => (
             <div
@@ -152,7 +152,7 @@ export function AssignmentCalendar({
                   "group/cell relative flex min-h-[68px] flex-col gap-1 border-b border-border-muted p-2 text-left outline-none transition-colors duration-fast sm:min-h-[104px]",
                   (i + 1) % 7 === 0 && "border-r-0",
                   i >= 35 && "border-b-0",
-                  inMonth ? "bg-surface-raised" : "bg-surface-muted/55",
+                  inMonth ? "bg-surface-raised" : "bg-surface-muted",
                   "hover:bg-surface-hover",
                   isSelected && "bg-surface-selected ring-1 ring-inset ring-content-info",
                 )}
@@ -164,7 +164,7 @@ export function AssignmentCalendar({
                       ? "bg-foreground font-semibold text-background"
                       : inMonth
                         ? "text-text-heading"
-                        : "text-text-subtle/55",
+                        : "text-content-muted",
                   )}
                 >
                   {date.getDate()}
@@ -209,7 +209,7 @@ export function AssignmentCalendar({
             <EmptyDescription>Nothing due this day.</EmptyDescription>
           </Empty>
         ) : (
-          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md border border-border bg-card">
+          <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-md bg-card shadow-xs">
             {selected.map((a) => {
               const TypeIcon = a.type === "reading_notes" ? BookOpen : FileText;
               return (
@@ -219,7 +219,7 @@ export function AssignmentCalendar({
                   className="group flex items-center justify-between gap-4 px-6 py-3 transition-colors duration-fast hover:bg-surface-hover"
                 >
                   <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-sm border border-border bg-surface-muted text-muted-foreground group-hover:text-foreground">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-sm bg-surface-muted text-muted-foreground group-hover:text-foreground">
                       <TypeIcon className="size-4" strokeWidth={1.5} />
                     </span>
                     <div className="min-w-0 flex-1">

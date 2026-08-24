@@ -58,7 +58,7 @@ export function TutorDashboardOverview({
         Dashboard overview
       </h2>
 
-      <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-[minmax(0,1.35fr)_minmax(0,0.8fr)]">
+      <dl className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1.35fr)_minmax(0,0.8fr)]">
         <Metric
           label="Need attention"
           value={focusItems.length}
@@ -89,10 +89,10 @@ export function TutorDashboardOverview({
 
       <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(20rem,1fr)]">
         <Card
-          className="min-w-0 gap-0 rounded-md border-border bg-surface-raised p-0 shadow-none"
+          className="min-w-0 gap-0 bg-surface-raised p-0"
           aria-labelledby="priority-queue-heading"
         >
-          <CardHeader className="border-b border-border-muted px-5 py-3">
+          <CardHeader className="px-5 pt-4 pb-3">
             <h3
               id="priority-queue-heading"
               className="text-heading-md text-foreground"
@@ -118,7 +118,7 @@ export function TutorDashboardOverview({
 
           <CardContent className="min-w-0 flex-1 p-0">
             {queue.length > 0 ? (
-              <div className="divide-y divide-border-muted border-b border-border-muted">
+              <div className="divide-y divide-border-muted">
                 {queue.map((item) => (
                   <AssignmentRow
                     key={item.id}
@@ -135,7 +135,7 @@ export function TutorDashboardOverview({
                 ))}
               </div>
             ) : (
-              <div className="flex min-h-28 items-center gap-3 border-b border-border-muted px-5 py-4">
+              <div className="flex min-h-28 items-center gap-3 px-5 py-4">
                 <span className="grid size-8 shrink-0 place-items-center rounded-sm bg-bg-success text-content-success">
                   <CircleCheck className="size-4" strokeWidth={1.75} aria-hidden />
                 </span>
@@ -166,10 +166,10 @@ export function TutorDashboardOverview({
         </Card>
 
         <Card
-          className="min-w-0 gap-0 rounded-md border-border bg-surface-raised p-0 shadow-none"
+          className="min-w-0 gap-0 bg-surface-raised p-0"
           aria-labelledby="learner-progress-heading"
         >
-          <CardHeader className="border-b border-border-muted px-5 py-3">
+          <CardHeader className="px-5 pt-4 pb-3">
             <h3
               id="learner-progress-heading"
               className="text-heading-md text-foreground"
@@ -273,7 +273,7 @@ function Metric({
   detail: ReactNode;
 }) {
   return (
-    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1 bg-surface-raised px-5 py-4">
+    <div className="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1 rounded-md bg-surface-raised px-5 py-4 shadow-xs">
       <dt className="col-span-2 text-caption font-medium text-content-subtle">
         {label}
       </dt>

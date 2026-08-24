@@ -13,11 +13,11 @@ const buttonVariants = cva(
         outline:
           "border-border-default bg-transparent text-content-emphasis hover:border-border-emphasis hover:bg-bg-muted",
         secondary:
-          "border-border-default bg-card text-content-emphasis shadow-xs hover:border-border-emphasis hover:bg-bg-muted hover:shadow-sm",
+          "border-transparent bg-bg-subtle text-content-emphasis shadow-none hover:bg-border-subtle",
         ghost:
           "border-transparent bg-transparent text-content-emphasis hover:bg-bg-muted",
         soft:
-          "border-transparent bg-bg-subtle text-content-emphasis hover:bg-border-subtle",
+          "border-transparent bg-bg-subtle text-content-emphasis hover:bg-border",
         destructive:
           "border-[var(--color-error-border)] bg-transparent text-content-error hover:bg-bg-error",
         link:
@@ -25,11 +25,11 @@ const buttonVariants = cva(
         marketing:
           "h-11! rounded-pill border-transparent bg-primary px-3.5 text-button-lg text-primary-foreground shadow-xs hover:bg-[var(--color-accent-brand-hover)] hover:shadow-sm active:bg-[var(--color-accent-brand-active)]",
         "marketing-secondary":
-          "h-11! rounded-pill border-border bg-card px-3.5 text-button-lg text-content-emphasis hover:bg-bg-muted",
+          "h-11! rounded-pill border-border-default bg-card px-3.5 text-button-lg text-content-emphasis hover:border-border-emphasis hover:bg-bg-muted",
         category:
-          "rounded-pill-category border-border bg-card px-4 text-button hover:bg-bg-muted",
+          "rounded-pill-category border-transparent bg-bg-subtle px-4 text-button hover:bg-border-subtle",
         icon:
-          "rounded-full border-border-default bg-card text-content-emphasis shadow-xs hover:border-border-emphasis hover:bg-bg-muted hover:shadow-sm",
+          "rounded-full border-transparent bg-bg-subtle text-content-emphasis shadow-none hover:bg-border-subtle",
       },
       size: {
         default: "h-11 px-3.5 sm:h-10",

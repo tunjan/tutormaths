@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function Loading() {
   return (
     <div aria-hidden="true">
-      <div className="mb-5 flex items-end justify-between border-b border-border-muted pb-5">
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <Skeleton className="h-8 w-28" />
           <Skeleton className="mt-2 h-4 w-44" />
@@ -11,8 +11,8 @@ export default function Loading() {
         <Skeleton className="h-10 w-32 rounded-md" />
       </div>
 
-      <section className="overflow-hidden rounded-lg border border-border-subtle bg-[var(--color-canvas-elevated)]">
-        <div className="border-b border-border-subtle px-4 py-3 sm:px-5">
+      <section className="overflow-hidden rounded-md bg-card shadow-xs">
+        <div className="px-4 pt-4 pb-3 sm:px-5">
           <Skeleton className="h-4 w-28" />
           <Skeleton className="mt-2 h-3 w-72 max-w-full" />
         </div>

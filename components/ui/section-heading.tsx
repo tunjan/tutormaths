@@ -8,7 +8,7 @@ export function SectionHeading({
   return (
     <h2
       className={cn(
-        "break-words text-balance text-section-title text-foreground",
+        "break-words text-balance text-section-title text-content-emphasis",
         className,
       )}
       {...props}

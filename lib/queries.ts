@@ -30,20 +30,28 @@ export async function loadComments(
 ): Promise<CommentView[]> {
   const supabase = await createClient();
 
-  const { data: comments } = await supabase
+  const { data: comments, error: commentsError } = await supabase
     .from("comments")
     .select("id, body, created_at, author_id")
     .eq("assignment_id", assignmentId)
     .is("deleted_at", null)
     .order("created_at", { ascending: true });
 
+  if (commentsError) {
+    throw new Error(`Could not load comments: ${commentsError.message}`);
+  }
+
   if (!comments || comments.length === 0) return [];
 
   const ids = [...new Set(comments.map((c) => c.author_id))];
-  const { data: authors } = await supabase
+  const { data: authors, error: authorsError } = await supabase
     .from("profiles")
     .select("id, full_name, email, role")
     .in("id", ids);
+
+  if (authorsError) {
+    throw new Error(`Could not load comment authors: ${authorsError.message}`);
+  }
 
   const byId = new Map((authors ?? []).map((a) => [a.id, a]));
 
