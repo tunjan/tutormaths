@@ -1,12 +1,16 @@
 "use client";
 
-import { useState, useTransition, useRef, useEffect } from "react";
-import { AlertCircle, Send } from "lucide-react";
+import { useRef, useState, useTransition } from "react";
+import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  Alert,
-  AlertDescription,
-} from "@/components/ui/alert";
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
 
 /**
  * Compact comment composer: a growing textarea with an inline send
@@ -25,67 +29,91 @@ export function CommentComposer({
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const textareaId = `comment-composer-${assignmentId}`;
+  const errorId = `${textareaId}-error`;
 
   function submit() {
     const body = value.trim();
-    if (!body || pending) return;
+    if (pending) return;
+    if (!body) {
+      setError("Write a message before posting.");
+      textareaRef.current?.focus();
+      return;
+    }
+
     const fd = new FormData();
     fd.set("assignment_id", assignmentId);
     fd.set("body", body);
+
     startTransition(async () => {
       try {
         await action(fd);
         setValue("");
         setError("");
-      } catch (e) {
-        setError((e as Error).message);
+      } catch {
+        setError("Couldn’t post the message. Try again.");
+        textareaRef.current?.focus();
       }
     });
   }
 
-  // Auto-grow height on value change
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  }, [value]);
-
   return (
-    <div className="flex flex-col gap-2">
-      {error && (
-        <Alert variant="destructive" role="alert">
-          <AlertCircle aria-hidden />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-      <div className="flex items-end gap-2 rounded-sm border border-border bg-card p-2 pl-3 transition-[border-color,box-shadow] duration-base ease-[var(--ease-out)] focus-within:border-content-info focus-within:shadow-[var(--focus-ring)]">
-        <textarea
-          ref={textareaRef}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => {
-            if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-              e.preventDefault();
-              submit();
-            }
-          }}
-          rows={1}
-          placeholder="Write a comment…"
-          className="max-h-40 min-h-9 flex-1 resize-none bg-transparent py-2 text-body placeholder:text-content-muted focus:outline-none"
-        />
-        <Button
-          type="button"
-          onClick={submit}
-          disabled={pending || !value.trim()}
-          aria-label="Post comment"
-          size="icon-sm"
-          variant="soft"
-          className="shrink-0"
-        >
-          <Send />
-        </Button>
-      </div>
-    </div>
+    <form
+      aria-busy={pending}
+      onSubmit={(event) => {
+        event.preventDefault();
+        submit();
+      }}
+    >
+      <FieldGroup className="gap-2">
+        <Field data-invalid={error ? "true" : undefined}>
+          <FieldLabel htmlFor={textareaId} className="sr-only">
+            Write a message
+          </FieldLabel>
+          <div className="flex items-end gap-2">
+            <Textarea
+              ref={textareaRef}
+              id={textareaId}
+              name="body"
+              value={value}
+              onChange={(event) => {
+                const nextValue = event.target.value;
+                setValue(nextValue);
+                if (error && nextValue.trim()) setError("");
+              }}
+              onKeyDown={(event) => {
+                if (
+                  (event.metaKey || event.ctrlKey) &&
+                  event.key === "Enter"
+                ) {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }}
+              rows={1}
+              placeholder="Write a message…"
+              autoComplete="off"
+              disabled={pending}
+              aria-invalid={error ? true : undefined}
+              aria-describedby={error ? errorId : undefined}
+              className="max-h-40 min-h-11 resize-none [field-sizing:content] sm:min-h-10"
+            />
+            <Button
+              type="submit"
+              disabled={pending}
+              aria-busy={pending}
+              aria-label="Post message"
+              title="Post message"
+              size="icon"
+              variant={value.trim() ? "default" : "soft"}
+              className="shrink-0"
+            >
+              {pending ? <Spinner aria-hidden /> : <Send aria-hidden />}
+            </Button>
+          </div>
+          {error && <FieldError id={errorId}>{error}</FieldError>}
+        </Field>
+      </FieldGroup>
+    </form>
   );
 }
