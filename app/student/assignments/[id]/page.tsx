@@ -3,7 +3,6 @@ import {
   BookOpen,
   CalendarDays,
   Download,
-  MessageSquareText,
   Paperclip,
 } from "lucide-react";
 import { requireStudent } from "@/lib/auth";
@@ -32,7 +31,9 @@ import {
   Card,
   CardAction,
   CardContent,
+  CardDescription,
   CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { LatexContent } from "@/components/ui/latex-content";
@@ -311,18 +312,12 @@ export default async function StudentAssignmentPage({
             aria-labelledby="tutor-discussion-title"
           >
             <CardHeader className="border-b border-border p-4">
-              <h2
-                id="tutor-discussion-title"
-                className="flex items-center gap-2 text-label font-semibold text-foreground"
-              >
-                <MessageSquareText className="size-4 text-muted-foreground" aria-hidden />
-                Tutor discussion
-              </h2>
-              <CardAction>
-                <Badge variant="outline">
-                  {comments.length} {comments.length === 1 ? "message" : "messages"}
-                </Badge>
-              </CardAction>
+              <CardTitle className="text-title-sm">
+                <h2 id="tutor-discussion-title">Conversation</h2>
+              </CardTitle>
+              <CardDescription className="text-caption">
+                With your tutor
+              </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 p-4">
               <LiveCommentThread

@@ -433,16 +433,16 @@ export default async function TutorAssignmentPage({
             )}
 
             <section aria-labelledby="conversation-heading">
-              <Card>
-                <CardHeader>
-                  <CardTitle>
+              <Card className="gap-0 rounded-lg border-border p-0 shadow-none">
+                <CardHeader className="border-b border-border p-4">
+                  <CardTitle className="text-title-sm">
                     <h2 id="conversation-heading">Conversation</h2>
                   </CardTitle>
-                  <CardDescription>
-                    Message {studentShortName} about this assignment.
+                  <CardDescription className="text-caption">
+                    With {studentShortName}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-4">
+                <CardContent className="flex flex-col gap-3 p-4">
                   <LiveCommentThread
                     assignmentId={id}
                     initial={comments}
@@ -451,7 +451,6 @@ export default async function TutorAssignmentPage({
                     editAction={editComment}
                     deleteAction={deleteComment}
                   />
-                  {comments.length > 0 && <Separator />}
                   <CommentComposer assignmentId={id} action={addComment} />
                 </CardContent>
               </Card>
