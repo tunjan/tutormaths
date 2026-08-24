@@ -139,7 +139,12 @@ function compareAssignments(
   const unreadDifference = Number(b.unread) - Number(a.unread);
   if (unreadDifference !== 0) return unreadDifference;
 
-  return a.title.localeCompare(b.title, "en-GB", { sensitivity: "base" });
+  const titleDifference = a.title.localeCompare(b.title, "en-GB", {
+    sensitivity: "base",
+  });
+  if (titleDifference !== 0) return titleDifference;
+
+  return a.id.localeCompare(b.id);
 }
 
 function updateUrl(
@@ -203,41 +208,6 @@ export function TutorAssignmentBrowser({
     return () => window.removeEventListener("popstate", restoreUrlState);
   }, [filter, items, nowMs, query]);
 
-  const filterCounts = useMemo(
-    () =>
-      items.reduce<Record<AssignmentFilter, number>>(
-        (counts, item) => {
-          counts.all += 1;
-          if (matchesFilter(item, "attention", nowMs)) counts.attention += 1;
-          if (matchesFilter(item, "active", nowMs)) counts.active += 1;
-          if (matchesFilter(item, "completed", nowMs)) counts.completed += 1;
-          return counts;
-        },
-        { attention: 0, active: 0, completed: 0, all: 0 },
-      ),
-    [items, nowMs],
-  );
-
-  const filterOptions = filterDefinitions.map((option) => ({
-    value: option.value,
-    label: (
-      <span className="inline-flex items-center gap-1">
-        <span>{option.label}</span>
-        <span
-          className="min-w-3 text-center font-metric tabular-nums text-content-muted"
-          aria-hidden
-        >
-          {filterCounts[option.value]}
-        </span>
-        <span className="sr-only">
-          {filterCounts[option.value] === 1
-            ? "1 assignment"
-            : `${filterCounts[option.value]} assignments`}
-        </span>
-      </span>
-    ),
-  }));
-
   const visible = useMemo(() => {
     const source = items.filter((item) => matchesFilter(item, filter, nowMs));
 
@@ -271,13 +241,17 @@ export function TutorAssignmentBrowser({
   function changeFilter(nextFilter: AssignmentFilter) {
     setFilter(nextFilter);
     setSelected(new Set());
-    updateUrl(nextFilter, query, "push");
+    const currentQuery = searchRef.current?.value ?? query;
+    updateUrl(nextFilter, currentQuery, "push");
   }
 
   function changeQuery(nextQuery: string) {
     setQuery(nextQuery);
     setSelected(new Set());
-    updateUrl(filter, nextQuery, "replace");
+    const currentFilter =
+      parseFilter(new URL(window.location.href).searchParams.get("view")) ??
+      filter;
+    updateUrl(currentFilter, nextQuery, "replace");
   }
 
   function toggle(id: string) {
@@ -378,7 +352,7 @@ export function TutorAssignmentBrowser({
           <SegmentedControl
             value={filter}
             onValueChange={changeFilter}
-            options={filterOptions}
+            options={filterDefinitions}
             ariaLabel="Assignment status filter"
             className="grid w-full grid-cols-4 sm:w-auto"
           />

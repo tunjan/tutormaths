@@ -62,7 +62,7 @@ export function TutorAssignmentSummary({
       <ul className="grid min-w-0 grid-cols-2 gap-px sm:grid-cols-4">
         <SummaryLink
           href="/tutor/assignments?view=attention"
-          label="Awaiting review"
+          label="To review"
           count={counts.awaiting}
           icon={Inbox}
           tone="info"
@@ -111,11 +111,11 @@ function SummaryLink({
       <Link
         href={href}
         aria-label={`${label}: ${count} ${count === 1 ? "assignment" : "assignments"}`}
-        className="group flex min-h-14 min-w-0 items-center gap-2.5 px-3 py-2 transition-colors hover:bg-bg-muted/65 sm:px-4"
+        className="group flex min-h-14 min-w-0 items-center gap-2 px-2 py-2 transition-colors hover:bg-bg-muted/65 sm:gap-2.5 sm:px-4"
       >
         <span
           className={cn(
-            "grid size-8 shrink-0 place-items-center rounded-sm",
+            "grid size-7 shrink-0 place-items-center rounded-sm sm:size-8",
             toneClasses[tone],
           )}
           aria-hidden

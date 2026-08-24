@@ -20,9 +20,9 @@ export default function Loading() {
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={index}
-              className="flex min-h-14 min-w-0 items-center gap-2.5 bg-card px-3 py-2 sm:px-4"
+              className="flex min-h-14 min-w-0 items-center gap-2 bg-card px-2 py-2 sm:gap-2.5 sm:px-4"
             >
-              <Skeleton className="size-8 shrink-0" />
+              <Skeleton className="size-7 shrink-0 sm:size-8" />
               <Skeleton className="h-4 min-w-0 flex-1" />
               <Skeleton className="h-6 w-6 shrink-0" />
             </div>
