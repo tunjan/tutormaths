@@ -49,7 +49,7 @@ export interface BrowserItem {
 
 export type AssignmentFilter = "attention" | "active" | "completed" | "all";
 
-const filterOptions = [
+const filterDefinitions = [
   { value: "attention", label: "Attention" },
   { value: "active", label: "Active" },
   { value: "completed", label: "Approved" },
@@ -57,10 +57,10 @@ const filterOptions = [
 ] satisfies { value: AssignmentFilter; label: string }[];
 
 const filterDescriptions: Record<AssignmentFilter, string> = {
-  attention: "Overdue work and submissions awaiting review.",
-  active: "Open assignments that are not overdue.",
-  completed: "Approved assignments.",
-  all: "All assignments.",
+  attention: "Awaiting review and overdue.",
+  active: "Open work by due date.",
+  completed: "Approved work.",
+  all: "Every assignment.",
 };
 
 function isOpen(item: BrowserItem) {
@@ -93,9 +93,70 @@ function defaultFilter(items: BrowserItem[], nowMs: number): AssignmentFilter {
 }
 
 function parseFilter(value: string | null): AssignmentFilter | undefined {
-  return filterOptions.some((option) => option.value === value)
+  return filterDefinitions.some((option) => option.value === value)
     ? (value as AssignmentFilter)
     : undefined;
+}
+
+function matchesFilter(
+  item: BrowserItem,
+  filter: AssignmentFilter,
+  nowMs: number,
+) {
+  if (filter === "attention") return needsAttention(item, nowMs);
+  if (filter === "active") {
+    return isOpen(item) && new Date(item.due_at).getTime() >= nowMs;
+  }
+  if (filter === "completed") return item.review_status === "approved";
+  return true;
+}
+
+function assignmentPriority(item: BrowserItem, nowMs: number) {
+  if (item.review_status === "submitted") return 0;
+  if (isOpen(item) && new Date(item.due_at).getTime() < nowMs) return 1;
+  if (isOpen(item)) return 2;
+  return 3;
+}
+
+function compareAssignments(
+  a: BrowserItem,
+  b: BrowserItem,
+  filter: AssignmentFilter,
+  nowMs: number,
+) {
+  if (filter === "attention" || filter === "all") {
+    const priorityDifference =
+      assignmentPriority(a, nowMs) - assignmentPriority(b, nowMs);
+    if (priorityDifference !== 0) return priorityDifference;
+  }
+
+  const dueDifference =
+    new Date(a.due_at).getTime() - new Date(b.due_at).getTime();
+  if (dueDifference !== 0) {
+    return filter === "completed" ? -dueDifference : dueDifference;
+  }
+
+  const unreadDifference = Number(b.unread) - Number(a.unread);
+  if (unreadDifference !== 0) return unreadDifference;
+
+  return a.title.localeCompare(b.title, "en-GB", { sensitivity: "base" });
+}
+
+function updateUrl(
+  nextFilter: AssignmentFilter,
+  nextQuery: string,
+  mode: "push" | "replace",
+) {
+  const url = new URL(window.location.href);
+  url.searchParams.set("view", nextFilter);
+  const trimmedQuery = nextQuery.trim();
+  if (trimmedQuery) url.searchParams.set("q", trimmedQuery);
+  else url.searchParams.delete("q");
+  window.history[mode === "push" ? "pushState" : "replaceState"](
+    {},
+    "",
+    url.toString(),
+  );
 }
 
 export function TutorAssignmentBrowser({
@@ -124,31 +185,73 @@ export function TutorAssignmentBrowser({
     function restoreUrlState() {
       const params = new URLSearchParams(window.location.search);
       const nextFilter = parseFilter(params.get("view"));
-      setFilter(nextFilter ?? defaultFilter(items, nowMs));
-      setQuery(params.get("q") ?? "");
+      const resolvedFilter = nextFilter ?? defaultFilter(items, nowMs);
+      const nextQuery = params.get("q") ?? "";
+      setFilter(resolvedFilter);
+      setQuery(nextQuery);
       setSelected(new Set());
+
+      if (!nextFilter) updateUrl(resolvedFilter, nextQuery, "replace");
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    if (!parseFilter(params.get("view"))) {
+      updateUrl(filter, query, "replace");
     }
 
     window.addEventListener("popstate", restoreUrlState);
     return () => window.removeEventListener("popstate", restoreUrlState);
-  }, [items, nowMs]);
+  }, [filter, items, nowMs, query]);
+
+  const filterCounts = useMemo(
+    () =>
+      items.reduce<Record<AssignmentFilter, number>>(
+        (counts, item) => {
+          counts.all += 1;
+          if (matchesFilter(item, "attention", nowMs)) counts.attention += 1;
+          if (matchesFilter(item, "active", nowMs)) counts.active += 1;
+          if (matchesFilter(item, "completed", nowMs)) counts.completed += 1;
+          return counts;
+        },
+        { attention: 0, active: 0, completed: 0, all: 0 },
+      ),
+    [items, nowMs],
+  );
+
+  const filterOptions = filterDefinitions.map((option) => ({
+    value: option.value,
+    label: (
+      <span className="inline-flex items-center gap-1">
+        <span>{option.label}</span>
+        <span
+          className="min-w-3 text-center font-metric tabular-nums text-content-muted"
+          aria-hidden
+        >
+          {filterCounts[option.value]}
+        </span>
+        <span className="sr-only">
+          {filterCounts[option.value] === 1
+            ? "1 assignment"
+            : `${filterCounts[option.value]} assignments`}
+        </span>
+      </span>
+    ),
+  }));
 
   const visible = useMemo(() => {
-    const source = items.filter((item) => {
-      if (filter === "attention") return needsAttention(item, nowMs);
-      if (filter === "active") {
-        return isOpen(item) && new Date(item.due_at).getTime() >= nowMs;
-      }
-      if (filter === "completed") return item.review_status === "approved";
-      return true;
-    });
+    const source = items.filter((item) => matchesFilter(item, filter, nowMs));
 
     const q = query.trim().toLowerCase();
-    if (!q) return source;
-    return source.filter(
-      (item) =>
-        item.title.toLowerCase().includes(q) ||
-        item.student.toLowerCase().includes(q),
+    const matches = q
+      ? source.filter(
+          (item) =>
+            item.title.toLowerCase().includes(q) ||
+            item.student.toLowerCase().includes(q),
+        )
+      : source;
+
+    return matches.toSorted((a, b) =>
+      compareAssignments(a, b, filter, nowMs),
     );
   }, [filter, items, nowMs, query]);
 
@@ -164,23 +267,6 @@ export function TutorAssignmentBrowser({
   const resultCountText = isFiltered
     ? `${visible.length} of ${items.length} assignment${items.length === 1 ? "" : "s"}`
     : `${visible.length} assignment${visible.length === 1 ? "" : "s"}`;
-
-  function updateUrl(
-    nextFilter: AssignmentFilter,
-    nextQuery: string,
-    mode: "push" | "replace",
-  ) {
-    const url = new URL(window.location.href);
-    url.searchParams.set("view", nextFilter);
-    const trimmedQuery = nextQuery.trim();
-    if (trimmedQuery) url.searchParams.set("q", trimmedQuery);
-    else url.searchParams.delete("q");
-    window.history[mode === "push" ? "pushState" : "replaceState"](
-      {},
-      "",
-      url.toString(),
-    );
-  }
 
   function changeFilter(nextFilter: AssignmentFilter) {
     setFilter(nextFilter);

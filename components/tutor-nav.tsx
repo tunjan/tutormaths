@@ -49,9 +49,9 @@ export function TutorNav({
               href={l.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "inline-flex h-8 items-center gap-2 rounded-sm px-3 text-label transition-[background-color,color] duration-fast focus-visible:outline-none",
+                "inline-flex h-8 items-center gap-2 rounded-sm border border-transparent px-3 text-label transition-[background-color,border-color,color] duration-fast focus-visible:outline-none",
                 active
-                  ? "bg-surface-selected font-medium text-accent-ink hover:bg-surface-selected"
+                  ? "border-border-strong bg-surface-selected font-medium text-accent-ink hover:bg-surface-selected"
                   : "text-content-default hover:bg-surface-hover hover:text-content-emphasis",
               )}
             >
@@ -89,9 +89,9 @@ export function TutorNav({
                   href={l.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "relative flex min-h-11 items-center gap-2.5 rounded-sm px-3 text-label transition-[background-color,color] duration-fast focus-visible:outline-none",
+                    "relative flex min-h-11 items-center gap-2.5 rounded-sm border border-transparent px-3 text-label transition-[background-color,border-color,color] duration-fast focus-visible:outline-none",
                     active
-                      ? "bg-surface-selected font-medium text-accent-ink hover:bg-surface-selected"
+                      ? "border-border-strong bg-surface-selected font-medium text-accent-ink hover:bg-surface-selected"
                       : "text-content-default hover:bg-surface-hover hover:text-content-emphasis",
                   )}
                 >

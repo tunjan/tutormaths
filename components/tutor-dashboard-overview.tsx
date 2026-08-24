@@ -210,7 +210,7 @@ export function TutorDashboardOverview({
                       <p className="font-eyebrow text-content-subtle">
                         Class average
                       </p>
-                      <p className="mt-0.5 truncate text-caption text-content-muted font-metric">
+                      <p className="mt-0.5 break-words text-caption text-content-muted font-metric">
                         {activeCount} active assignment
                         {activeCount === 1 ? "" : "s"}
                       </p>

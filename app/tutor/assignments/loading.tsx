@@ -12,6 +12,25 @@ export default function Loading() {
       </header>
 
       <section
+        className="mb-5 overflow-hidden rounded-md border border-card-edge bg-border-subtle shadow-xs"
+        aria-label="Loading assignment summary"
+        aria-busy="true"
+      >
+        <div className="grid grid-cols-2 gap-px sm:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="flex min-h-14 min-w-0 items-center gap-2.5 bg-card px-3 py-2 sm:px-4"
+            >
+              <Skeleton className="size-8 shrink-0" />
+              <Skeleton className="h-4 min-w-0 flex-1" />
+              <Skeleton className="h-6 w-6 shrink-0" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section
         className="overflow-hidden rounded-md bg-surface-raised shadow-xs"
         aria-label="Loading assignments"
       >

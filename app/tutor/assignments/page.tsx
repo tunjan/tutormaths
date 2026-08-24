@@ -9,6 +9,7 @@ import {
   type AssignmentFilter,
   type BrowserItem,
 } from "@/components/tutor-assignment-browser";
+import { TutorAssignmentSummary } from "@/components/tutor-assignment-summary";
 import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata: Metadata = {
@@ -145,6 +146,10 @@ export default async function AssignmentsPage({
         }
         className="mb-5 gap-4 border-b-0 pb-0"
       />
+
+      {items.length > 0 && (
+        <TutorAssignmentSummary items={items} nowMs={nowMs} />
+      )}
 
       <TutorAssignmentBrowser
         items={items}

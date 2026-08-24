@@ -8,7 +8,7 @@ export function AppFooter({ homeHref }: { homeHref: string }) {
         <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
           <Link
             href={homeHref}
-            className="font-heading font-semibold text-content-emphasis focus-visible:outline-none"
+            className="inline-flex min-h-6 items-center rounded-sm font-heading font-semibold text-content-emphasis focus-visible:outline-none"
             translate="no"
           >
             Maths Tasks
