@@ -269,10 +269,14 @@ export function NewAssignmentForm({
       unstable_rethrow(err);
       let cleanupWarning = "";
       if (uploaded.length > 0) {
-        const { error: cleanupError } = await supabase.storage
-          .from(BUCKET_ASSIGNMENTS)
-          .remove(uploaded.map((u) => u.filePath));
-        if (cleanupError) {
+        try {
+          const { error: cleanupError } = await supabase.storage
+            .from(BUCKET_ASSIGNMENTS)
+            .remove(uploaded.map((upload) => upload.filePath));
+          if (cleanupError) {
+            cleanupWarning = " Uploaded files may need to be removed manually.";
+          }
+        } catch {
           cleanupWarning = " Uploaded files may need to be removed manually.";
         }
       }
@@ -338,6 +342,10 @@ export function NewAssignmentForm({
   }
 
   function confirmPageCancel(event: React.MouseEvent<HTMLAnchorElement>) {
+    if (busy) {
+      event.preventDefault();
+      return;
+    }
     if (dirty && !window.confirm("Discard this assignment draft?")) {
       event.preventDefault();
     }
@@ -363,7 +371,7 @@ export function NewAssignmentForm({
           isDialog && "flex-1 overflow-y-auto overscroll-contain pr-2",
         )}
       >
-        <div className="grid items-start gap-5 pb-5 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.92fr)]">
+        <div className="grid items-stretch gap-5 pb-5 md:grid-cols-[minmax(0,1fr)_minmax(20rem,0.92fr)]">
           <section
             aria-labelledby="assignment-details-heading"
             className="min-w-0 rounded-md bg-bg-subtle p-4 sm:p-5"
@@ -381,7 +389,7 @@ export function NewAssignmentForm({
             </div>
 
             <FieldGroup className="gap-4">
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid min-w-0 gap-4 sm:grid-cols-2">
                 <Field data-invalid={!!errors.student}>
                   <FieldLabel id="student-label">Student</FieldLabel>
                   <Select
@@ -486,7 +494,7 @@ export function NewAssignmentForm({
                 <FieldError id="title-error">{errors.title}</FieldError>
               </Field>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid min-w-0 gap-4 sm:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)]">
                 <Field data-invalid={!!errors.due}>
                   <FieldLabel htmlFor="due_at">Due</FieldLabel>
                   <DateTimePicker
@@ -597,6 +605,7 @@ export function NewAssignmentForm({
                   name="description"
                   rows={3}
                   disabled={busy}
+                  className="min-h-20"
                   placeholder="Add focus areas, page numbers, or a helpful hint…"
                   onKeyDown={submitFromTextarea}
                 />
@@ -606,7 +615,7 @@ export function NewAssignmentForm({
 
           <section
             aria-labelledby="assignment-content-heading"
-            className="min-w-0 rounded-md bg-bg-subtle p-4 sm:p-5"
+            className="h-full min-w-0 rounded-md bg-bg-subtle p-4 sm:p-5"
           >
             <div className="mb-4 flex flex-col gap-1">
               <SectionHeading
@@ -788,6 +797,7 @@ export function NewAssignmentForm({
             href="/tutor"
             onClick={confirmPageCancel}
             aria-disabled={busy}
+            tabIndex={busy ? -1 : undefined}
             className={cn(
               buttonVariants({ variant: "ghost" }),
               "w-full sm:w-auto",

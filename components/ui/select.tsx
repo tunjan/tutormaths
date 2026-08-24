@@ -22,7 +22,10 @@ function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
   return (
     <SelectPrimitive.Value
       data-slot="select-value"
-      className={cn("flex min-w-0 flex-1 text-left", className)}
+      className={cn(
+        "min-w-0 flex-1 overflow-hidden text-left text-ellipsis whitespace-nowrap",
+        className
+      )}
       {...props}
     />
   )
@@ -41,11 +44,11 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex h-11 w-fit items-center justify-between gap-2 rounded-sm border border-border-default bg-card px-3 text-base whitespace-nowrap outline-none select-none sm:h-10 sm:text-body",
+        "flex h-11 w-fit items-center justify-between gap-2 overflow-hidden rounded-sm border border-border-default bg-card px-3 text-base whitespace-nowrap outline-none select-none sm:h-10 sm:text-body",
         "transition-[background-color,border-color,color,box-shadow] duration-fast ease-[var(--ease-standard)]",
         "hover:border-border-emphasis focus-visible:border-accent-ink focus-visible:shadow-[var(--focus-ring)] disabled:cursor-not-allowed disabled:border-border-subtle disabled:bg-bg-subtle disabled:text-content-muted",
         "data-placeholder:text-content-muted data-[size=sm]:h-11 sm:data-[size=sm]:h-8",
-        "*:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+        "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
         className
       )}
       {...props}
